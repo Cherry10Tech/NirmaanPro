@@ -1,0 +1,2251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Nirmaan Pro — Home Construction ERP & Expense Tracker</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+    .shake { animation: shake 0.35s ease-in-out; }
+    .pin-dot { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+  </style>
+</head>
+<body class="min-h-screen pb-24 selection:bg-amber-500 selection:text-white">
+
+  <!-- ==========================================
+       1. FULL-SCREEN PIN LOCK GATE (SHA-256)
+       ========================================== -->
+  <div id="pinLockScreen" class="fixed inset-0 z-50 bg-slate-950 flex flex-col items-center justify-between p-6 text-white select-none">
+    <div class="w-full max-w-sm pt-6 flex items-center justify-between text-xs text-slate-400">
+      <span class="flex items-center gap-1.5 font-medium">
+        <span id="lockSyncDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span id="lockSyncText">Cloud DB Connected</span>
+      </span>
+      <span class="text-slate-500 font-mono">v2.5 Live</span>
+    </div>
+
+    <div class="w-full max-w-xs flex flex-col items-center my-auto">
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/25 mb-4">
+        <i data-lucide="hard-hat" class="w-9 h-9 text-slate-950 stroke-[2.2]"></i>
+      </div>
+      <h1 class="text-2xl font-extrabold tracking-tight text-white">Nirmaan Pro</h1>
+      <p class="text-xs text-slate-400 mt-1 text-center">Home Construction Ledger & Live Analytics</p>
+
+      <!-- 4 PIN Dots -->
+      <div id="pinDotsContainer" class="flex items-center gap-4 my-7">
+        <div class="pin-dot w-4 h-4 rounded-full border-2 border-slate-600"></div>
+        <div class="pin-dot w-4 h-4 rounded-full border-2 border-slate-600"></div>
+        <div class="pin-dot w-4 h-4 rounded-full border-2 border-slate-600"></div>
+        <div class="pin-dot w-4 h-4 rounded-full border-2 border-slate-600"></div>
+      </div>
+
+      <p id="pinErrorMsg" class="text-xs text-rose-400 font-semibold h-5 mb-2 opacity-0 transition-opacity">
+        Incorrect PIN. Please try again.
+      </p>
+
+      <!-- Numeric Keypad -->
+      <div class="grid grid-cols-3 gap-3.5 w-full mt-1">
+        <button onclick="pressPinDigit('1')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">1</button>
+        <button onclick="pressPinDigit('2')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">2</button>
+        <button onclick="pressPinDigit('3')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">3</button>
+        <button onclick="pressPinDigit('4')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">4</button>
+        <button onclick="pressPinDigit('5')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">5</button>
+        <button onclick="pressPinDigit('6')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">6</button>
+        <button onclick="pressPinDigit('7')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">7</button>
+        <button onclick="pressPinDigit('8')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">8</button>
+        <button onclick="pressPinDigit('9')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">9</button>
+        <button onclick="clearPinDigits()" class="h-14 rounded-2xl bg-slate-900/50 hover:bg-slate-800 active:scale-95 border border-slate-800/60 text-xs font-semibold text-slate-400 uppercase tracking-wider transition">Clear</button>
+        <button onclick="pressPinDigit('0')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">0</button>
+        <button onclick="backspacePinDigit()" class="h-14 rounded-2xl bg-slate-900/50 hover:bg-slate-800 active:scale-95 border border-slate-800/60 flex items-center justify-center text-slate-300 transition">
+          <i data-lucide="delete" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="text-[11px] text-slate-500 text-center pb-2">
+      Protected by SHA-256 Verification • Real-Time Multi-Phone Sync
+    </div>
+  </div>
+
+  <!-- ==========================================
+       2. MAIN APPLICATION CONTAINER
+       ========================================== -->
+  <div id="mainAppContainer" class="hidden">
+    <!-- Top Sticky Header -->
+    <header class="sticky top-0 z-30 bg-slate-950 text-white shadow-md border-b border-slate-800">
+      <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-slate-950 font-extrabold shadow">
+            <i data-lucide="hard-hat" class="w-5 h-5 stroke-[2.3]"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 id="headerProjectTitle" class="font-extrabold text-base tracking-tight leading-none">Nirmaan Pro</h1>
+              <button onclick="lockAppNow()" title="Lock Screen" class="text-slate-400 hover:text-amber-400 transition">
+                <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-0.5" id="headerLastSyncText">Syncing live with Firebase...</p>
+          </div>
+        </div>
+
+        <!-- Live Sync Status Pill -->
+        <div class="flex items-center gap-2">
+          <button onclick="switchMainTab('settings')" id="syncStatusBadge" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 transition">
+            <span id="syncStatusDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span id="syncStatusLabel">Live Cloud</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Body Content -->
+    <main class="max-w-5xl mx-auto px-3 sm:px-4 pt-4 space-y-5">
+
+      <!-- ==========================================
+           TAB 1: DASHBOARD (HOME)
+           ========================================== -->
+      <section id="tab-dashboard" class="space-y-4">
+        <!-- Hero Financial Summary Card -->
+        <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 text-white rounded-2xl p-4 sm:p-5 shadow-lg border border-slate-800">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <span class="text-[11px] uppercase tracking-wider font-bold text-amber-400">Total Spent Till Date</span>
+              <div class="flex items-baseline gap-2 mt-1">
+                <h2 id="dashTotalSpent" class="text-3xl sm:text-4xl font-extrabold tracking-tight">₹0</h2>
+                <span id="dashTotalSpentWords" class="text-xs text-slate-400 font-medium">Zero</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="openBudgetAndProgressModal()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-200 flex items-center gap-1.5 transition">
+                <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-amber-400"></i>
+                Edit Budget / Stage %
+              </button>
+            </div>
+          </div>
+
+          <!-- Two Progress Bars: Budget Used % & Construction Stage % -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 pt-4 border-t border-slate-800/90">
+            <!-- Budget Progress -->
+            <div>
+              <div class="flex justify-between text-xs mb-1.5">
+                <span class="text-slate-400 font-medium">Target Budget: <strong id="dashBudgetTarget" class="text-white">Not Set</strong></span>
+                <span id="dashBudgetPct" class="font-bold text-amber-400">0% Used</span>
+              </div>
+              <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
+                <div id="dashBudgetBar" class="h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+              <p id="dashBudgetRemaining" class="text-[11px] text-slate-400 mt-1">Tap "Edit Budget / Stage %" to set your overall budget target.</p>
+            </div>
+
+            <!-- Construction Physical Progress -->
+            <div>
+              <div class="flex justify-between text-xs mb-1.5">
+                <span class="text-slate-400 font-medium">Construction Completed Stage</span>
+                <span id="dashStagePctLabel" class="font-bold text-emerald-400">0% Done</span>
+              </div>
+              <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
+                <div id="dashStageBar" class="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+              <p id="dashStageNote" class="text-[11px] text-slate-400 mt-1">Update physical work % anytime to track cost vs. progress.</p>
+            </div>
+          </div>
+
+          <!-- 4 Mini KPI Pills -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-4">
+            <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-2.5">
+              <span class="text-[10px] uppercase tracking-wider text-slate-400 block">Pending Bills / Dues</span>
+              <span id="dashPendingDues" class="text-sm sm:text-base font-bold text-rose-400 mt-0.5 block">₹0</span>
+            </div>
+            <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-2.5">
+              <span class="text-[10px] uppercase tracking-wider text-slate-400 block">Cash Spent</span>
+              <span id="dashCashSpent" class="text-sm sm:text-base font-bold text-emerald-300 mt-0.5 block">₹0 (0%)</span>
+            </div>
+            <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-2.5">
+              <span class="text-[10px] uppercase tracking-wider text-slate-400 block">Bank / UPI / Cheque</span>
+              <span id="dashDigitalSpent" class="text-sm sm:text-base font-bold text-sky-300 mt-0.5 block">₹0 (0%)</span>
+            </div>
+            <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-2.5">
+              <span class="text-[10px] uppercase tracking-wider text-slate-400 block">Total Entries</span>
+              <span id="dashTotalEntriesCount" class="text-sm sm:text-base font-bold text-white mt-0.5 block">0 Records</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Action Banner for Digitizing Physical Book -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
+              <i data-lucide="book-open-check" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-900">Digitize Your Physical Expense Book</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Use <strong>Sticky Rapid Mode</strong> or <strong>Bulk Table Mode</strong> to quickly enter past notebook pages.</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <button onclick="switchMainTab('add'); toggleAddSubMode('single');" class="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition">
+              <i data-lucide="plus-circle" class="w-4 h-4 text-amber-400"></i> Add Expense
+            </button>
+            <button onclick="switchMainTab('add'); toggleAddSubMode('bulk');" class="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-extrabold flex items-center justify-center gap-1.5 transition">
+              <i data-lucide="table" class="w-4 h-4"></i> Bulk Book Entry
+            </button>
+          </div>
+        </div>
+
+        <!-- Dashboard Two-Column Grid: Top Categories % & Recent Entries -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <!-- Top Categories % Share -->
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900">Top Spending Categories (% Share)</h3>
+                <p class="text-[11px] text-slate-500">Live percentage split of total money spent</p>
+              </div>
+              <button onclick="switchMainTab('stats')" class="text-xs font-bold text-amber-600 hover:text-amber-700 flex items-center gap-1">
+                Full Stats <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+            <div id="dashTopCategoriesList" class="space-y-3">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Recent 6 Transactions -->
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900">Recent Passbook Entries</h3>
+                <p class="text-[11px] text-slate-500">Latest updates across all family phones</p>
+              </div>
+              <button onclick="switchMainTab('passbook')" class="text-xs font-bold text-amber-600 hover:text-amber-700 flex items-center gap-1">
+                All Entries <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+            <div id="dashRecentTransactions" class="divide-y divide-slate-100">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           TAB 2: ADD EXPENSE (SINGLE + BULK TABLE)
+           ========================================== -->
+      <section id="tab-add" class="hidden space-y-4">
+        <!-- Mode Switcher Header -->
+        <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl w-full sm:w-auto">
+            <button id="btnModeSingle" onclick="toggleAddSubMode('single')" class="flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold bg-slate-900 text-white shadow transition">
+              Single / Rapid Entry
+            </button>
+            <button id="btnModeBulk" onclick="toggleAddSubMode('bulk')" class="flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition">
+              Bulk Notebook Table (Multi-Row)
+            </button>
+          </div>
+
+          <!-- Notebook Sticky Toggle -->
+          <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer select-none px-2 py-1 rounded-lg bg-amber-50 border border-amber-200">
+            <input type="checkbox" id="stickyNotebookMode" checked class="rounded text-amber-600 focus:ring-amber-500 w-4 h-4" />
+            <span>📌 Notebook Catch-Up Mode (Keep Date & Category locked after save)</span>
+          </label>
+        </div>
+
+        <!-- SINGLE EXPENSE FORM -->
+        <form id="singleExpenseForm" onsubmit="handleSingleExpenseSubmit(event)" class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <h2 id="formTitleHeading" class="text-base font-extrabold text-slate-900">Record Construction Expense</h2>
+              <p class="text-xs text-slate-500">Select "➕ Other (Type Custom...)" in any dropdown to add your own item immediately.</p>
+            </div>
+            <input type="hidden" id="editingExpenseId" value="" />
+            <button type="button" id="cancelEditBtn" onclick="resetSingleForm()" class="hidden px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 text-xs font-bold">
+              Cancel Edit
+            </button>
+          </div>
+
+          <!-- Row 1: Date, Category (with inline Other), Nature/Type -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Date *</label>
+              <input type="date" id="expDate" required class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm font-medium focus:border-amber-500 focus:outline-none" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Construction Category *</label>
+              <select id="expCategorySelect" onchange="handleDynamicSelectChange('expCategorySelect', 'customCategoryWrap', 'expCategoryCustom')" required class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm font-medium bg-white focus:border-amber-500 focus:outline-none">
+                <!-- Populated dynamically + Other option -->
+              </select>
+              <!-- Inline Custom Category Box -->
+              <div id="customCategoryWrap" class="hidden mt-2 p-2.5 rounded-xl bg-amber-50 border border-amber-300 space-y-2">
+                <input type="text" id="expCategoryCustom" placeholder="Type new category name..." class="w-full rounded-lg border border-amber-400 px-2.5 py-1.5 text-xs font-semibold bg-white focus:outline-none" />
+                <label class="flex items-center gap-1.5 text-[11px] font-medium text-amber-900 cursor-pointer">
+                  <input type="checkbox" id="saveCustomCategoryPerm" checked class="rounded text-amber-600" />
+                  Save to dropdown for future entries
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Expense Type (For % Split) *</label>
+              <select id="expCostNature" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm font-medium bg-white focus:border-amber-500 focus:outline-none">
+                <option value="Material">🧱 Raw & Finishing Material</option>
+                <option value="Labor">👷 Labor / Mestri / Execution</option>
+                <option value="Approval & Fees">📋 Approvals / Architect / Fees</option>
+                <option value="Machinery & Transport">🚜 Transport / JCB / Machinery / Water</option>
+                <option value="Other">📦 Other / Misc</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Row 2: Amount (with built-in calculator) + Payment Status + Pending Balance -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label class="text-xs font-bold text-slate-800">Amount Paid Now (₹) *</label>
+                <span id="calcPreviewBadge" class="text-[11px] font-bold text-emerald-600"></span>
+              </div>
+              <input type="text" inputmode="decimal" id="expAmountInput" oninput="handleAmountMathPreview()" placeholder="e.g. 45000 or 100*390" required class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-base font-extrabold text-slate-900 focus:border-amber-500 focus:outline-none" />
+              <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                <button type="button" onclick="quickAddAmount(1000)" class="px-2 py-0.5 rounded bg-slate-200 hover:bg-slate-300 text-[10px] font-bold text-slate-700">+1K</button>
+                <button type="button" onclick="quickAddAmount(5000)" class="px-2 py-0.5 rounded bg-slate-200 hover:bg-slate-300 text-[10px] font-bold text-slate-700">+5K</button>
+                <button type="button" onclick="quickAddAmount(10000)" class="px-2 py-0.5 rounded bg-slate-200 hover:bg-slate-300 text-[10px] font-bold text-slate-700">+10K</button>
+                <button type="button" onclick="quickAddAmount(50000)" class="px-2 py-0.5 rounded bg-slate-200 hover:bg-slate-300 text-[10px] font-bold text-slate-700">+50K</button>
+                <button type="button" onclick="quickAddAmount(100000)" class="px-2 py-0.5 rounded bg-amber-200 hover:bg-amber-300 text-[10px] font-bold text-amber-900">+1L</button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-800 mb-1">Payment Status</label>
+              <select id="expPaymentStatus" onchange="togglePendingBalanceInput()" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm font-semibold bg-white focus:border-amber-500 focus:outline-none">
+                <option value="Paid">✅ Fully Paid / Settled</option>
+                <option value="Partial">⏳ Advance / Partial (Balance Pending)</option>
+                <option value="Refund">↩️ Material Return / Refund (Minus ₹)</option>
+              </select>
+              <div id="pendingAmountWrap" class="hidden mt-2">
+                <label class="block text-[11px] font-bold text-rose-600 mb-0.5">Pending Balance Still Owed (₹)</label>
+                <input type="number" id="expPendingAmount" placeholder="e.g. 15000" min="0" step="any" class="w-full rounded-lg border border-rose-300 px-2.5 py-1.5 text-xs font-bold text-rose-700 bg-white focus:outline-none" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-800 mb-1">Description / Item Details *</label>
+              <input type="text" id="expDescription" required placeholder="e.g. 100 Bags UltraTech / 1st Floor Brick Work" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm font-medium focus:border-amber-500 focus:outline-none" />
+              <p class="text-[10px] text-slate-400 mt-1">Write exact notebook remark for easy search later.</p>
+            </div>
+          </div>
+
+          <!-- Row 3: Paid By, Payment Mode, Zone/Floor (All with inline Other option) -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Paid By (Family Member / Source)</label>
+              <select id="expPaidBySelect" onchange="handleDynamicSelectChange('expPaidBySelect', 'customPaidByWrap', 'expPaidByCustom')" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm font-medium bg-white focus:border-amber-500 focus:outline-none">
+                <!-- Populated dynamically + Other -->
+              </select>
+              <div id="customPaidByWrap" class="hidden mt-2 p-2 rounded-xl bg-amber-50 border border-amber-300">
+                <input type="text" id="expPaidByCustom" placeholder="Type payer name..." class="w-full rounded-lg border border-amber-400 px-2.5 py-1.5 text-xs font-semibold bg-white" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Payment Mode</label>
+              <select id="expPaymentMode" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm font-medium bg-white focus:border-amber-500 focus:outline-none">
+                <option value="Cash">💵 Cash</option>
+                <option value="UPI / GPay / PhonePe">📱 UPI / GPay / PhonePe</option>
+                <option value="Bank Transfer (NEFT/RTGS/IMPS)">🏦 Bank Transfer (NEFT/RTGS)</option>
+                <option value="Cheque">🎫 Cheque</option>
+                <option value="Card / Other">💳 Card / Other</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">House Floor / Area / Zone</label>
+              <select id="expZoneSelect" onchange="handleDynamicSelectChange('expZoneSelect', 'customZoneWrap', 'expZoneCustom')" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm font-medium bg-white focus:border-amber-500 focus:outline-none">
+                <!-- Populated dynamically + Other -->
+              </select>
+              <div id="customZoneWrap" class="hidden mt-2 p-2 rounded-xl bg-amber-50 border border-amber-300">
+                <input type="text" id="expZoneCustom" placeholder="Type custom area/floor..." class="w-full rounded-lg border border-amber-400 px-2.5 py-1.5 text-xs font-semibold bg-white" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 4: Optional Vendor, Quantity/Unit & Bill/Book Page Ref -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-2 border-t border-slate-100">
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">Vendor / Contractor Name (Optional)</label>
+              <input type="text" id="expVendor" list="vendorSuggestionsList" placeholder="e.g. Mestri Raju / Hardware Shop" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-medium focus:border-amber-500 focus:outline-none" />
+              <datalist id="vendorSuggestionsList"></datalist>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">Quantity (Opt)</label>
+                <input type="number" id="expQty" step="any" min="0" placeholder="e.g. 50" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-medium focus:border-amber-500 focus:outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">Unit</label>
+                <select id="expUnit" class="w-full rounded-xl border border-slate-200 px-2 py-2 text-xs font-medium bg-white focus:border-amber-500 focus:outline-none">
+                  <option value="">-- None --</option>
+                  <option value="Bags">Bags</option>
+                  <option value="Tons">Tons</option>
+                  <option value="Kg">Kg</option>
+                  <option value="Loads / Tractor">Loads</option>
+                  <option value="Cubic Ft (CFT)">CFT</option>
+                  <option value="Sq.Ft">Sq.Ft</option>
+                  <option value="Pieces / Nos">Nos / Pcs</option>
+                  <option value="Days / Shifts">Days</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">Book Page No. / Bill Ref (Optional)</label>
+              <input type="text" id="expBookRef" placeholder="e.g. Book Pg 12 / Bill #402" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-medium focus:border-amber-500 focus:outline-none" />
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="pt-2 flex items-center justify-end gap-3">
+            <button type="submit" id="saveExpenseBtn" class="w-full sm:w-auto px-8 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-slate-950 font-extrabold text-sm shadow-md flex items-center justify-center gap-2 transition">
+              <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+              <span id="saveExpenseBtnText">Save Expense to Cloud</span>
+            </button>
+          </div>
+        </form>
+
+        <!-- BULK NOTEBOOK TABLE MODE -->
+        <div id="bulkExpenseContainer" class="hidden bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+            <div>
+              <h2 class="text-base font-extrabold text-slate-900">Bulk Notebook Digitizer Table</h2>
+              <p class="text-xs text-slate-500">Type multiple lines from your physical book at once. Select "➕ Other..." in any category cell to type a custom category.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="addBulkTableRow(5)" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700">
+                + Add 5 Rows
+              </button>
+              <button type="button" onclick="saveAllBulkRows()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-extrabold flex items-center gap-1.5 shadow">
+                <i data-lucide="cloud-upload" class="w-4 h-4"></i> Save All Filled Rows
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse min-w-[760px]">
+              <thead>
+                <tr class="border-b border-slate-200 text-[11px] uppercase tracking-wider text-slate-500 bg-slate-50">
+                  <th class="py-2.5 px-2 w-32">Date</th>
+                  <th class="py-2.5 px-2 w-48">Category (or Custom)</th>
+                  <th class="py-2.5 px-2">Item / Book Description *</th>
+                  <th class="py-2.5 px-2 w-36">Amount (₹) *</th>
+                  <th class="py-2.5 px-2 w-32">Mode</th>
+                  <th class="py-2.5 px-2 w-32">Paid By</th>
+                  <th class="py-2.5 px-2 w-10"></th>
+                </tr>
+              </thead>
+              <tbody id="bulkTableBody" class="divide-y divide-slate-100 text-xs">
+                <!-- Rows added dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           TAB 3: STATS & % ANALYTICS
+           ========================================== -->
+      <section id="tab-stats" class="hidden space-y-4">
+        <!-- Stats Filter Bar -->
+        <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-base font-extrabold text-slate-900">Complete Percentage (%) & Cost Analytics</h2>
+            <p class="text-xs text-slate-500">Every rupee broken down by Category %, Material vs. Labor %, Floor/Zone %, and Payer %</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <select id="statsZoneFilter" onchange="renderAllViews()" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-bold bg-slate-50">
+              <option value="ALL">All Floors / Zones</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 3 High-Level Split Cards: Material %, Labor %, Approvals/Transport % -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5" id="statsNatureCards">
+          <!-- Populated dynamically -->
+        </div>
+
+        <!-- Charts & Detailed % Breakdown Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <!-- Donut Chart Card (5 cols) -->
+          <div class="lg:col-span-5 bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col justify-between">
+            <div>
+              <h3 class="text-sm font-bold text-slate-900">Category Share Donut (%)</h3>
+              <p class="text-[11px] text-slate-500 mb-3">Visual proportion of your construction expenses</p>
+            </div>
+            <div class="relative h-64 flex items-center justify-center">
+              <canvas id="categoryDonutChart"></canvas>
+              <div id="donutEmptyState" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+                <i data-lucide="pie-chart" class="w-8 h-8 text-slate-300 mb-1"></i>
+                <p class="text-xs text-slate-400 font-medium">Add expenses to view percentage chart</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ranked Category Percentage Table (7 cols) -->
+          <div class="lg:col-span-7 bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900">Category-Wise Exact % & Amount</h3>
+                <p class="text-[11px] text-slate-500">Sorted from highest spending share to lowest</p>
+              </div>
+              <span id="statsCategoryCountBadge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">0 Categories</span>
+            </div>
+            <div id="statsCategoryFullList" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Zone / Floor % Split & Family Payer % Split -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+            <h3 class="text-sm font-bold text-slate-900">Floor / Room / Area Percentage Split</h3>
+            <p class="text-[11px] text-slate-500 mb-3">How much % went to Structure vs. Bathrooms vs. Interiors</p>
+            <div id="statsZoneBreakdownList" class="space-y-2.5"></div>
+          </div>
+
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+            <h3 class="text-sm font-bold text-slate-900">Who Paid How Much (% Contribution)</h3>
+            <p class="text-[11px] text-slate-500 mb-3">Breakdown by Family Member & Payment Mode</p>
+            <div id="statsPayerBreakdownList" class="space-y-2.5"></div>
+          </div>
+        </div>
+
+        <!-- Monthly Spending Timeline Chart & Material Quantity Intelligence -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+            <h3 class="text-sm font-bold text-slate-900">Monthly Spending Trend</h3>
+            <p class="text-[11px] text-slate-500 mb-3">Month-by-month cash outflow from start of project</p>
+            <div class="h-56">
+              <canvas id="monthlyBarChart"></canvas>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+            <h3 class="text-sm font-bold text-slate-900">Material Quantity & Average Rate Tracker</h3>
+            <p class="text-[11px] text-slate-500 mb-3">Auto-calculated from entries where you filled Quantity + Unit</p>
+            <div id="statsMaterialSummary" class="space-y-2 max-h-56 overflow-y-auto"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           TAB 4: PASSBOOK (ALL ENTRIES + FILTERS)
+           ========================================== -->
+      <section id="tab-passbook" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 class="text-base font-extrabold text-slate-900">Digital Construction Passbook</h2>
+              <p class="text-xs text-slate-500">Search, filter, edit, or settle pending vendor balances in real time</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="exportPassbookCSV()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
+                <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Download Excel (CSV)
+              </button>
+            </div>
+          </div>
+
+          <!-- Search & Multi-Filter Row -->
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 pt-1">
+            <div class="relative sm:col-span-1">
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+              <input type="text" id="passbookSearch" oninput="renderPassbookList()" placeholder="Search item, vendor, page..." class="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-300 text-xs font-medium focus:border-amber-500 focus:outline-none" />
+            </div>
+            <select id="passbookCatFilter" onchange="renderPassbookList()" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold bg-white">
+              <option value="ALL">All Categories</option>
+            </select>
+            <select id="passbookPayerFilter" onchange="renderPassbookList()" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold bg-white">
+              <option value="ALL">All Payers</option>
+            </select>
+            <select id="passbookStatusFilter" onchange="renderPassbookList()" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold bg-white">
+              <option value="ALL">All Statuses</option>
+              <option value="PENDING_ONLY">⏳ Pending Balance Only</option>
+              <option value="CASH_ONLY">💵 Cash Only</option>
+              <option value="DIGITAL_ONLY">🏦 UPI / Bank Only</option>
+            </select>
+          </div>
+
+          <!-- Filtered Total Bar -->
+          <div class="flex flex-wrap items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-900 text-white text-xs">
+            <span id="passbookFilteredCount">Showing 0 entries</span>
+            <div class="flex items-center gap-4">
+              <span>Filtered Paid Total: <strong id="passbookFilteredTotal" class="text-amber-400 text-sm">₹0</strong></span>
+              <span>Pending: <strong id="passbookFilteredPending" class="text-rose-400">₹0</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Passbook Entries List -->
+        <div id="passbookEntriesContainer" class="space-y-2.5">
+          <!-- Populated dynamically -->
+        </div>
+      </section>
+
+      <!-- ==========================================
+           TAB 5: SETTINGS, CONTRACTORS & CLOUD SYNC
+           ========================================== -->
+      <section id="tab-settings" class="hidden space-y-4">
+        <!-- Live Cloud Database Connection Box -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-3">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+              <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                <i data-lucide="database" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h2 class="text-base font-extrabold text-slate-900">Real-Time Cloud Database (Pre-Connected)</h2>
+                <p class="text-xs text-slate-500">Your Firebase Realtime Database is built into the code. You can also override it below in extreme scenarios.</p>
+              </div>
+            </div>
+            <button onclick="forceCloudPullNow()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 flex items-center gap-1.5">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Sync Now
+            </button>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+            <label class="block text-xs font-bold text-slate-700">Active Firebase Realtime Database URL</label>
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input type="url" id="settingsDbUrlInput" class="flex-1 rounded-xl border border-slate-300 px-3 py-2 text-xs font-mono bg-white focus:border-amber-500 focus:outline-none" />
+              <button onclick="saveCustomDatabaseUrl()" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold">
+                Update DB URL
+              </button>
+              <button onclick="resetToDefaultDatabaseUrl()" class="px-3 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold">
+                Reset to Default
+              </button>
+            </div>
+            <p class="text-[11px] text-slate-500">
+              Default Built-in URL: <code class="text-emerald-700 font-semibold">https://nirmaanpro-73f90-default-rtdb.firebaseio.com/</code>
+            </p>
+          </div>
+        </div>
+
+        <!-- Contractor Milestone & Agreement Tracker -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-extrabold text-slate-900">Contractor Running Account (RA) Tracker</h3>
+              <p class="text-xs text-slate-500">Add agreed contractor budgets (e.g., Civil Mestri, Plumber, Carpenter). Payments with matching Vendor names link automatically!</p>
+            </div>
+          </div>
+
+          <form onsubmit="handleAddContractor(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 pt-1">
+            <input type="text" id="conName" required placeholder="Contractor / Vendor Name" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold" />
+            <input type="text" id="conWorkType" required placeholder="Work (e.g. Civil Labor Contract)" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold" />
+            <input type="number" id="conAgreedAmount" required min="1" placeholder="Total Agreed Value (₹)" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold" />
+            <button type="submit" class="rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs py-2 px-4">
+              + Add Contract
+            </button>
+          </form>
+
+          <div id="contractorsListContainer" class="space-y-2.5 pt-2">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Manage Custom Categories, Payers, Zones & Change PIN -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Security PIN Change -->
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
+            <h3 class="text-sm font-extrabold text-slate-900">Change App Lock PIN</h3>
+            <p class="text-xs text-slate-500">Updates the SHA-256 encrypted PIN across all connected family phones.</p>
+            <div class="flex items-center gap-2">
+              <input type="password" id="newPinInput" maxlength="4" pattern="\d{4}" inputmode="numeric" placeholder="New 4-Digit PIN" class="flex-1 rounded-xl border border-slate-300 px-3 py-2 text-xs font-bold tracking-widest" />
+              <button onclick="updateCloudAppPin()" class="px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold">
+                Update PIN
+              </button>
+            </div>
+          </div>
+
+          <!-- Recycle Bin (Soft Deleted Items) -->
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-2">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-extrabold text-slate-900">Recycle Bin (Deleted Entries)</h3>
+              <span id="recycleBinCount" class="text-xs font-bold text-slate-500">0 items</span>
+            </div>
+            <p class="text-xs text-slate-500">Accidentally deleted an entry on any phone? Restore it with 1 tap.</p>
+            <div id="recycleBinContainer" class="space-y-1.5 max-h-40 overflow-y-auto pt-1"></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ==========================================
+         BOTTOM MOBILE NAVIGATION BAR
+         ========================================== -->
+    <nav class="fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur border-t border-slate-200 shadow-lg">
+      <div class="max-w-lg mx-auto grid grid-cols-5 h-16 px-1">
+        <button onclick="switchMainTab('dashboard')" id="nav-dashboard" class="nav-btn flex flex-col items-center justify-center gap-1 text-amber-600 font-bold">
+          <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+          <span class="text-[10px]">Dashboard</span>
+        </button>
+        <button onclick="switchMainTab('stats')" id="nav-stats" class="nav-btn flex flex-col items-center justify-center gap-1 text-slate-500 font-medium">
+          <i data-lucide="pie-chart" class="w-5 h-5"></i>
+          <span class="text-[10px]">Stats & %</span>
+        </button>
+        <button onclick="switchMainTab('add')" id="nav-add" class="flex flex-col items-center justify-center -mt-4">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-600 text-slate-950 flex items-center justify-center shadow-lg shadow-amber-500/30 border-2 border-white">
+            <i data-lucide="plus" class="w-6 h-6 stroke-[2.8]"></i>
+          </div>
+          <span class="text-[10px] font-extrabold text-slate-800 mt-0.5">Add Entry</span>
+        </button>
+        <button onclick="switchMainTab('passbook')" id="nav-passbook" class="nav-btn flex flex-col items-center justify-center gap-1 text-slate-500 font-medium">
+          <i data-lucide="book-text" class="w-5 h-5"></i>
+          <span class="text-[10px]">Passbook</span>
+        </button>
+        <button onclick="switchMainTab('settings')" id="nav-settings" class="nav-btn flex flex-col items-center justify-center gap-1 text-slate-500 font-medium">
+          <i data-lucide="settings-2" class="w-5 h-5"></i>
+          <span class="text-[10px]">Sync & More</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <!-- ==========================================
+       MODAL: EDIT TARGET BUDGET & STAGE %
+       ========================================== -->
+  <div id="budgetModal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-base font-extrabold text-slate-900">Project Budget & Construction Stage</h3>
+        <button onclick="closeBudgetAndProgressModal()" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Project / House Title</label>
+          <input type="text" id="modalProjectTitle" placeholder="e.g. Our Dream Home Construction" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Overall Estimated Construction Budget (₹)</label>
+          <input type="number" id="modalTotalBudget" min="0" step="any" placeholder="e.g. 7500000" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-bold" />
+          <p class="text-[11px] text-slate-400 mt-0.5">Used to calculate % of total budget spent and remaining balance.</p>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs font-bold text-slate-700 mb-1">
+            <span>Physical Construction Completed (%)</span>
+            <span id="modalStageRangeVal" class="text-emerald-600">0%</span>
+          </div>
+          <input type="range" id="modalStagePercent" min="0" max="100" step="1" oninput="document.getElementById('modalStageRangeVal').textContent = this.value + '%'" class="w-full accent-emerald-600" />
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeBudgetAndProgressModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-xs font-bold text-slate-600">Cancel</button>
+        <button onclick="saveBudgetAndProgressModal()" class="px-5 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold">Save & Sync</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBanner" class="fixed top-16 right-4 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold shadow-lg border border-slate-700 flex items-center gap-2">
+    <span id="toastText">Saved!</span>
+  </div>
+
+  <!-- ==========================================
+       JAVASCRIPT ENGINE (CLEAN SLATE + LIVE FIREBASE)
+       ========================================== -->
+  <script>
+    // 1. BUILT-IN FIREBASE REALTIME DATABASE URL
+    const DEFAULT_FIREBASE_DB_URL = "https://nirmaanpro-73f90-default-rtdb.firebaseio.com";
+
+    // 2. SHA-256 HASH OF INITIAL PIN (Never stores plain digits in code)
+    const DEFAULT_PIN_SHA256 = "07123e1f482356c415f684407a3b8723e10b2cbbc0b8fcd6282c49d37c9c1abc";
+
+    // Pre-loaded Indian Construction Categories, Payers & Zones (Editable & Expandable)
+    const INITIAL_CATEGORIES = [
+      "Excavation & Earthwork",
+      "Cement",
+      "Steel / TMT Bars",
+      "Sand / M-Sand / P-Sand",
+      "Aggregates / Jelly (20mm/40mm)",
+      "Bricks / Solid Concrete Blocks",
+      "Ready-Mix Concrete (RMC)",
+      "Centering & Shuttering",
+      "Civil Mestri / Masonry Labor",
+      "Waterproofing & Anti-Termite",
+      "Plumbing Pipes & Fittings (CPVC/PVC)",
+      "Sanitaryware & Bathroom Fittings",
+      "Electrical Conduits, Wires & Switches",
+      "Flooring Tiles & Adhesive",
+      "Marble, Granite & Stone Cladding",
+      "Main Door, Windows & Teak Woodwork",
+      "Interior Plywood, Fluting & Laminates",
+      "Putty, Primer & Painting",
+      "MS Fabrication, Grills & Railing",
+      "Borewell, Sump & Water Tanker",
+      "Plan Approval, Architect & EB Fees",
+      "JCB, Transport & Site Cleaning",
+      "Pooja & Ceremonies"
+    ];
+
+    const INITIAL_PAYERS = [
+      "Self",
+      "Father",
+      "Mother",
+      "Family Joint Account",
+      "Home Loan Account"
+    ];
+
+    const INITIAL_ZONES = [
+      "Overall House / Common",
+      "Foundation & Plinth",
+      "Ground Floor",
+      "First Floor",
+      "Second Floor / Terrace",
+      "Entrance & Living Feature Wall",
+      "Kitchen & Utility",
+      "Bathroom 1",
+      "Bathroom 2",
+      "Bathroom 3",
+      "Bathroom 4",
+      "Exterior & Compound Wall"
+    ];
+
+    // Application State (100% Empty Transactions by Default — Zero Dummy Data)
+    let appState = {
+      meta: {
+        projectTitle: "Nirmaan Pro",
+        totalBudget: 0,
+        constructionStagePct: 0,
+        pinHash: DEFAULT_PIN_SHA256,
+        updatedAt: 0
+      },
+      categories: [...INITIAL_CATEGORIES],
+      payers: [...INITIAL_PAYERS],
+      zones: [...INITIAL_ZONES],
+      expenses: {},      // Object map of id -> expense (Clean Slate!)
+      contractors: {},   // Object map of id -> contractor
+      recycleBin: {}     // Soft-deleted expenses
+    };
+
+    let enteredPin = "";
+    let eventSourceStream = null;
+    let isCurrentlySyncing = false;
+    let categoryChartInstance = null;
+    let monthlyChartInstance = null;
+
+    // Helper: Get Active Firebase DB URL
+    function getActiveDbUrl() {
+      const custom = localStorage.getItem("nirmaan_custom_db_url");
+      const base = (custom && custom.trim()) ? custom.trim() : DEFAULT_FIREBASE_DB_URL;
+      return base.replace(/\/+$/, "");
+    }
+
+    // Helper: SHA-256 Hash Function using Web Crypto API
+    async function sha256Hex(text) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(text);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    // ==========================================
+    // PIN LOCK LOGIC
+    // ==========================================
+    function pressPinDigit(digit) {
+      if (enteredPin.length >= 4) return;
+      enteredPin += digit;
+      updatePinDotsUI();
+      if (enteredPin.length === 4) {
+        verifyEnteredPin();
+      }
+    }
+
+    function backspacePinDigit() {
+      enteredPin = enteredPin.slice(0, -1);
+      document.getElementById("pinErrorMsg").classList.add("opacity-0");
+      updatePinDotsUI();
+    }
+
+    function clearPinDigits() {
+      enteredPin = "";
+      document.getElementById("pinErrorMsg").classList.add("opacity-0");
+      updatePinDotsUI();
+    }
+
+    function updatePinDotsUI() {
+      const dots = document.querySelectorAll("#pinDotsContainer .pin-dot");
+      dots.forEach((dot, idx) => {
+        if (idx < enteredPin.length) {
+          dot.classList.add("bg-amber-400", "border-amber-400", "scale-110");
+          dot.classList.remove("border-slate-600");
+        } else {
+          dot.classList.remove("bg-amber-400", "border-amber-400", "scale-110");
+          dot.classList.add("border-slate-600");
+        }
+      });
+    }
+
+    async function verifyEnteredPin() {
+      const hashedInput = await sha256Hex(enteredPin);
+      const activeHash = (appState.meta && appState.meta.pinHash) ? appState.meta.pinHash : DEFAULT_PIN_SHA256;
+
+      if (hashedInput === activeHash) {
+        sessionStorage.setItem("nirmaan_unlocked", "true");
+        document.getElementById("pinLockScreen").classList.add("hidden");
+        document.getElementById("mainAppContainer").classList.remove("hidden");
+        enteredPin = "";
+        updatePinDotsUI();
+        renderAllViews();
+      } else {
+        const container = document.getElementById("pinDotsContainer");
+        container.classList.add("shake");
+        document.getElementById("pinErrorMsg").classList.remove("opacity-0");
+        setTimeout(() => {
+          container.classList.remove("shake");
+          enteredPin = "";
+          updatePinDotsUI();
+        }, 400);
+      }
+    }
+
+    function lockAppNow() {
+      sessionStorage.removeItem("nirmaan_unlocked");
+      enteredPin = "";
+      updatePinDotsUI();
+      document.getElementById("mainAppContainer").classList.add("hidden");
+      document.getElementById("pinLockScreen").classList.remove("hidden");
+    }
+
+    // Support Physical Keyboard on PIN Screen
+    window.addEventListener("keydown", (e) => {
+      const lockVisible = !document.getElementById("pinLockScreen").classList.contains("hidden");
+      if (!lockVisible) return;
+      if (e.key >= "0" && e.key <= "9") pressPinDigit(e.key);
+      else if (e.key === "Backspace") backspacePinDigit();
+      else if (e.key === "Escape") clearPinDigits();
+    });
+
+    // ==========================================
+    // REAL-TIME FIREBASE SYNC ENGINE (REST + SSE)
+    // ==========================================
+    function setSyncIndicator(status, message) {
+      const badge = document.getElementById("syncStatusBadge");
+      const dot = document.getElementById("syncStatusDot");
+      const label = document.getElementById("syncStatusLabel");
+      const headerSub = document.getElementById("headerLastSyncText");
+      const lockDot = document.getElementById("lockSyncDot");
+      const lockText = document.getElementById("lockSyncText");
+
+      if (status === "live") {
+        badge.className = "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 transition";
+        dot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+        label.textContent = "Live Cloud";
+        headerSub.textContent = message || "Real-Time Cloud Sync Active across all phones";
+        if (lockDot) lockDot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+        if (lockText) lockText.textContent = "Firebase Live Connected";
+      } else if (status === "syncing") {
+        badge.className = "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30 transition";
+        dot.className = "w-2 h-2 rounded-full bg-amber-400 animate-ping";
+        label.textContent = "Syncing...";
+      } else {
+        badge.className = "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/15 text-rose-300 border border-rose-500/30 transition";
+        dot.className = "w-2 h-2 rounded-full bg-rose-400";
+        label.textContent = "Offline Cache";
+        headerSub.textContent = message || "Offline — Saved locally, will sync when online";
+        if (lockDot) lockDot.className = "w-2 h-2 rounded-full bg-rose-400";
+        if (lockText) lockText.textContent = "Offline Mode (Local Cache)";
+      }
+    }
+
+    function saveLocalBackup() {
+      try {
+        localStorage.setItem("nirmaan_state_cache_v2", JSON.stringify(appState));
+      } catch (e) {}
+    }
+
+    function loadLocalBackup() {
+      try {
+        const raw = localStorage.getItem("nirmaan_state_cache_v2");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          mergeIncomingCloudData(parsed, false);
+        }
+      } catch (e) {}
+    }
+
+    function mergeIncomingCloudData(cloudData, shouldRender = true) {
+      if (!cloudData || typeof cloudData !== "object") return;
+
+      if (cloudData.meta) {
+        appState.meta = {
+          projectTitle: cloudData.meta.projectTitle || "Nirmaan Pro",
+          totalBudget: Number(cloudData.meta.totalBudget) || 0,
+          constructionStagePct: Number(cloudData.meta.constructionStagePct) || 0,
+          pinHash: cloudData.meta.pinHash || DEFAULT_PIN_SHA256,
+          updatedAt: cloudData.meta.updatedAt || Date.now()
+        };
+      }
+      if (Array.isArray(cloudData.categories) && cloudData.categories.length > 0) {
+        appState.categories = cloudData.categories;
+      }
+      if (Array.isArray(cloudData.payers) && cloudData.payers.length > 0) {
+        appState.payers = cloudData.payers;
+      }
+      if (Array.isArray(cloudData.zones) && cloudData.zones.length > 0) {
+        appState.zones = cloudData.zones;
+      }
+      appState.expenses = cloudData.expenses || {};
+      appState.contractors = cloudData.contractors || {};
+      appState.recycleBin = cloudData.recycleBin || {};
+
+      saveLocalBackup();
+      if (shouldRender) {
+        populateAllDropdowns();
+        renderAllViews();
+      }
+    }
+
+    async function forceCloudPullNow() {
+      setSyncIndicator("syncing");
+      const dbUrl = getActiveDbUrl();
+      try {
+        const res = await fetch(`${dbUrl}/nirmaanProData.json`);
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        if (data) {
+          mergeIncomingCloudData(data, true);
+        } else {
+          // Initialize clean state on cloud if brand new DB
+          await pushFullStateToCloud();
+        }
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        setSyncIndicator("live", `Synced live with Cloud at ${timeStr}`);
+      } catch (err) {
+        setSyncIndicator("offline", "Could not reach Firebase — Check DB Rules or Internet");
+      }
+    }
+
+    async function pushFullStateToCloud() {
+      setSyncIndicator("syncing");
+      appState.meta.updatedAt = Date.now();
+      saveLocalBackup();
+      const dbUrl = getActiveDbUrl();
+      try {
+        const res = await fetch(`${dbUrl}/nirmaanProData.json`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(appState)
+        });
+        if (!res.ok) throw new Error("Write failed");
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        setSyncIndicator("live", `All changes saved live (${timeStr})`);
+      } catch (err) {
+        setSyncIndicator("offline", "Saved on phone — Waiting for connection to push");
+      }
+    }
+
+    // Real-time Server-Sent Events (SSE) listener so Phone B updates the instant Phone A saves
+    function startRealTimeCloudStream() {
+      if (eventSourceStream) {
+        eventSourceStream.close();
+        eventSourceStream = null;
+      }
+      const dbUrl = getActiveDbUrl();
+      try {
+        eventSourceStream = new EventSource(`${dbUrl}/nirmaanProData.json`);
+        eventSourceStream.addEventListener("put", (e) => {
+          try {
+            const packet = JSON.parse(e.data);
+            if (packet.path === "/" && packet.data) {
+              mergeIncomingCloudData(packet.data, true);
+              const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+              setSyncIndicator("live", `Live update received at ${timeStr}`);
+            } else {
+              // Partial path update: fetch fresh snapshot
+              forceCloudPullNow();
+            }
+          } catch (err) {}
+        });
+        eventSourceStream.addEventListener("patch", () => {
+          forceCloudPullNow();
+        });
+        eventSourceStream.onerror = () => {
+          // Fallback polling every 8 seconds if mobile browser pauses SSE
+        };
+      } catch (e) {}
+    }
+
+    // Background heartbeat poll every 10 seconds to guarantee multi-phone sync even on strict mobile networks
+    setInterval(() => {
+      if (!document.hidden) {
+        forceCloudPullNow();
+      }
+    }, 10000);
+
+    // ==========================================
+    // FORMATTING HELPERS (INDIAN LAKHS / CRORES)
+    // ==========================================
+    function formatINR(num) {
+      const n = Number(num) || 0;
+      const isNeg = n < 0;
+      const abs = Math.abs(Math.round(n));
+      return (isNeg ? "-₹" : "₹") + abs.toLocaleString("en-IN");
+    }
+
+    function formatShortINRWords(num) {
+      const abs = Math.abs(Number(num) || 0);
+      if (abs === 0) return "Zero";
+      if (abs >= 10000000) return (abs / 10000000).toFixed(2) + " Crore";
+      if (abs >= 100000) return (abs / 100000).toFixed(2) + " Lakh";
+      if (abs >= 1000) return (abs / 1000).toFixed(1) + " Thousand";
+      return abs.toLocaleString("en-IN");
+    }
+
+    function showToast(msg) {
+      const banner = document.getElementById("toastBanner");
+      document.getElementById("toastText").textContent = msg;
+      banner.classList.remove("hidden");
+      setTimeout(() => banner.classList.add("hidden"), 2800);
+    }
+
+    // ==========================================
+    // DROPDOWNS WITH INLINE "➕ OTHER (FREE TEXT)"
+    // ==========================================
+    function populateAllDropdowns() {
+      const catSelect = document.getElementById("expCategorySelect");
+      const prevCat = catSelect.value;
+      catSelect.innerHTML = appState.categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("") +
+        `<option value="__OTHER__" class="font-bold text-amber-700 bg-amber-50">➕ Other (Type Custom Category...)</option>`;
+      if (prevCat && appState.categories.includes(prevCat)) catSelect.value = prevCat;
+
+      const payerSelect = document.getElementById("expPaidBySelect");
+      const prevPayer = payerSelect.value;
+      payerSelect.innerHTML = appState.payers.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("") +
+        `<option value="__OTHER__" class="font-bold text-amber-700 bg-amber-50">➕ Other (Type Custom Payer...)</option>`;
+      if (prevPayer && appState.payers.includes(prevPayer)) payerSelect.value = prevPayer;
+
+      const zoneSelect = document.getElementById("expZoneSelect");
+      const prevZone = zoneSelect.value;
+      zoneSelect.innerHTML = appState.zones.map(z => `<option value="${escapeHtml(z)}">${escapeHtml(z)}</option>`).join("") +
+        `<option value="__OTHER__" class="font-bold text-amber-700 bg-amber-50">➕ Other (Type Custom Floor/Area...)</option>`;
+      if (prevZone && appState.zones.includes(prevZone)) zoneSelect.value = prevZone;
+
+      // Filter dropdowns in Passbook & Stats
+      const pbCat = document.getElementById("passbookCatFilter");
+      const curPbCat = pbCat.value || "ALL";
+      pbCat.innerHTML = `<option value="ALL">All Categories</option>` +
+        appState.categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+      pbCat.value = curPbCat;
+
+      const pbPayer = document.getElementById("passbookPayerFilter");
+      const curPbPayer = pbPayer.value || "ALL";
+      pbPayer.innerHTML = `<option value="ALL">All Payers</option>` +
+        appState.payers.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
+      pbPayer.value = curPbPayer;
+
+      const stZone = document.getElementById("statsZoneFilter");
+      const curStZone = stZone.value || "ALL";
+      stZone.innerHTML = `<option value="ALL">All Floors / Zones</option>` +
+        appState.zones.map(z => `<option value="${escapeHtml(z)}">${escapeHtml(z)}</option>`).join("");
+      stZone.value = curStZone;
+
+      // Vendor autocomplete suggestions from existing entries + contractors
+      const vendorSet = new Set();
+      Object.values(appState.expenses || {}).forEach(e => { if (e.vendor) vendorSet.add(e.vendor); });
+      Object.values(appState.contractors || {}).forEach(c => { if (c.name) vendorSet.add(c.name); });
+      document.getElementById("vendorSuggestionsList").innerHTML = Array.from(vendorSet)
+        .map(v => `<option value="${escapeHtml(v)}"></option>`).join("");
+    }
+
+    function handleDynamicSelectChange(selectId, wrapId, inputId) {
+      const sel = document.getElementById(selectId);
+      const wrap = document.getElementById(wrapId);
+      const inp = document.getElementById(inputId);
+      if (sel.value === "__OTHER__") {
+        wrap.classList.remove("hidden");
+        inp.required = true;
+        inp.focus();
+      } else {
+        wrap.classList.add("hidden");
+        inp.required = false;
+        inp.value = "";
+      }
+    }
+
+    function togglePendingBalanceInput() {
+      const st = document.getElementById("expPaymentStatus").value;
+      const wrap = document.getElementById("pendingAmountWrap");
+      if (st === "Partial") {
+        wrap.classList.remove("hidden");
+      } else {
+        wrap.classList.add("hidden");
+        document.getElementById("expPendingAmount").value = "";
+      }
+    }
+
+    // Built-in Math Evaluator for Amount Box (e.g. "120 * 390")
+    function evaluateMathExpression(raw) {
+      if (!raw) return 0;
+      const cleaned = String(raw).replace(/,/g, "").trim();
+      if (/^[0-9+\-*/.() ]+$/.test(cleaned)) {
+        try {
+          const val = Function('"use strict"; return (' + cleaned + ')')();
+          return isFinite(val) ? Number(val) : 0;
+        } catch (e) {
+          return Number(cleaned) || 0;
+        }
+      }
+      return Number(cleaned) || 0;
+    }
+
+    function handleAmountMathPreview() {
+      const raw = document.getElementById("expAmountInput").value;
+      const badge = document.getElementById("calcPreviewBadge");
+      const val = evaluateMathExpression(raw);
+      if (val > 0) {
+        badge.textContent = `${formatINR(val)} (${formatShortINRWords(val)})`;
+      } else {
+        badge.textContent = "";
+      }
+    }
+
+    function quickAddAmount(addVal) {
+      const inp = document.getElementById("expAmountInput");
+      const current = evaluateMathExpression(inp.value);
+      inp.value = current + addVal;
+      handleAmountMathPreview();
+    }
+
+    // ==========================================
+    // SAVE SINGLE EXPENSE (WITH DUPLICATE CHECK)
+    // ==========================================
+    async function handleSingleExpenseSubmit(e) {
+      e.preventDefault();
+
+      const date = document.getElementById("expDate").value;
+      let category = document.getElementById("expCategorySelect").value;
+      if (category === "__OTHER__") {
+        category = document.getElementById("expCategoryCustom").value.trim();
+        if (!category) {
+          alert("Please type your custom category name.");
+          return;
+        }
+        if (document.getElementById("saveCustomCategoryPerm").checked && !appState.categories.includes(category)) {
+          appState.categories.push(category);
+        }
+      }
+
+      let paidBy = document.getElementById("expPaidBySelect").value;
+      if (paidBy === "__OTHER__") {
+        paidBy = document.getElementById("expPaidByCustom").value.trim() || "Other";
+        if (!appState.payers.includes(paidBy)) appState.payers.push(paidBy);
+      }
+
+      let zone = document.getElementById("expZoneSelect").value;
+      if (zone === "__OTHER__") {
+        zone = document.getElementById("expZoneCustom").value.trim() || "Overall House / Common";
+        if (!appState.zones.includes(zone)) appState.zones.push(zone);
+      }
+
+      const rawAmt = evaluateMathExpression(document.getElementById("expAmountInput").value);
+      if (rawAmt <= 0) {
+        alert("Please enter a valid amount greater than 0.");
+        return;
+      }
+
+      const paymentStatus = document.getElementById("expPaymentStatus").value;
+      const finalAmount = paymentStatus === "Refund" ? -Math.abs(rawAmt) : Math.abs(rawAmt);
+      const pendingAmount = paymentStatus === "Partial" ? (Number(document.getElementById("expPendingAmount").value) || 0) : 0;
+      const description = document.getElementById("expDescription").value.trim();
+      const costNature = document.getElementById("expCostNature").value;
+      const paymentMode = document.getElementById("expPaymentMode").value;
+      const vendor = document.getElementById("expVendor").value.trim();
+      const qty = Number(document.getElementById("expQty").value) || 0;
+      const unit = document.getElementById("expUnit").value;
+      const bookRef = document.getElementById("expBookRef").value.trim();
+
+      const editingId = document.getElementById("editingExpenseId").value;
+
+      // Duplicate safety check when digitizing book
+      if (!editingId) {
+        const duplicate = Object.values(appState.expenses || {}).find(x =>
+          x.date === date &&
+          x.category === category &&
+          Math.abs(Number(x.amount)) === Math.abs(finalAmount)
+        );
+        if (duplicate) {
+          const proceed = confirm(`⚠️ Duplicate Check:\nAn entry of ${formatINR(finalAmount)} under "${category}" on ${date} ("${duplicate.description}") already exists.\n\nDo you still want to save this entry?`);
+          if (!proceed) return;
+        }
+      }
+
+      const id = editingId || ("exp_" + Date.now() + "_" + Math.random().toString(36).substring(2, 6));
+      if (!appState.expenses) appState.expenses = {};
+
+      appState.expenses[id] = {
+        id,
+        date,
+        category,
+        costNature,
+        amount: finalAmount,
+        paymentStatus,
+        pendingAmount,
+        description,
+        paidBy,
+        paymentMode,
+        zone,
+        vendor,
+        qty,
+        unit,
+        bookRef,
+        updatedAt: Date.now()
+      };
+
+      populateAllDropdowns();
+      renderAllViews();
+      await pushFullStateToCloud();
+
+      if (editingId) {
+        showToast("Expense Updated & Synced!");
+        resetSingleForm();
+        switchMainTab("passbook");
+      } else {
+        showToast(`Saved ${formatINR(finalAmount)} to Cloud!`);
+        const keepSticky = document.getElementById("stickyNotebookMode").checked;
+        if (keepSticky) {
+          // Keep Date, Category, Zone & PaidBy locked for fast notebook entry
+          document.getElementById("expAmountInput").value = "";
+          document.getElementById("expDescription").value = "";
+          document.getElementById("expPendingAmount").value = "";
+          document.getElementById("expQty").value = "";
+          document.getElementById("calcPreviewBadge").textContent = "";
+          document.getElementById("customCategoryWrap").classList.add("hidden");
+          document.getElementById("expCategorySelect").value = category;
+          document.getElementById("expDescription").focus();
+        } else {
+          resetSingleForm();
+        }
+      }
+    }
+
+    function resetSingleForm() {
+      document.getElementById("editingExpenseId").value = "";
+      document.getElementById("formTitleHeading").textContent = "Record Construction Expense";
+      document.getElementById("saveExpenseBtnText").textContent = "Save Expense to Cloud";
+      document.getElementById("cancelEditBtn").classList.add("hidden");
+      document.getElementById("expDate").value = new Date().toISOString().split("T")[0];
+      document.getElementById("expAmountInput").value = "";
+      document.getElementById("expDescription").value = "";
+      document.getElementById("expVendor").value = "";
+      document.getElementById("expQty").value = "";
+      document.getElementById("expUnit").value = "";
+      document.getElementById("expBookRef").value = "";
+      document.getElementById("expPaymentStatus").value = "Paid";
+      document.getElementById("expPendingAmount").value = "";
+      document.getElementById("pendingAmountWrap").classList.add("hidden");
+      document.getElementById("calcPreviewBadge").textContent = "";
+      document.getElementById("customCategoryWrap").classList.add("hidden");
+      document.getElementById("customPaidByWrap").classList.add("hidden");
+      document.getElementById("customZoneWrap").classList.add("hidden");
+    }
+
+    // ==========================================
+    // BULK NOTEBOOK TABLE MODE
+    // ==========================================
+    function toggleAddSubMode(mode) {
+      const singleForm = document.getElementById("singleExpenseForm");
+      const bulkBox = document.getElementById("bulkExpenseContainer");
+      const btnSingle = document.getElementById("btnModeSingle");
+      const btnBulk = document.getElementById("btnModeBulk");
+
+      if (mode === "bulk") {
+        singleForm.classList.add("hidden");
+        bulkBox.classList.remove("hidden");
+        btnBulk.className = "flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold bg-slate-900 text-white shadow transition";
+        btnSingle.className = "flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition";
+        if (document.getElementById("bulkTableBody").children.length === 0) {
+          addBulkTableRow(6);
+        }
+      } else {
+        bulkBox.classList.add("hidden");
+        singleForm.classList.remove("hidden");
+        btnSingle.className = "flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold bg-slate-900 text-white shadow transition";
+        btnBulk.className = "flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition";
+      }
+    }
+
+    function addBulkTableRow(count = 1) {
+      const tbody = document.getElementById("bulkTableBody");
+      const today = new Date().toISOString().split("T")[0];
+      const catOptions = appState.categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("") +
+        `<option value="__OTHER__">➕ Other (Custom)...</option>`;
+      const payerOptions = appState.payers.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
+
+      for (let i = 0; i < count; i++) {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-slate-50/80";
+        tr.innerHTML = `
+          <td class="p-1.5">
+            <input type="date" value="${today}" class="bulk-date w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs" />
+          </td>
+          <td class="p-1.5">
+            <select onchange="handleBulkCatOther(this)" class="bulk-cat w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs bg-white">
+              ${catOptions}
+            </select>
+            <input type="text" placeholder="Type custom category..." class="bulk-cat-custom hidden mt-1 w-full rounded-lg border border-amber-400 bg-amber-50 px-2 py-1 text-xs font-semibold" />
+          </td>
+          <td class="p-1.5">
+            <input type="text" placeholder="Item / Notebook remark..." class="bulk-desc w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs" />
+          </td>
+          <td class="p-1.5">
+            <input type="text" inputmode="decimal" placeholder="e.g. 25000" class="bulk-amt w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs font-bold" />
+          </td>
+          <td class="p-1.5">
+            <select class="bulk-mode w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs bg-white">
+              <option value="Cash">Cash</option>
+              <option value="UPI / GPay / PhonePe">UPI</option>
+              <option value="Bank Transfer (NEFT/RTGS/IMPS)">Bank</option>
+              <option value="Cheque">Cheque</option>
+            </select>
+          </td>
+          <td class="p-1.5">
+            <select class="bulk-payer w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs bg-white">
+              ${payerOptions}
+            </select>
+          </td>
+          <td class="p-1.5 text-center">
+            <button type="button" onclick="this.closest('tr').remove()" class="text-slate-400 hover:text-rose-500 p-1">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      }
+      lucide.createIcons();
+    }
+
+    function handleBulkCatOther(selectEl) {
+      const customInp = selectEl.parentElement.querySelector(".bulk-cat-custom");
+      if (selectEl.value === "__OTHER__") {
+        customInp.classList.remove("hidden");
+        customInp.focus();
+      } else {
+        customInp.classList.add("hidden");
+        customInp.value = "";
+      }
+    }
+
+    async function saveAllBulkRows() {
+      const rows = Array.from(document.querySelectorAll("#bulkTableBody tr"));
+      let savedCount = 0;
+      if (!appState.expenses) appState.expenses = {};
+
+      rows.forEach((tr, idx) => {
+        const amtRaw = tr.querySelector(".bulk-amt").value.trim();
+        const desc = tr.querySelector(".bulk-desc").value.trim();
+        const amt = evaluateMathExpression(amtRaw);
+
+        if (amt > 0 && desc) {
+          const date = tr.querySelector(".bulk-date").value || new Date().toISOString().split("T")[0];
+          let category = tr.querySelector(".bulk-cat").value;
+          if (category === "__OTHER__") {
+            category = tr.querySelector(".bulk-cat-custom").value.trim() || "Other";
+            if (!appState.categories.includes(category)) appState.categories.push(category);
+          }
+          const paymentMode = tr.querySelector(".bulk-mode").value;
+          const paidBy = tr.querySelector(".bulk-payer").value;
+
+          const id = "exp_" + Date.now() + "_" + idx + "_" + Math.random().toString(36).substring(2, 5);
+          appState.expenses[id] = {
+            id,
+            date,
+            category,
+            costNature: inferCostNatureFromCategory(category),
+            amount: amt,
+            paymentStatus: "Paid",
+            pendingAmount: 0,
+            description: desc,
+            paidBy,
+            paymentMode,
+            zone: "Overall House / Common",
+            vendor: "",
+            qty: 0,
+            unit: "",
+            bookRef: "Bulk Book Entry",
+            updatedAt: Date.now()
+          };
+          savedCount++;
+        }
+      });
+
+      if (savedCount === 0) {
+        alert("Please fill at least one row with both Description and Amount.");
+        return;
+      }
+
+      document.getElementById("bulkTableBody").innerHTML = "";
+      addBulkTableRow(6);
+      populateAllDropdowns();
+      renderAllViews();
+      await pushFullStateToCloud();
+      showToast(`Saved ${savedCount} Notebook Entries to Cloud!`);
+      switchMainTab("dashboard");
+    }
+
+    function inferCostNatureFromCategory(cat) {
+      const lower = cat.toLowerCase();
+      if (lower.includes("labor") || lower.includes("mestri")) return "Labor";
+      if (lower.includes("approval") || lower.includes("architect") || lower.includes("fees")) return "Approval & Fees";
+      if (lower.includes("jcb") || lower.includes("transport") || lower.includes("borewell") || lower.includes("tanker")) return "Machinery & Transport";
+      return "Material";
+    }
+
+    // ==========================================
+    // RENDER DASHBOARD, STATS % & CHARTS
+    // ==========================================
+    function getExpensesArray() {
+      return Object.values(appState.expenses || {}).sort((a, b) => {
+        if (b.date !== a.date) return b.date.localeCompare(a.date);
+        return (b.updatedAt || 0) - (a.updatedAt || 0);
+      });
+    }
+
+    function renderAllViews() {
+      const allExpenses = getExpensesArray();
+      const totalSpent = allExpenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+      const totalPending = allExpenses.reduce((sum, e) => sum + (Number(e.pendingAmount) || 0), 0);
+      const cashSpent = allExpenses.filter(e => e.paymentMode === "Cash").reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+      const digitalSpent = totalSpent - cashSpent;
+
+      // Header & Dashboard Hero Updates
+      document.getElementById("headerProjectTitle").textContent = appState.meta.projectTitle || "Nirmaan Pro";
+      document.getElementById("dashTotalSpent").textContent = formatINR(totalSpent);
+      document.getElementById("dashTotalSpentWords").textContent = formatShortINRWords(totalSpent);
+      document.getElementById("dashPendingDues").textContent = formatINR(totalPending);
+
+      const cashPct = totalSpent > 0 ? ((cashSpent / totalSpent) * 100).toFixed(1) : "0";
+      const digPct = totalSpent > 0 ? ((digitalSpent / totalSpent) * 100).toFixed(1) : "0";
+      document.getElementById("dashCashSpent").textContent = `${formatINR(cashSpent)} (${cashPct}%)`;
+      document.getElementById("dashDigitalSpent").textContent = `${formatINR(digitalSpent)} (${digPct}%)`;
+      document.getElementById("dashTotalEntriesCount").textContent = `${allExpenses.length} Records`;
+
+      // Budget Target & Progress Bar
+      const budget = Number(appState.meta.totalBudget) || 0;
+      if (budget > 0) {
+        const usedPct = Math.min(100, Math.max(0, (totalSpent / budget) * 100));
+        const rawUsedPct = ((totalSpent / budget) * 100).toFixed(1);
+        document.getElementById("dashBudgetTarget").textContent = `${formatINR(budget)} (${formatShortINRWords(budget)})`;
+        document.getElementById("dashBudgetPct").textContent = `${rawUsedPct}% Used`;
+        document.getElementById("dashBudgetBar").style.width = `${usedPct}%`;
+        const rem = budget - totalSpent;
+        document.getElementById("dashBudgetRemaining").textContent = rem >= 0
+          ? `Remaining Budget: ${formatINR(rem)} (${formatShortINRWords(rem)})`
+          : `Over Budget by ${formatINR(Math.abs(rem))}`;
+      } else {
+        document.getElementById("dashBudgetTarget").textContent = "Not Set";
+        document.getElementById("dashBudgetPct").textContent = "0% Used";
+        document.getElementById("dashBudgetBar").style.width = "0%";
+        document.getElementById("dashBudgetRemaining").textContent = "Tap 'Edit Budget / Stage %' above to set your house budget.";
+      }
+
+      // Construction Stage % Bar
+      const stagePct = Number(appState.meta.constructionStagePct) || 0;
+      document.getElementById("dashStagePctLabel").textContent = `${stagePct}% Done`;
+      document.getElementById("dashStageBar").style.width = `${ Math.min(100, Math.max(0, stagePct)) }%`;
+
+      // Category Totals Map
+      const catTotals = {};
+      allExpenses.forEach(e => {
+        const c = e.category || "Uncategorized";
+        catTotals[c] = (catTotals[c] || 0) + (Number(e.amount) || 0);
+      });
+      const sortedCats = Object.entries(catTotals)
+        .filter(([, amt]) => amt > 0)
+        .sort((a, b) => b[1] - a[1]);
+
+      // Dashboard Top 5 Categories
+      const topCatEl = document.getElementById("dashTopCategoriesList");
+      if (sortedCats.length === 0) {
+        topCatEl.innerHTML = `
+          <div class="text-center py-8 text-slate-400 text-xs">
+            No expenses recorded yet. Tap <strong>Add Entry</strong> to start digitizing your book!
+          </div>`;
+      } else {
+        topCatEl.innerHTML = sortedCats.slice(0, 6).map(([cat, amt]) => {
+          const pct = totalSpent > 0 ? ((amt / totalSpent) * 100).toFixed(1) : 0;
+          return `
+            <div>
+              <div class="flex justify-between items-center text-xs mb-1">
+                <span class="font-bold text-slate-800 truncate pr-2">${escapeHtml(cat)}</span>
+                <span class="font-extrabold text-slate-900 shrink-0">${formatINR(amt)} <span class="text-amber-600 ml-1">(${pct}%)</span></span>
+              </div>
+              <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div class="h-full bg-amber-500 rounded-full" style="width: ${Math.min(100, pct)}%"></div>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      // Dashboard Recent 6 Transactions
+      const recEl = document.getElementById("dashRecentTransactions");
+      if (allExpenses.length === 0) {
+        recEl.innerHTML = `
+          <div class="text-center py-8 text-slate-400 text-xs">
+            Your passbook is currently empty (₹0).
+          </div>`;
+      } else {
+        recEl.innerHTML = allExpenses.slice(0, 6).map(e => `
+          <div class="py-2.5 flex items-center justify-between gap-2">
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-bold text-slate-900 truncate">${escapeHtml(e.description)}</span>
+                ${e.pendingAmount > 0 ? `<span class="px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 text-[10px] font-bold">Due: ${formatINR(e.pendingAmount)}</span>` : ""}
+              </div>
+              <p class="text-[11px] text-slate-500 truncate">${e.date} • ${escapeHtml(e.category)} • ${escapeHtml(e.paidBy)}</p>
+            </div>
+            <div class="text-right shrink-0">
+              <span class="text-xs font-extrabold ${e.amount < 0 ? 'text-emerald-600' : 'text-slate-900'}">${formatINR(e.amount)}</span>
+              <span class="block text-[10px] text-slate-400">${escapeHtml(e.paymentMode.split(" ")[0])}</span>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      renderStatsTab(allExpenses);
+      renderPassbookList();
+      renderContractorsAndSettings();
+      lucide.createIcons();
+    }
+
+    function renderStatsTab(allExpenses) {
+      const zoneFilter = document.getElementById("statsZoneFilter").value || "ALL";
+      const filtered = zoneFilter === "ALL" ? allExpenses : allExpenses.filter(e => e.zone === zoneFilter);
+      const total = filtered.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+
+      // 1. Nature Split (Material vs Labor vs Fees/Machinery)
+      const natureMap = {
+        "Material": 0,
+        "Labor": 0,
+        "Other": 0
+      };
+      filtered.forEach(e => {
+        const n = e.costNature || "Material";
+        if (n === "Material") natureMap["Material"] += Number(e.amount) || 0;
+        else if (n === "Labor") natureMap["Labor"] += Number(e.amount) || 0;
+        else natureMap["Other"] += Number(e.amount) || 0;
+      });
+
+      const matPct = total > 0 ? ((natureMap["Material"] / total) * 100).toFixed(1) : "0.0";
+      const labPct = total > 0 ? ((natureMap["Labor"] / total) * 100).toFixed(1) : "0.0";
+      const othPct = total > 0 ? ((natureMap["Other"] / total) * 100).toFixed(1) : "0.0";
+
+      document.getElementById("statsNatureCards").innerHTML = `
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+          <span class="text-[11px] font-bold uppercase text-slate-400">🧱 Total Material Share</span>
+          <div class="flex items-baseline justify-between mt-1">
+            <span class="text-xl font-extrabold text-slate-900">${formatINR(natureMap["Material"])}</span>
+            <span class="text-sm font-extrabold text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full">${matPct}%</span>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+          <span class="text-[11px] font-bold uppercase text-slate-400">👷 Total Labor & Mestri Share</span>
+          <div class="flex items-baseline justify-between mt-1">
+            <span class="text-xl font-extrabold text-slate-900">${formatINR(natureMap["Labor"])}</span>
+            <span class="text-sm font-extrabold text-sky-600 bg-sky-50 px-2.5 py-0.5 rounded-full">${labPct}%</span>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+          <span class="text-[11px] font-bold uppercase text-slate-400">🚜 Approvals, Transport & Misc</span>
+          <div class="flex items-baseline justify-between mt-1">
+            <span class="text-xl font-extrabold text-slate-900">${formatINR(natureMap["Other"])}</span>
+            <span class="text-sm font-extrabold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">${othPct}%</span>
+          </div>
+        </div>
+      `;
+
+      // 2. Category Breakdown List & Donut Chart
+      const catMap = {};
+      filtered.forEach(e => {
+        catMap[e.category] = (catMap[e.category] || 0) + (Number(e.amount) || 0);
+      });
+      const catEntries = Object.entries(catMap).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+      document.getElementById("statsCategoryCountBadge").textContent = `${catEntries.length} Active Categories`;
+
+      const fullCatEl = document.getElementById("statsCategoryFullList");
+      if (catEntries.length === 0) {
+        fullCatEl.innerHTML = `<p class="text-xs text-slate-400 py-8 text-center">No expenses to calculate percentages yet.</p>`;
+      } else {
+        fullCatEl.innerHTML = catEntries.map(([cat, amt], idx) => {
+          const pct = total > 0 ? ((amt / total) * 100).toFixed(2) : "0.00";
+          return `
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70">
+              <div class="flex items-center justify-between text-xs mb-1">
+                <span class="font-bold text-slate-800">${idx + 1}. ${escapeHtml(cat)}</span>
+                <div class="flex items-center gap-2">
+                  <span class="font-extrabold text-slate-900">${formatINR(amt)}</span>
+                  <span class="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-800 font-extrabold text-[11px]">${pct}%</span>
+                </div>
+              </div>
+              <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                <div class="h-full bg-slate-900 rounded-full" style="width: ${Math.min(100, pct)}%"></div>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      // Render Donut Chart
+      const donutCanvas = document.getElementById("categoryDonutChart");
+      const donutEmpty = document.getElementById("donutEmptyState");
+      if (catEntries.length === 0) {
+        donutEmpty.classList.remove("hidden");
+        if (categoryChartInstance) { categoryChartInstance.destroy(); categoryChartInstance = null; }
+      } else {
+        donutEmpty.classList.add("hidden");
+        const top8 = catEntries.slice(0, 8);
+        const otherSum = catEntries.slice(8).reduce((s, [, v]) => s + v, 0);
+        const labels = top8.map(([k]) => k);
+        const values = top8.map(([, v]) => v);
+        if (otherSum > 0) {
+          labels.push("Other Categories");
+          values.push(otherSum);
+        }
+        if (categoryChartInstance) categoryChartInstance.destroy();
+        categoryChartInstance = new Chart(donutCanvas, {
+          type: "doughnut",
+          data: {
+            labels,
+            datasets: [{
+              data: values,
+              backgroundColor: ["#f59e0b", "#0f172a", "#10b981", "#0284c7", "#8b5cf6", "#ec4899", "#ef4444", "#14b8a6", "#64748b"],
+              borderWidth: 2,
+              borderColor: "#ffffff"
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: "bottom", labels: { boxWidth: 10, font: { size: 10 } } },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => {
+                    const val = ctx.parsed;
+                    const p = total > 0 ? ((val / total) * 100).toFixed(1) : 0;
+                    return ` ${ctx.label}: ${formatINR(val)} (${p}%)`;
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+
+      // 3. Zone / Floor Breakdown
+      const zoneMap = {};
+      allExpenses.forEach(e => {
+        const z = e.zone || "Overall House / Common";
+        zoneMap[z] = (zoneMap[z] || 0) + (Number(e.amount) || 0);
+      });
+      const grandTotal = allExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+      const zoneEntries = Object.entries(zoneMap).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+      const zoneEl = document.getElementById("statsZoneBreakdownList");
+      zoneEl.innerHTML = zoneEntries.length === 0
+        ? `<p class="text-xs text-slate-400 py-4 text-center">No floor/zone data yet.</p>`
+        : zoneEntries.map(([z, amt]) => {
+            const p = grandTotal > 0 ? ((amt / grandTotal) * 100).toFixed(1) : "0.0";
+            return `
+              <div class="flex items-center justify-between text-xs py-1.5 border-b border-slate-100">
+                <span class="font-semibold text-slate-700">${escapeHtml(z)}</span>
+                <span class="font-bold text-slate-900">${formatINR(amt)} <span class="text-emerald-600 ml-1">(${p}%)</span></span>
+              </div>
+            `;
+          }).join("");
+
+      // 4. Payer Breakdown
+      const payerMap = {};
+      allExpenses.forEach(e => {
+        const p = e.paidBy || "Self";
+        payerMap[p] = (payerMap[p] || 0) + (Number(e.amount) || 0);
+      });
+      const payerEntries = Object.entries(payerMap).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+      const payerEl = document.getElementById("statsPayerBreakdownList");
+      payerEl.innerHTML = payerEntries.length === 0
+        ? `<p class="text-xs text-slate-400 py-4 text-center">No payer data yet.</p>`
+        : payerEntries.map(([pName, amt]) => {
+            const p = grandTotal > 0 ? ((amt / grandTotal) * 100).toFixed(1) : "0.0";
+            return `
+              <div class="flex items-center justify-between text-xs py-1.5 border-b border-slate-100">
+                <span class="font-semibold text-slate-700">${escapeHtml(pName)}</span>
+                <span class="font-bold text-slate-900">${formatINR(amt)} <span class="text-sky-600 ml-1">(${p}%)</span></span>
+              </div>
+            `;
+          }).join("");
+
+      // 5. Monthly Bar Chart
+      const monthMap = {};
+      filtered.forEach(e => {
+        if (e.date && e.date.length >= 7) {
+          const ym = e.date.slice(0, 7);
+          monthMap[ym] = (monthMap[ym] || 0) + (Number(e.amount) || 0);
+        }
+      });
+      const sortedMonths = Object.keys(monthMap).sort();
+      const barCanvas = document.getElementById("monthlyBarChart");
+      if (monthlyChartInstance) monthlyChartInstance.destroy();
+      monthlyChartInstance = new Chart(barCanvas, {
+        type: "bar",
+        data: {
+          labels: sortedMonths.length ? sortedMonths : ["No Data"],
+          datasets: [{
+            label: "Monthly Spend (₹)",
+            data: sortedMonths.length ? sortedMonths.map(m => monthMap[m]) : [0],
+            backgroundColor: "#0f172a",
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } }
+        }
+      });
+
+      // 6. Material Quantity & Average Unit Rate Tracker
+      const matTracker = {};
+      allExpenses.forEach(e => {
+        if (Number(e.qty) > 0 && e.unit) {
+          const key = `${e.category} (${e.unit})`;
+          if (!matTracker[key]) matTracker[key] = { qty: 0, cost: 0, unit: e.unit };
+          matTracker[key].qty += Number(e.qty);
+          matTracker[key].cost += Number(e.amount) || 0;
+        }
+      });
+      const matKeys = Object.entries(matTracker);
+      const matEl = document.getElementById("statsMaterialSummary");
+      matEl.innerHTML = matKeys.length === 0
+        ? `<p class="text-xs text-slate-400 py-6 text-center">Fill optional "Quantity + Unit" when adding Cement, Steel, Bricks, Sand, or Tiles to see total quantity & average rate here.</p>`
+        : matKeys.map(([k, info]) => {
+            const avg = info.qty > 0 ? Math.round(info.cost / info.qty) : 0;
+            return `
+              <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
+                <div>
+                  <span class="font-bold text-slate-900 block">${escapeHtml(k)}</span>
+                  <span class="text-[11px] text-slate-500">Total Bought: <strong>${info.qty} ${escapeHtml(info.unit)}</strong></span>
+                </div>
+                <div class="text-right">
+                  <span class="font-extrabold text-amber-700">Avg: ${formatINR(avg)} / ${escapeHtml(info.unit)}</span>
+                  <span class="block text-[10px] text-slate-400">Total: ${formatINR(info.cost)}</span>
+                </div>
+              </div>
+            `;
+          }).join("");
+    }
+
+    // ==========================================
+    // PASSBOOK LIST, EDIT, SETTLE & SOFT DELETE
+    // ==========================================
+    function renderPassbookList() {
+      const all = getExpensesArray();
+      const q = (document.getElementById("passbookSearch").value || "").toLowerCase().trim();
+      const catF = document.getElementById("passbookCatFilter").value || "ALL";
+      const payerF = document.getElementById("passbookPayerFilter").value || "ALL";
+      const statusF = document.getElementById("passbookStatusFilter").value || "ALL";
+
+      const filtered = all.filter(e => {
+        if (catF !== "ALL" && e.category !== catF) return false;
+        if (payerF !== "ALL" && e.paidBy !== payerF) return false;
+        if (statusF === "PENDING_ONLY" && !(Number(e.pendingAmount) > 0)) return false;
+        if (statusF === "CASH_ONLY" && e.paymentMode !== "Cash") return false;
+        if (statusF === "DIGITAL_ONLY" && e.paymentMode === "Cash") return false;
+        if (q) {
+          const hay = `${e.description} ${e.category} ${e.vendor} ${e.bookRef} ${e.zone} ${e.paidBy} ${e.date}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+
+      const sumPaid = filtered.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+      const sumPend = filtered.reduce((s, e) => s + (Number(e.pendingAmount) || 0), 0);
+
+      document.getElementById("passbookFilteredCount").textContent = `Showing ${filtered.length} of ${all.length} entries`;
+      document.getElementById("passbookFilteredTotal").textContent = formatINR(sumPaid);
+      document.getElementById("passbookFilteredPending").textContent = formatINR(sumPend);
+
+      const container = document.getElementById("passbookEntriesContainer");
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl p-8 text-center text-slate-400 text-xs border border-slate-200">
+            No matching passbook entries found.
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(e => `
+        <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div class="space-y-1 min-w-0">
+            <div class="flex flex-wrap items-center gap-1.5">
+              <span class="px-2 py-0.5 rounded-md bg-slate-900 text-white text-[10px] font-bold">${escapeHtml(e.category)}</span>
+              <span class="text-xs font-extrabold text-slate-900">${escapeHtml(e.description)}</span>
+              ${Number(e.pendingAmount) > 0 ? `<span class="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[10px] font-extrabold">Pending Balance: ${formatINR(e.pendingAmount)}</span>` : ""}
+            </div>
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-500">
+              <span>📅 ${e.date}</span>
+              <span>👤 Paid by: <strong>${escapeHtml(e.paidBy)}</strong> (${escapeHtml(e.paymentMode)})</span>
+              <span>🏠 ${escapeHtml(e.zone || "Overall")}</span>
+              ${e.vendor ? `<span>🏪 Vendor: <strong>${escapeHtml(e.vendor)}</strong></span>` : ""}
+              ${Number(e.qty) > 0 ? `<span>📦 Qty: ${e.qty} ${escapeHtml(e.unit)}</span>` : ""}
+              ${e.bookRef ? `<span>📖 Ref: ${escapeHtml(e.bookRef)}</span>` : ""}
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-100">
+            <div class="text-left sm:text-right">
+              <span class="text-base font-extrabold ${e.amount < 0 ? 'text-emerald-600' : 'text-slate-900'}">${formatINR(e.amount)}</span>
+              <span class="block text-[10px] text-slate-400">${escapeHtml(e.costNature || "Material")}</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              ${Number(e.pendingAmount) > 0 ? `
+                <button onclick="settlePendingExpense('${e.id}')" title="Mark Pending Balance as Paid" class="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-bold">
+                  Settle Due
+                </button>
+              ` : ""}
+              <button onclick="startEditingExpense('${e.id}')" title="Edit Entry" class="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700">
+                <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+              </button>
+              <button onclick="softDeleteExpense('${e.id}')" title="Delete to Recycle Bin" class="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join("");
+      lucide.createIcons();
+    }
+
+    function startEditingExpense(id) {
+      const e = appState.expenses[id];
+      if (!e) return;
+
+      switchMainTab("add");
+      toggleAddSubMode("single");
+
+      document.getElementById("editingExpenseId").value = e.id;
+      document.getElementById("formTitleHeading").textContent = "Edit Passbook Entry";
+      document.getElementById("saveExpenseBtnText").textContent = "Update Entry Across All Phones";
+      document.getElementById("cancelEditBtn").classList.remove("hidden");
+
+      document.getElementById("expDate").value = e.date;
+      if (!appState.categories.includes(e.category)) appState.categories.push(e.category);
+      if (!appState.payers.includes(e.paidBy)) appState.payers.push(e.paidBy);
+      if (e.zone && !appState.zones.includes(e.zone)) appState.zones.push(e.zone);
+      populateAllDropdowns();
+
+      document.getElementById("expCategorySelect").value = e.category;
+      document.getElementById("expCostNature").value = e.costNature || "Material";
+      document.getElementById("expAmountInput").value = Math.abs(e.amount);
+      document.getElementById("expPaymentStatus").value = e.paymentStatus || "Paid";
+      togglePendingBalanceInput();
+      document.getElementById("expPendingAmount").value = e.pendingAmount || "";
+      document.getElementById("expDescription").value = e.description || "";
+      document.getElementById("expPaidBySelect").value = e.paidBy || "Self";
+      document.getElementById("expPaymentMode").value = e.paymentMode || "Cash";
+      document.getElementById("expZoneSelect").value = e.zone || "Overall House / Common";
+      document.getElementById("expVendor").value = e.vendor || "";
+      document.getElementById("expQty").value = e.qty || "";
+      document.getElementById("expUnit").value = e.unit || "";
+      document.getElementById("expBookRef").value = e.bookRef || "";
+      handleAmountMathPreview();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    async function settlePendingExpense(id) {
+      const e = appState.expenses[id];
+      if (!e || !(Number(e.pendingAmount) > 0)) return;
+      const confirmSettle = confirm(`Settle Pending Balance of ${formatINR(e.pendingAmount)} for "${e.description}"?\n\nThis will add ${formatINR(e.pendingAmount)} to the paid amount and set Pending Balance to ₹0.`);
+      if (!confirmSettle) return;
+
+      e.amount = (Number(e.amount) || 0) + Number(e.pendingAmount);
+      e.pendingAmount = 0;
+      e.paymentStatus = "Paid";
+      e.updatedAt = Date.now();
+
+      renderAllViews();
+      await pushFullStateToCloud();
+      showToast("Pending Balance Settled!");
+    }
+
+    async function softDeleteExpense(id) {
+      const e = appState.expenses[id];
+      if (!e) return;
+      if (!confirm(`Move "${e.description}" (${formatINR(e.amount)}) to Recycle Bin?`)) return;
+
+      if (!appState.recycleBin) appState.recycleBin = {};
+      appState.recycleBin[id] = { ...e, deletedAt: Date.now() };
+      delete appState.expenses[id];
+
+      renderAllViews();
+      await pushFullStateToCloud();
+      showToast("Moved to Recycle Bin");
+    }
+
+    async function restoreFromRecycleBin(id) {
+      const item = appState.recycleBin && appState.recycleBin[id];
+      if (!item) return;
+      if (!appState.expenses) appState.expenses = {};
+      appState.expenses[id] = item;
+      delete appState.recycleBin[id];
+
+      renderAllViews();
+      await pushFullStateToCloud();
+      showToast("Entry Restored!");
+    }
+
+    // ==========================================
+    // CONTRACTORS, SETTINGS & EXCEL EXPORT
+    // ==========================================
+    async function handleAddContractor(e) {
+      e.preventDefault();
+      const name = document.getElementById("conName").value.trim();
+      const workType = document.getElementById("conWorkType").value.trim();
+      const agreed = Number(document.getElementById("conAgreedAmount").value) || 0;
+      if (!name || agreed <= 0) return;
+
+      const id = "con_" + Date.now();
+      if (!appState.contractors) appState.contractors = {};
+      appState.contractors[id] = { id, name, workType, agreedAmount: agreed };
+
+      document.getElementById("conName").value = "";
+      document.getElementById("conWorkType").value = "";
+      document.getElementById("conAgreedAmount").value = "";
+
+      populateAllDropdowns();
+      renderAllViews();
+      await pushFullStateToCloud();
+      showToast("Contractor Agreement Added!");
+    }
+
+    async function deleteContractor(id) {
+      if (!confirm("Remove this contractor tracker card?")) return;
+      delete appState.contractors[id];
+      renderAllViews();
+      await pushFullStateToCloud();
+    }
+
+    function renderContractorsAndSettings() {
+      document.getElementById("settingsDbUrlInput").value = getActiveDbUrl();
+
+      const allExp = getExpensesArray();
+      const conList = Object.values(appState.contractors || {});
+      const conEl = document.getElementById("contractorsListContainer");
+
+      if (conList.length === 0) {
+        conEl.innerHTML = `<p class="text-xs text-slate-400 py-3">No contractor agreements added yet.</p>`;
+      } else {
+        conEl.innerHTML = conList.map(c => {
+          const paidToCon = allExp
+            .filter(e => (e.vendor || "").toLowerCase().trim() === c.name.toLowerCase().trim())
+            .reduce((s, e) => s + (Number(e.amount) || 0), 0);
+          const bal = c.agreedAmount - paidToCon;
+          const pct = c.agreedAmount > 0 ? ((paidToCon / c.agreedAmount) * 100).toFixed(1) : 0;
+          return `
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="text-xs font-extrabold text-slate-900">${escapeHtml(c.name)}</span>
+                  <span class="text-[11px] text-slate-500 ml-1">(${escapeHtml(c.workType)})</span>
+                </div>
+                <button onclick="deleteContractor('${c.id}')" class="text-slate-400 hover:text-rose-600">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-xs">
+                <div><span class="text-[10px] text-slate-400 block">Agreed Value</span><strong>${formatINR(c.agreedAmount)}</strong></div>
+                <div><span class="text-[10px] text-slate-400 block">Paid So Far (${pct}%)</span><strong class="text-emerald-700">${formatINR(paidToCon)}</strong></div>
+                <div><span class="text-[10px] text-slate-400 block">Balance Payable</span><strong class="text-rose-600">${formatINR(bal)}</strong></div>
+              </div>
+              <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                <div class="h-full bg-emerald-500 rounded-full" style="width: ${Math.min(100, pct)}%"></div>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      // Recycle Bin
+      const binItems = Object.values(appState.recycleBin || {});
+      document.getElementById("recycleBinCount").textContent = `${binItems.length} items`;
+      const binEl = document.getElementById("recycleBinContainer");
+      binEl.innerHTML = binItems.length === 0
+        ? `<p class="text-[11px] text-slate-400">Recycle bin is empty.</p>`
+        : binItems.map(b => `
+            <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-slate-50 border border-slate-200">
+              <span class="truncate pr-2">${b.date} • <strong>${escapeHtml(b.description)}</strong> (${formatINR(b.amount)})</span>
+              <button onclick="restoreFromRecycleBin('${b.id}')" class="px-2.5 py-1 rounded bg-emerald-600 text-white text-[10px] font-bold shrink-0">Restore</button>
+            </div>
+          `).join("");
+    }
+
+    function saveCustomDatabaseUrl() {
+      const val = document.getElementById("settingsDbUrlInput").value.trim();
+      if (!val.startsWith("https://")) {
+        alert("Please enter a valid https:// Firebase Realtime Database URL.");
+        return;
+      }
+      localStorage.setItem("nirmaan_custom_db_url", val);
+      startRealTimeCloudStream();
+      forceCloudPullNow();
+      showToast("Database URL Updated!");
+    }
+
+    function resetToDefaultDatabaseUrl() {
+      localStorage.removeItem("nirmaan_custom_db_url");
+      document.getElementById("settingsDbUrlInput").value = DEFAULT_FIREBASE_DB_URL;
+      startRealTimeCloudStream();
+      forceCloudPullNow();
+      showToast("Reconnected to Default Built-in Firebase DB!");
+    }
+
+    async function updateCloudAppPin() {
+      const newPin = document.getElementById("newPinInput").value.trim();
+      if (!/^\d{4}$/.test(newPin)) {
+        alert("Please enter an exact 4-digit numeric PIN.");
+        return;
+      }
+      appState.meta.pinHash = await sha256Hex(newPin);
+      document.getElementById("newPinInput").value = "";
+      await pushFullStateToCloud();
+      showToast("App PIN Updated Across All Phones!");
+    }
+
+    // Budget & Stage Modal
+    function openBudgetAndProgressModal() {
+      document.getElementById("modalProjectTitle").value = appState.meta.projectTitle || "Nirmaan Pro";
+      document.getElementById("modalTotalBudget").value = appState.meta.totalBudget || "";
+      const st = Number(appState.meta.constructionStagePct) || 0;
+      document.getElementById("modalStagePercent").value = st;
+      document.getElementById("modalStageRangeVal").textContent = st + "%";
+      document.getElementById("budgetModal").classList.remove("hidden");
+    }
+
+    function closeBudgetAndProgressModal() {
+      document.getElementById("budgetModal").classList.add("hidden");
+    }
+
+    async function saveBudgetAndProgressModal() {
+      appState.meta.projectTitle = document.getElementById("modalProjectTitle").value.trim() || "Nirmaan Pro";
+      appState.meta.totalBudget = Number(document.getElementById("modalTotalBudget").value) || 0;
+      appState.meta.constructionStagePct = Number(document.getElementById("modalStagePercent").value) || 0;
+      closeBudgetAndProgressModal();
+      renderAllViews();
+      await pushFullStateToCloud();
+      showToast("Budget & Construction Stage Updated!");
+    }
+
+    // Export Passbook to Excel CSV
+    function exportPassbookCSV() {
+      const all = getExpensesArray();
+      if (all.length === 0) {
+        alert("No entries to export yet.");
+        return;
+      }
+      const headers = ["Date", "Category", "Cost Type", "Description", "Amount Paid (INR)", "Pending Balance (INR)", "Payment Status", "Paid By", "Payment Mode", "Floor/Zone", "Vendor", "Quantity", "Unit", "Book/Bill Ref"];
+      const rows = all.map(e => [
+        e.date,
+        `"${(e.category || "").replace(/"/g, '""')}"`,
+        `"${(e.costNature || "").replace(/"/g, '""')}"`,
+        `"${(e.description || "").replace(/"/g, '""')}"`,
+        e.amount,
+        e.pendingAmount || 0,
+        e.paymentStatus || "Paid",
+        `"${(e.paidBy || "").replace(/"/g, '""')}"`,
+        `"${(e.paymentMode || "").replace(/"/g, '""')}"`,
+        `"${(e.zone || "").replace(/"/g, '""')}"`,
+        `"${(e.vendor || "").replace(/"/g, '""')}"`,
+        e.qty || "",
+        e.unit || "",
+        `"${(e.bookRef || "").replace(/"/g, '""')}"`
+      ].join(","));
+
+      const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `NirmaanPro_Expenses_${new Date().toISOString().split("T")[0]}.csv`;
+      a.click();
+    }
+
+    // Tab Navigation
+    function switchMainTab(tabId) {
+      ["dashboard", "add", "stats", "passbook", "settings"].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.add("hidden");
+        const navBtn = document.getElementById(`nav-${t}`);
+        if (navBtn && t !== "add") {
+          navBtn.classList.remove("text-amber-600", "font-bold");
+          navBtn.classList.add("text-slate-500", "font-medium");
+        }
+      });
+      document.getElementById(`tab-${tabId}`).classList.remove("hidden");
+      const activeBtn = document.getElementById(`nav-${tabId}`);
+      if (activeBtn && tabId !== "add") {
+        activeBtn.classList.remove("text-slate-500", "font-medium");
+        activeBtn.classList.add("text-amber-600", "font-bold");
+      }
+      renderAllViews();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    // Initialize Application
+    window.addEventListener("DOMContentLoaded", async () => {
+      lucide.createIcons();
+      document.getElementById("expDate").value = new Date().toISOString().split("T")[0];
+
+      loadLocalBackup();
+      populateAllDropdowns();
+      renderAllViews();
+
+      // Check if already unlocked in this tab session
+      if (sessionStorage.getItem("nirmaan_unlocked") === "true") {
+        document.getElementById("pinLockScreen").classList.add("hidden");
+        document.getElementById("mainAppContainer").classList.remove("hidden");
+      }
+
+      // Connect to built-in Firebase Realtime Database
+      await forceCloudPullNow();
+      startRealTimeCloudStream();
+    });
+  </script>
+</body>
+</html>
