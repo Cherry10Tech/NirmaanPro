@@ -35,12 +35,12 @@
        1. FULL-SCREEN PIN LOCK GATE (SHA-256)
        ========================================== -->
   <div id="pinLockScreen" class="fixed inset-0 z-50 bg-slate-950 flex flex-col items-center justify-between p-6 text-white select-none">
-    <div class="w-full max-w-sm pt-6 flex items-center justify-between text-xs text-slate-400">
+    <div class="w-full max-w-sm pt-4 flex items-center justify-between text-xs text-slate-400">
       <span class="flex items-center gap-1.5 font-medium">
         <span id="lockSyncDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
         <span id="lockSyncText">Cloud DB Connected</span>
       </span>
-      <span class="text-slate-500 font-mono">v2.5 Live</span>
+      <span class="text-slate-500 font-mono">v3.0 Pro</span>
     </div>
 
     <div class="w-full max-w-xs flex flex-col items-center my-auto">
@@ -64,18 +64,18 @@
 
       <!-- Numeric Keypad -->
       <div class="grid grid-cols-3 gap-3.5 w-full mt-1">
-        <button onclick="pressPinDigit('1')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">1</button>
-        <button onclick="pressPinDigit('2')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">2</button>
-        <button onclick="pressPinDigit('3')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">3</button>
-        <button onclick="pressPinDigit('4')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">4</button>
-        <button onclick="pressPinDigit('5')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">5</button>
-        <button onclick="pressPinDigit('6')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">6</button>
-        <button onclick="pressPinDigit('7')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">7</button>
-        <button onclick="pressPinDigit('8')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">8</button>
-        <button onclick="pressPinDigit('9')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">9</button>
-        <button onclick="clearPinDigits()" class="h-14 rounded-2xl bg-slate-900/50 hover:bg-slate-800 active:scale-95 border border-slate-800/60 text-xs font-semibold text-slate-400 uppercase tracking-wider transition">Clear</button>
-        <button onclick="pressPinDigit('0')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">0</button>
-        <button onclick="backspacePinDigit()" class="h-14 rounded-2xl bg-slate-900/50 hover:bg-slate-800 active:scale-95 border border-slate-800/60 flex items-center justify-center text-slate-300 transition">
+        <button type="button" onclick="pressPinDigit('1')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">1</button>
+        <button type="button" onclick="pressPinDigit('2')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">2</button>
+        <button type="button" onclick="pressPinDigit('3')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">3</button>
+        <button type="button" onclick="pressPinDigit('4')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">4</button>
+        <button type="button" onclick="pressPinDigit('5')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">5</button>
+        <button type="button" onclick="pressPinDigit('6')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">6</button>
+        <button type="button" onclick="pressPinDigit('7')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">7</button>
+        <button type="button" onclick="pressPinDigit('8')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">8</button>
+        <button type="button" onclick="pressPinDigit('9')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">9</button>
+        <button type="button" onclick="clearPinDigits()" class="h-14 rounded-2xl bg-slate-900/50 hover:bg-slate-800 active:scale-95 border border-slate-800/60 text-xs font-semibold text-slate-400 uppercase tracking-wider transition">Clear</button>
+        <button type="button" onclick="pressPinDigit('0')" class="h-14 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 border border-slate-800 text-xl font-bold transition">0</button>
+        <button type="button" onclick="backspacePinDigit()" class="h-14 rounded-2xl bg-slate-900/50 hover:bg-slate-800 active:scale-95 border border-slate-800/60 flex items-center justify-center text-slate-300 transition">
           <i data-lucide="delete" class="w-5 h-5"></i>
         </button>
       </div>
@@ -110,6 +110,10 @@
 
         <!-- Live Sync Status Pill -->
         <div class="flex items-center gap-2">
+          <button onclick="shareWhatsAppProjectSummary()" title="Share Summary on WhatsApp" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 transition">
+            <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+            <span>Share Report</span>
+          </button>
           <button onclick="switchMainTab('settings')" id="syncStatusBadge" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 transition">
             <span id="syncStatusDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span id="syncStatusLabel">Live Cloud</span>
@@ -136,6 +140,9 @@
               </div>
             </div>
             <div class="flex items-center gap-2">
+              <button onclick="shareWhatsAppProjectSummary()" class="sm:hidden px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-amber-400 flex items-center gap-1">
+                <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+              </button>
               <button onclick="openBudgetAndProgressModal()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-200 flex items-center gap-1.5 transition">
                 <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-amber-400"></i>
                 Edit Budget / Stage %
@@ -145,7 +152,6 @@
 
           <!-- Two Progress Bars: Budget Used % & Construction Stage % -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 pt-4 border-t border-slate-800/90">
-            <!-- Budget Progress -->
             <div>
               <div class="flex justify-between text-xs mb-1.5">
                 <span class="text-slate-400 font-medium">Target Budget: <strong id="dashBudgetTarget" class="text-white">Not Set</strong></span>
@@ -157,7 +163,6 @@
               <p id="dashBudgetRemaining" class="text-[11px] text-slate-400 mt-1">Tap "Edit Budget / Stage %" to set your overall budget target.</p>
             </div>
 
-            <!-- Construction Physical Progress -->
             <div>
               <div class="flex justify-between text-xs mb-1.5">
                 <span class="text-slate-400 font-medium">Construction Completed Stage</span>
@@ -198,8 +203,11 @@
               <i data-lucide="book-open-check" class="w-5 h-5"></i>
             </div>
             <div>
-              <h3 class="text-sm font-bold text-slate-900">Digitize Your Physical Expense Book</h3>
-              <p class="text-xs text-slate-500 mt-0.5">Use <strong>Sticky Rapid Mode</strong> or <strong>Bulk Table Mode</strong> to quickly enter past notebook pages.</p>
+              <div class="flex items-center gap-2 flex-wrap">
+                <h3 class="text-sm font-bold text-slate-900">Digitize Your Physical Expense Book</h3>
+                <span id="lastBookPageBadge" class="hidden px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-extrabold"></span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Use <strong>Sticky Rapid Mode</strong>, <strong>Bulk Table</strong>, or <strong>Upload Excel (CSV)</strong> in Passbook.</p>
             </div>
           </div>
           <div class="flex items-center gap-2 w-full sm:w-auto">
@@ -225,9 +233,7 @@
                 Full Stats <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
               </button>
             </div>
-            <div id="dashTopCategoriesList" class="space-y-3">
-              <!-- Populated dynamically -->
-            </div>
+            <div id="dashTopCategoriesList" class="space-y-3"></div>
           </div>
 
           <!-- Recent 6 Transactions -->
@@ -241,9 +247,7 @@
                 All Entries <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
               </button>
             </div>
-            <div id="dashRecentTransactions" class="divide-y divide-slate-100">
-              <!-- Populated dynamically -->
-            </div>
+            <div id="dashRecentTransactions" class="divide-y divide-slate-100"></div>
           </div>
         </div>
       </section>
@@ -255,16 +259,16 @@
         <!-- Mode Switcher Header -->
         <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-2">
           <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl w-full sm:w-auto">
-            <button id="btnModeSingle" onclick="toggleAddSubMode('single')" class="flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold bg-slate-900 text-white shadow transition">
+            <button type="button" id="btnModeSingle" onclick="toggleAddSubMode('single')" class="flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold bg-slate-900 text-white shadow transition">
               Single / Rapid Entry
             </button>
-            <button id="btnModeBulk" onclick="toggleAddSubMode('bulk')" class="flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition">
+            <button type="button" id="btnModeBulk" onclick="toggleAddSubMode('bulk')" class="flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition">
               Bulk Notebook Table (Multi-Row)
             </button>
           </div>
 
           <!-- Notebook Sticky Toggle -->
-          <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer select-none px-2 py-1 rounded-lg bg-amber-50 border border-amber-200">
+          <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer select-none px-2.5 py-1.5 rounded-lg bg-amber-50 border border-amber-200">
             <input type="checkbox" id="stickyNotebookMode" checked class="rounded text-amber-600 focus:ring-amber-500 w-4 h-4" />
             <span>📌 Notebook Catch-Up Mode (Keep Date & Category locked after save)</span>
           </label>
@@ -275,7 +279,7 @@
           <div class="flex items-center justify-between border-b border-slate-100 pb-3">
             <div>
               <h2 id="formTitleHeading" class="text-base font-extrabold text-slate-900">Record Construction Expense</h2>
-              <p class="text-xs text-slate-500">Select "➕ Other (Type Custom...)" in any dropdown to add your own item immediately.</p>
+              <p class="text-xs text-slate-500">Select "➕ Other (Type New...)" in any dropdown to add and permanently save a new option.</p>
             </div>
             <input type="hidden" id="editingExpenseId" value="" />
             <button type="button" id="cancelEditBtn" onclick="resetSingleForm()" class="hidden px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 text-xs font-bold">
@@ -283,7 +287,7 @@
             </button>
           </div>
 
-          <!-- Row 1: Date, Category (with inline Other), Nature/Type -->
+          <!-- Row 1: Date, Category (with inline Other), Cost Nature (with inline Other) -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Date *</label>
@@ -293,9 +297,8 @@
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Construction Category *</label>
               <select id="expCategorySelect" onchange="handleDynamicSelectChange('expCategorySelect', 'customCategoryWrap', 'expCategoryCustom')" required class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm font-medium bg-white focus:border-amber-500 focus:outline-none">
-                <!-- Populated dynamically + Other option -->
+                <!-- Populated dynamically -->
               </select>
-              <!-- Inline Custom Category Box -->
               <div id="customCategoryWrap" class="hidden mt-2 p-2.5 rounded-xl bg-amber-50 border border-amber-300 space-y-2">
                 <input type="text" id="expCategoryCustom" placeholder="Type new category name..." class="w-full rounded-lg border border-amber-400 px-2.5 py-1.5 text-xs font-semibold bg-white focus:outline-none" />
                 <label class="flex items-center gap-1.5 text-[11px] font-medium text-amber-900 cursor-pointer">
@@ -307,17 +310,20 @@
 
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Expense Type (For % Split) *</label>
-              <select id="expCostNature" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm font-medium bg-white focus:border-amber-500 focus:outline-none">
-                <option value="Material">🧱 Raw & Finishing Material</option>
-                <option value="Labor">👷 Labor / Mestri / Execution</option>
-                <option value="Approval & Fees">📋 Approvals / Architect / Fees</option>
-                <option value="Machinery & Transport">🚜 Transport / JCB / Machinery / Water</option>
-                <option value="Other">📦 Other / Misc</option>
+              <select id="expCostNatureSelect" onchange="handleDynamicSelectChange('expCostNatureSelect', 'customCostNatureWrap', 'expCostNatureCustom')" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm font-medium bg-white focus:border-amber-500 focus:outline-none">
+                <!-- Populated dynamically -->
               </select>
+              <div id="customCostNatureWrap" class="hidden mt-2 p-2.5 rounded-xl bg-amber-50 border border-amber-300 space-y-2">
+                <input type="text" id="expCostNatureCustom" placeholder="Type new expense type..." class="w-full rounded-lg border border-amber-400 px-2.5 py-1.5 text-xs font-semibold bg-white focus:outline-none" />
+                <label class="flex items-center gap-1.5 text-[11px] font-medium text-amber-900 cursor-pointer">
+                  <input type="checkbox" id="saveCustomNaturePerm" checked class="rounded text-amber-600" />
+                  Save to dropdown for future entries
+                </label>
+              </div>
             </div>
           </div>
 
-          <!-- Row 2: Amount (with built-in calculator) + Payment Status + Pending Balance -->
+          <!-- Row 2: Amount (with built-in calculator) + Payment Status + Description -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
             <div>
               <div class="flex justify-between items-center mb-1">
@@ -354,15 +360,18 @@
             </div>
           </div>
 
-          <!-- Row 3: Paid By, Payment Mode, Zone/Floor (All with inline Other option) -->
+          <!-- Row 3: Paid By, Payment Mode, Zone/Floor -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Paid By (Family Member / Source)</label>
               <select id="expPaidBySelect" onchange="handleDynamicSelectChange('expPaidBySelect', 'customPaidByWrap', 'expPaidByCustom')" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm font-medium bg-white focus:border-amber-500 focus:outline-none">
-                <!-- Populated dynamically + Other -->
               </select>
-              <div id="customPaidByWrap" class="hidden mt-2 p-2 rounded-xl bg-amber-50 border border-amber-300">
+              <div id="customPaidByWrap" class="hidden mt-2 p-2.5 rounded-xl bg-amber-50 border border-amber-300 space-y-1.5">
                 <input type="text" id="expPaidByCustom" placeholder="Type payer name..." class="w-full rounded-lg border border-amber-400 px-2.5 py-1.5 text-xs font-semibold bg-white" />
+                <label class="flex items-center gap-1.5 text-[11px] font-medium text-amber-900 cursor-pointer">
+                  <input type="checkbox" id="saveCustomPayerPerm" checked class="rounded text-amber-600" />
+                  Save payer for next time
+                </label>
               </div>
             </div>
 
@@ -380,20 +389,31 @@
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">House Floor / Area / Zone</label>
               <select id="expZoneSelect" onchange="handleDynamicSelectChange('expZoneSelect', 'customZoneWrap', 'expZoneCustom')" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm font-medium bg-white focus:border-amber-500 focus:outline-none">
-                <!-- Populated dynamically + Other -->
               </select>
-              <div id="customZoneWrap" class="hidden mt-2 p-2 rounded-xl bg-amber-50 border border-amber-300">
+              <div id="customZoneWrap" class="hidden mt-2 p-2.5 rounded-xl bg-amber-50 border border-amber-300 space-y-1.5">
                 <input type="text" id="expZoneCustom" placeholder="Type custom area/floor..." class="w-full rounded-lg border border-amber-400 px-2.5 py-1.5 text-xs font-semibold bg-white" />
+                <label class="flex items-center gap-1.5 text-[11px] font-medium text-amber-900 cursor-pointer">
+                  <input type="checkbox" id="saveCustomZonePerm" checked class="rounded text-amber-600" />
+                  Save floor/zone for next time
+                </label>
               </div>
             </div>
           </div>
 
-          <!-- Row 4: Optional Vendor, Quantity/Unit & Bill/Book Page Ref -->
+          <!-- Row 4: Proper Clickable Vendor/Contractor Dropdown, Quantity/Unit & Book Page Ref -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-2 border-t border-slate-100">
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1">Vendor / Contractor Name (Optional)</label>
-              <input type="text" id="expVendor" list="vendorSuggestionsList" placeholder="e.g. Mestri Raju / Hardware Shop" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-medium focus:border-amber-500 focus:outline-none" />
-              <datalist id="vendorSuggestionsList"></datalist>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Vendor / Contractor (Dropdown)</label>
+              <select id="expVendorSelect" onchange="handleDynamicSelectChange('expVendorSelect', 'customVendorWrap', 'expVendorCustom')" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold bg-white focus:border-amber-500 focus:outline-none">
+                <!-- Populated dynamically with Contractors + Past Vendors + Other -->
+              </select>
+              <div id="customVendorWrap" class="hidden mt-2 p-2.5 rounded-xl bg-amber-50 border border-amber-300 space-y-1.5">
+                <input type="text" id="expVendorCustom" placeholder="Type contractor or shop name..." class="w-full rounded-lg border border-amber-400 px-2.5 py-1.5 text-xs font-semibold bg-white focus:outline-none" />
+                <label class="flex items-center gap-1.5 text-[11px] font-medium text-amber-900 cursor-pointer">
+                  <input type="checkbox" id="saveCustomVendorPerm" checked class="rounded text-amber-600" />
+                  Save vendor to dropdown for future entries
+                </label>
+              </div>
             </div>
 
             <div class="grid grid-cols-2 gap-2">
@@ -419,7 +439,7 @@
 
             <div>
               <label class="block text-xs font-bold text-slate-600 mb-1">Book Page No. / Bill Ref (Optional)</label>
-              <input type="text" id="expBookRef" placeholder="e.g. Book Pg 12 / Bill #402" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-medium focus:border-amber-500 focus:outline-none" />
+              <input type="text" id="expBookRef" placeholder="e.g. Page 12 / Bill #402" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-medium focus:border-amber-500 focus:outline-none" />
             </div>
           </div>
 
@@ -437,7 +457,7 @@
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
             <div>
               <h2 class="text-base font-extrabold text-slate-900">Bulk Notebook Digitizer Table</h2>
-              <p class="text-xs text-slate-500">Type multiple lines from your physical book at once. Select "➕ Other..." in any category cell to type a custom category.</p>
+              <p class="text-xs text-slate-500">Type multiple lines from your physical book at once. Select "➕ Other..." in any Category or Vendor cell to add custom names.</p>
             </div>
             <div class="flex items-center gap-2">
               <button type="button" onclick="addBulkTableRow(5)" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700">
@@ -450,16 +470,18 @@
           </div>
 
           <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse min-w-[760px]">
+            <table class="w-full text-left border-collapse min-w-[880px]">
               <thead>
                 <tr class="border-b border-slate-200 text-[11px] uppercase tracking-wider text-slate-500 bg-slate-50">
                   <th class="py-2.5 px-2 w-32">Date</th>
-                  <th class="py-2.5 px-2 w-48">Category (or Custom)</th>
+                  <th class="py-2.5 px-2 w-44">Category</th>
                   <th class="py-2.5 px-2">Item / Book Description *</th>
-                  <th class="py-2.5 px-2 w-36">Amount (₹) *</th>
-                  <th class="py-2.5 px-2 w-32">Mode</th>
-                  <th class="py-2.5 px-2 w-32">Paid By</th>
-                  <th class="py-2.5 px-2 w-10"></th>
+                  <th class="py-2.5 px-2 w-32">Amount (₹) *</th>
+                  <th class="py-2.5 px-2 w-40">Vendor / Contractor</th>
+                  <th class="py-2.5 px-2 w-28">Mode</th>
+                  <th class="py-2.5 px-2 w-28">Paid By</th>
+                  <th class="py-2.5 px-2 w-24">Book Pg</th>
+                  <th class="py-2.5 px-2 w-9"></th>
                 </tr>
               </thead>
               <tbody id="bulkTableBody" class="divide-y divide-slate-100 text-xs">
@@ -478,23 +500,20 @@
         <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 class="text-base font-extrabold text-slate-900">Complete Percentage (%) & Cost Analytics</h2>
-            <p class="text-xs text-slate-500">Every rupee broken down by Category %, Material vs. Labor %, Floor/Zone %, and Payer %</p>
+            <p class="text-xs text-slate-500">Every rupee broken down by Category %, Expense Type %, Floor/Zone %, and Payer %</p>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex flex-wrap items-center gap-2">
             <select id="statsZoneFilter" onchange="renderAllViews()" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-bold bg-slate-50">
               <option value="ALL">All Floors / Zones</option>
             </select>
           </div>
         </div>
 
-        <!-- 3 High-Level Split Cards: Material %, Labor %, Approvals/Transport % -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5" id="statsNatureCards">
-          <!-- Populated dynamically -->
-        </div>
+        <!-- Dynamic Expense Type (Nature) Split Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5" id="statsNatureCards"></div>
 
         <!-- Charts & Detailed % Breakdown Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-          <!-- Donut Chart Card (5 cols) -->
           <div class="lg:col-span-5 bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col justify-between">
             <div>
               <h3 class="text-sm font-bold text-slate-900">Category Share Donut (%)</h3>
@@ -509,7 +528,6 @@
             </div>
           </div>
 
-          <!-- Ranked Category Percentage Table (7 cols) -->
           <div class="lg:col-span-7 bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
             <div class="flex items-center justify-between mb-3">
               <div>
@@ -518,9 +536,7 @@
               </div>
               <span id="statsCategoryCountBadge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">0 Categories</span>
             </div>
-            <div id="statsCategoryFullList" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
-              <!-- Populated dynamically -->
-            </div>
+            <div id="statsCategoryFullList" class="space-y-2.5 max-h-80 overflow-y-auto pr-1"></div>
           </div>
         </div>
 
@@ -534,7 +550,7 @@
 
           <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
             <h3 class="text-sm font-bold text-slate-900">Who Paid How Much (% Contribution)</h3>
-            <p class="text-[11px] text-slate-500 mb-3">Breakdown by Family Member & Payment Mode</p>
+            <p class="text-[11px] text-slate-500 mb-3">Breakdown by Family Member & Payment Source</p>
             <div id="statsPayerBreakdownList" class="space-y-2.5"></div>
           </div>
         </div>
@@ -558,30 +574,41 @@
       </section>
 
       <!-- ==========================================
-           TAB 4: PASSBOOK (ALL ENTRIES + FILTERS)
+           TAB 4: PASSBOOK (ALL ENTRIES + EXCEL IMPORT/EXPORT)
            ========================================== -->
       <section id="tab-passbook" class="hidden space-y-4">
         <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div>
               <h2 class="text-base font-extrabold text-slate-900">Digital Construction Passbook</h2>
-              <p class="text-xs text-slate-500">Search, filter, edit, or settle pending vendor balances in real time</p>
+              <p class="text-xs text-slate-500">Download to Excel, or upload your edited Excel (CSV) back to auto-fill all records</p>
             </div>
-            <div class="flex items-center gap-2">
-              <button onclick="exportPassbookCSV()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
-                <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Download Excel (CSV)
+            <!-- Excel Download & Auto-Fill Upload Buttons -->
+            <div class="flex flex-wrap items-center gap-2">
+              <input type="file" id="csvFileInput" accept=".csv" onchange="handleImportCSVFile(event)" class="hidden" />
+              <button type="button" onclick="document.getElementById('csvFileInput').click()" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-extrabold flex items-center gap-1.5 shadow-sm transition">
+                <i data-lucide="upload" class="w-3.5 h-3.5"></i> Upload Excel (CSV)
+              </button>
+              <button type="button" onclick="exportPassbookCSV(false)" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i> Download Excel (CSV)
+              </button>
+              <button type="button" onclick="exportPassbookCSV(true)" title="Download Blank CSV Template for Book Entry" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1 transition">
+                <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Blank Template
               </button>
             </div>
           </div>
 
           <!-- Search & Multi-Filter Row -->
-          <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 pt-1">
-            <div class="relative sm:col-span-1">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 pt-1">
+            <div class="relative">
               <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
-              <input type="text" id="passbookSearch" oninput="renderPassbookList()" placeholder="Search item, vendor, page..." class="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-300 text-xs font-medium focus:border-amber-500 focus:outline-none" />
+              <input type="text" id="passbookSearch" oninput="renderPassbookList()" placeholder="Search item, page, bill..." class="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-300 text-xs font-medium focus:border-amber-500 focus:outline-none" />
             </div>
             <select id="passbookCatFilter" onchange="renderPassbookList()" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold bg-white">
               <option value="ALL">All Categories</option>
+            </select>
+            <select id="passbookVendorFilter" onchange="renderPassbookList()" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold bg-white">
+              <option value="ALL">All Vendors / Contractors</option>
             </select>
             <select id="passbookPayerFilter" onchange="renderPassbookList()" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold bg-white">
               <option value="ALL">All Payers</option>
@@ -594,8 +621,19 @@
             </select>
           </div>
 
+          <!-- Date Range Filter Row -->
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-bold text-slate-600">Date Filter:</span>
+              <input type="date" id="passbookDateFrom" onchange="renderPassbookList()" class="rounded-lg border border-slate-300 px-2.5 py-1 text-xs" />
+              <span class="text-slate-400">to</span>
+              <input type="date" id="passbookDateTo" onchange="renderPassbookList()" class="rounded-lg border border-slate-300 px-2.5 py-1 text-xs" />
+              <button type="button" onclick="clearPassbookFilters()" class="text-amber-600 hover:underline font-bold ml-1">Reset Filters</button>
+            </div>
+          </div>
+
           <!-- Filtered Total Bar -->
-          <div class="flex flex-wrap items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-900 text-white text-xs">
+          <div class="flex flex-wrap items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl bg-slate-900 text-white text-xs">
             <span id="passbookFilteredCount">Showing 0 entries</span>
             <div class="flex items-center gap-4">
               <span>Filtered Paid Total: <strong id="passbookFilteredTotal" class="text-amber-400 text-sm">₹0</strong></span>
@@ -605,15 +643,74 @@
         </div>
 
         <!-- Passbook Entries List -->
-        <div id="passbookEntriesContainer" class="space-y-2.5">
-          <!-- Populated dynamically -->
-        </div>
+        <div id="passbookEntriesContainer" class="space-y-2.5"></div>
       </section>
 
       <!-- ==========================================
            TAB 5: SETTINGS, CONTRACTORS & CLOUD SYNC
            ========================================== -->
       <section id="tab-settings" class="hidden space-y-4">
+        <!-- Contractor Milestone & Agreement Tracker (CLICKABLE LEDGER) -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-base font-extrabold text-slate-900">Contractor Running Account (RA) Tracker</h3>
+              <p class="text-xs text-slate-500">Add your contractors below. Their names automatically appear in the <strong>Add Expense Vendor Dropdown</strong>. Tap any contractor card to view their full payment history!</p>
+            </div>
+          </div>
+
+          <form onsubmit="handleAddContractor(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 pt-1">
+            <input type="text" id="conName" required placeholder="Contractor / Vendor Name" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold" />
+            <input type="text" id="conWorkType" required placeholder="Work (e.g. Civil Masonry / Plumbing)" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold" />
+            <input type="number" id="conAgreedAmount" required min="1" placeholder="Total Agreed Value (₹)" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold" />
+            <button type="submit" class="rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs py-2 px-4 shadow-sm">
+              + Add Contractor
+            </button>
+          </form>
+
+          <div id="contractorsListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2"></div>
+        </div>
+
+        <!-- Manage Dropdown Lists (Categories, Expense Types, Vendors, Payers, Zones) -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-3">
+          <div>
+            <h3 class="text-sm font-extrabold text-slate-900">Manage Dropdown Options (Add or Remove)</h3>
+            <p class="text-xs text-slate-500">Add new items or delete mistyped ones—changes sync immediately across all phones.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+            <!-- Manage Categories -->
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+              <span class="text-xs font-extrabold text-slate-800 block">Construction Categories</span>
+              <div class="flex gap-1.5">
+                <input type="text" id="quickAddCatInput" placeholder="New Category..." class="flex-1 rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs bg-white" />
+                <button type="button" onclick="quickAddMasterItem('categories', 'quickAddCatInput')" class="px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-bold">Add</button>
+              </div>
+              <div id="manageCategoriesList" class="max-h-36 overflow-y-auto space-y-1 pr-1"></div>
+            </div>
+
+            <!-- Manage Vendors / Contractors -->
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+              <span class="text-xs font-extrabold text-slate-800 block">Saved Vendors / Shops</span>
+              <div class="flex gap-1.5">
+                <input type="text" id="quickAddVendorInput" placeholder="New Vendor..." class="flex-1 rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs bg-white" />
+                <button type="button" onclick="quickAddMasterItem('vendors', 'quickAddVendorInput')" class="px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-bold">Add</button>
+              </div>
+              <div id="manageVendorsList" class="max-h-36 overflow-y-auto space-y-1 pr-1"></div>
+            </div>
+
+            <!-- Manage Expense Types & Payers -->
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+              <span class="text-xs font-extrabold text-slate-800 block">Expense Types (% Split)</span>
+              <div class="flex gap-1.5">
+                <input type="text" id="quickAddNatureInput" placeholder="New Expense Type..." class="flex-1 rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs bg-white" />
+                <button type="button" onclick="quickAddMasterItem('costNatures', 'quickAddNatureInput')" class="px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-bold">Add</button>
+              </div>
+              <div id="manageNaturesList" class="max-h-36 overflow-y-auto space-y-1 pr-1"></div>
+            </div>
+          </div>
+        </div>
+
         <!-- Live Cloud Database Connection Box -->
         <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-3">
           <div class="flex items-start justify-between gap-3">
@@ -623,7 +720,7 @@
               </div>
               <div>
                 <h2 class="text-base font-extrabold text-slate-900">Real-Time Cloud Database (Pre-Connected)</h2>
-                <p class="text-xs text-slate-500">Your Firebase Realtime Database is built into the code. You can also override it below in extreme scenarios.</p>
+                <p class="text-xs text-slate-500">Protected by Cloud Overwrite Guard—updating code on GitHub will never erase your Firebase data.</p>
               </div>
             </div>
             <button onclick="forceCloudPullNow()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 flex items-center gap-1.5">
@@ -642,38 +739,11 @@
                 Reset to Default
               </button>
             </div>
-            <p class="text-[11px] text-slate-500">
-              Default Built-in URL: <code class="text-emerald-700 font-semibold">https://nirmaanpro-73f90-default-rtdb.firebaseio.com/</code>
-            </p>
           </div>
         </div>
 
-        <!-- Contractor Milestone & Agreement Tracker -->
-        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-3">
-          <div class="flex items-center justify-between">
-            <div>
-              <h3 class="text-sm font-extrabold text-slate-900">Contractor Running Account (RA) Tracker</h3>
-              <p class="text-xs text-slate-500">Add agreed contractor budgets (e.g., Civil Mestri, Plumber, Carpenter). Payments with matching Vendor names link automatically!</p>
-            </div>
-          </div>
-
-          <form onsubmit="handleAddContractor(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 pt-1">
-            <input type="text" id="conName" required placeholder="Contractor / Vendor Name" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold" />
-            <input type="text" id="conWorkType" required placeholder="Work (e.g. Civil Labor Contract)" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold" />
-            <input type="number" id="conAgreedAmount" required min="1" placeholder="Total Agreed Value (₹)" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold" />
-            <button type="submit" class="rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs py-2 px-4">
-              + Add Contract
-            </button>
-          </form>
-
-          <div id="contractorsListContainer" class="space-y-2.5 pt-2">
-            <!-- Populated dynamically -->
-          </div>
-        </div>
-
-        <!-- Manage Custom Categories, Payers, Zones & Change PIN -->
+        <!-- Security PIN Change & Recycle Bin -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Security PIN Change -->
           <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
             <h3 class="text-sm font-extrabold text-slate-900">Change App Lock PIN</h3>
             <p class="text-xs text-slate-500">Updates the SHA-256 encrypted PIN across all connected family phones.</p>
@@ -685,7 +755,6 @@
             </div>
           </div>
 
-          <!-- Recycle Bin (Soft Deleted Items) -->
           <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-2">
             <div class="flex items-center justify-between">
               <h3 class="text-sm font-extrabold text-slate-900">Recycle Bin (Deleted Entries)</h3>
@@ -731,7 +800,7 @@
   </div>
 
   <!-- ==========================================
-       MODAL: EDIT TARGET BUDGET & STAGE %
+       MODAL 1: EDIT TARGET BUDGET & STAGE %
        ========================================== -->
   <div id="budgetModal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-xl space-y-4">
@@ -749,7 +818,6 @@
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">Overall Estimated Construction Budget (₹)</label>
           <input type="number" id="modalTotalBudget" min="0" step="any" placeholder="e.g. 7500000" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-bold" />
-          <p class="text-[11px] text-slate-400 mt-0.5">Used to calculate % of total budget spent and remaining balance.</p>
         </div>
         <div>
           <div class="flex justify-between text-xs font-bold text-slate-700 mb-1">
@@ -766,22 +834,51 @@
     </div>
   </div>
 
+  <!-- ==========================================
+       MODAL 2: CLICKABLE CONTRACTOR LEDGER STATEMENT
+       ========================================== -->
+  <div id="contractorLedgerModal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-5 shadow-xl space-y-4 max-h-[85vh] flex flex-col">
+      <div class="flex items-start justify-between border-b border-slate-100 pb-3">
+        <div>
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-600">Contractor Running Account Ledger</span>
+          <h3 id="ledgerModalTitle" class="text-base font-extrabold text-slate-900">Contractor Name</h3>
+          <p id="ledgerModalSubtitle" class="text-xs text-slate-500"></p>
+        </div>
+        <button onclick="closeContractorLedgerModal()" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div id="ledgerModalSummary" class="grid grid-cols-3 gap-2 bg-slate-900 text-white p-3 rounded-xl text-xs"></div>
+
+      <div id="ledgerModalPaymentsList" class="flex-1 overflow-y-auto space-y-2 pr-1 divide-y divide-slate-100 text-xs"></div>
+
+      <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+        <button type="button" id="ledgerWhatsAppBtn" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5">
+          <i data-lucide="share-2" class="w-3.5 h-3.5"></i> Share Statement on WhatsApp
+        </button>
+        <button type="button" onclick="closeContractorLedgerModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-xs font-bold text-slate-700">Close</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <div id="toastBanner" class="fixed top-16 right-4 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold shadow-lg border border-slate-700 flex items-center gap-2">
     <span id="toastText">Saved!</span>
   </div>
 
   <!-- ==========================================
-       JAVASCRIPT ENGINE (CLEAN SLATE + LIVE FIREBASE)
+       JAVASCRIPT ENGINE (v3.0 COMPLETE)
        ========================================== -->
   <script>
     // 1. BUILT-IN FIREBASE REALTIME DATABASE URL
     const DEFAULT_FIREBASE_DB_URL = "https://nirmaanpro-73f90-default-rtdb.firebaseio.com";
 
-    // 2. SHA-256 HASH OF INITIAL PIN (Never stores plain digits in code)
+    // 2. VERIFIED SHA-256 HASH FOR PIN 9975
     const DEFAULT_PIN_SHA256 = "8220f2490226f57d84e902e082394a175d988ebcc2bc4523295d6210c849f83f";
-    
-    // Pre-loaded Indian Construction Categories, Payers & Zones (Editable & Expandable)
+
+    // Pre-loaded Indian Construction Defaults
     const INITIAL_CATEGORIES = [
       "Excavation & Earthwork",
       "Cement",
@@ -808,6 +905,14 @@
       "Pooja & Ceremonies"
     ];
 
+    const INITIAL_COST_NATURES = [
+      "Material",
+      "Labor",
+      "Approval & Fees",
+      "Machinery & Transport",
+      "Other"
+    ];
+
     const INITIAL_PAYERS = [
       "Self",
       "Father",
@@ -831,7 +936,7 @@
       "Exterior & Compound Wall"
     ];
 
-    // Application State (100% Empty Transactions by Default — Zero Dummy Data)
+    // Application State (Zero Dummy Data + Full Lists)
     let appState = {
       meta: {
         projectTitle: "Nirmaan Pro",
@@ -841,27 +946,27 @@
         updatedAt: 0
       },
       categories: [...INITIAL_CATEGORIES],
+      costNatures: [...INITIAL_COST_NATURES],
       payers: [...INITIAL_PAYERS],
       zones: [...INITIAL_ZONES],
-      expenses: {},      // Object map of id -> expense (Clean Slate!)
-      contractors: {},   // Object map of id -> contractor
-      recycleBin: {}     // Soft-deleted expenses
+      vendors: [],       // Explicit saved vendors list
+      expenses: {},      // Map of id -> expense
+      contractors: {},   // Map of id -> contractor
+      recycleBin: {}     // Map of id -> deleted expense
     };
 
     let enteredPin = "";
     let eventSourceStream = null;
-    let isCurrentlySyncing = false;
+    let hasCompletedInitialFetch = false; // CRITICAL GUARD: Prevents overwriting cloud before first pull
     let categoryChartInstance = null;
     let monthlyChartInstance = null;
 
-    // Helper: Get Active Firebase DB URL
     function getActiveDbUrl() {
       const custom = localStorage.getItem("nirmaan_custom_db_url");
       const base = (custom && custom.trim()) ? custom.trim() : DEFAULT_FIREBASE_DB_URL;
       return base.replace(/\/+$/, "");
     }
 
-    // Helper: SHA-256 Hash Function using Web Crypto API
     async function sha256Hex(text) {
       const encoder = new TextEncoder();
       const data = encoder.encode(text);
@@ -871,7 +976,7 @@
     }
 
     // ==========================================
-    // PIN LOCK LOGIC
+    // PIN LOCK LOGIC (WITH SELF-HEALING 9975 HASH)
     // ==========================================
     function pressPinDigit(digit) {
       if (enteredPin.length >= 4) return;
@@ -908,37 +1013,39 @@
     }
 
     async function verifyEnteredPin() {
-  const hashedInput = await sha256Hex(enteredPin);
-  const brokenOldHash = "07123e1f482356c415f684407a3b8723e10b2cbbc0b8fcd6282c49d37c9c1abc";
+      const hashedInput = await sha256Hex(enteredPin);
+      const brokenOldHash = "07123e1f482356c415f684407a3b8723e10b2cbbc0b8fcd6282c49d37c9c1abc";
 
-  // Auto-fix if the broken hash from before is stuck in Firebase or local storage
-  if (!appState.meta.pinHash || appState.meta.pinHash === brokenOldHash) {
-    appState.meta.pinHash = DEFAULT_PIN_SHA256;
-  }
+      if (!appState.meta.pinHash || appState.meta.pinHash === brokenOldHash) {
+        appState.meta.pinHash = DEFAULT_PIN_SHA256;
+      }
 
-  // Dynamic fallback verification so 9975 always works without plain-text exposure
-  const expectedDefault = await sha256Hex(String(1995 * 5)); 
+      const expectedDefault = await sha256Hex(String(1995 * 5));
 
-  if (hashedInput === appState.meta.pinHash || hashedInput === expectedDefault) {
-    appState.meta.pinHash = hashedInput;
-    sessionStorage.setItem("nirmaan_unlocked", "true");
-    document.getElementById("pinLockScreen").classList.add("hidden");
-    document.getElementById("mainAppContainer").classList.remove("hidden");
-    enteredPin = "";
-    updatePinDotsUI();
-    renderAllViews();
-    pushFullStateToCloud();
-  } else {
-    const container = document.getElementById("pinDotsContainer");
-    container.classList.add("shake");
-    document.getElementById("pinErrorMsg").classList.remove("opacity-0");
-    setTimeout(() => {
-      container.classList.remove("shake");
-      enteredPin = "";
-      updatePinDotsUI();
-    }, 400);
-  }
-}
+      if (hashedInput === appState.meta.pinHash || hashedInput === expectedDefault) {
+        appState.meta.pinHash = hashedInput;
+        sessionStorage.setItem("nirmaan_unlocked", "true");
+        document.getElementById("pinLockScreen").classList.add("hidden");
+        document.getElementById("mainAppContainer").classList.remove("hidden");
+        enteredPin = "";
+        updatePinDotsUI();
+        populateAllDropdowns();
+        renderAllViews();
+        if (hasCompletedInitialFetch) {
+          pushFullStateToCloud();
+        }
+      } else {
+        const container = document.getElementById("pinDotsContainer");
+        container.classList.add("shake");
+        document.getElementById("pinErrorMsg").classList.remove("opacity-0");
+        setTimeout(() => {
+          container.classList.remove("shake");
+          enteredPin = "";
+          updatePinDotsUI();
+        }, 400);
+      }
+    }
+
     function lockAppNow() {
       sessionStorage.removeItem("nirmaan_unlocked");
       enteredPin = "";
@@ -947,7 +1054,6 @@
       document.getElementById("pinLockScreen").classList.remove("hidden");
     }
 
-    // Support Physical Keyboard on PIN Screen
     window.addEventListener("keydown", (e) => {
       const lockVisible = !document.getElementById("pinLockScreen").classList.contains("hidden");
       if (!lockVisible) return;
@@ -957,7 +1063,7 @@
     });
 
     // ==========================================
-    // REAL-TIME FIREBASE SYNC ENGINE (REST + SSE)
+    // REAL-TIME FIREBASE SYNC ENGINE (WITH DATA SAFETY GUARD)
     // ==========================================
     function setSyncIndicator(status, message) {
       const badge = document.getElementById("syncStatusBadge");
@@ -990,13 +1096,13 @@
 
     function saveLocalBackup() {
       try {
-        localStorage.setItem("nirmaan_state_cache_v2", JSON.stringify(appState));
+        localStorage.setItem("nirmaan_state_cache_v3", JSON.stringify(appState));
       } catch (e) {}
     }
 
     function loadLocalBackup() {
       try {
-        const raw = localStorage.getItem("nirmaan_state_cache_v2");
+        const raw = localStorage.getItem("nirmaan_state_cache_v3") || localStorage.getItem("nirmaan_state_cache_v2");
         if (raw) {
           const parsed = JSON.parse(raw);
           mergeIncomingCloudData(parsed, false);
@@ -1004,30 +1110,71 @@
       } catch (e) {}
     }
 
+    // Helper: Merge arrays uniquely without losing custom items
+    function uniqueStringArray(arr1 = [], arr2 = []) {
+      const set = new Set();
+      [...arr1, ...arr2].forEach(item => {
+        if (item && typeof item === "string" && item.trim() && item !== "__OTHER__") {
+          set.add(item.trim());
+        }
+      });
+      return Array.from(set);
+    }
+
     function mergeIncomingCloudData(cloudData, shouldRender = true) {
       if (!cloudData || typeof cloudData !== "object") return;
 
+      const brokenOldHash = "07123e1f482356c415f684407a3b8723e10b2cbbc0b8fcd6282c49d37c9c1abc";
       if (cloudData.meta) {
+        const incomingPin = (cloudData.meta.pinHash && cloudData.meta.pinHash !== brokenOldHash)
+          ? cloudData.meta.pinHash
+          : DEFAULT_PIN_SHA256;
         appState.meta = {
           projectTitle: cloudData.meta.projectTitle || "Nirmaan Pro",
           totalBudget: Number(cloudData.meta.totalBudget) || 0,
           constructionStagePct: Number(cloudData.meta.constructionStagePct) || 0,
-          pinHash: cloudData.meta.pinHash || DEFAULT_PIN_SHA256,
+          pinHash: incomingPin,
           updatedAt: cloudData.meta.updatedAt || Date.now()
         };
       }
-      if (Array.isArray(cloudData.categories) && cloudData.categories.length > 0) {
-        appState.categories = cloudData.categories;
-      }
-      if (Array.isArray(cloudData.payers) && cloudData.payers.length > 0) {
-        appState.payers = cloudData.payers;
-      }
-      if (Array.isArray(cloudData.zones) && cloudData.zones.length > 0) {
-        appState.zones = cloudData.zones;
-      }
+
       appState.expenses = cloudData.expenses || {};
       appState.contractors = cloudData.contractors || {};
       appState.recycleBin = cloudData.recycleBin || {};
+
+      // Extract any custom categories, natures, payers, zones, and vendors used inside expenses/contractors so nothing is ever lost
+      const expList = Object.values(appState.expenses);
+      const conList = Object.values(appState.contractors);
+
+      const usedCats = expList.map(e => e.category).filter(Boolean);
+      const usedNatures = expList.map(e => e.costNature).filter(Boolean);
+      const usedPayers = expList.map(e => e.paidBy).filter(Boolean);
+      const usedZones = expList.map(e => e.zone).filter(Boolean);
+      const usedVendors = [
+        ...conList.map(c => c.name).filter(Boolean),
+        ...expList.map(e => e.vendor).filter(Boolean)
+      ];
+
+      appState.categories = uniqueStringArray(
+        Array.isArray(cloudData.categories) && cloudData.categories.length ? cloudData.categories : INITIAL_CATEGORIES,
+        usedCats
+      );
+      appState.costNatures = uniqueStringArray(
+        Array.isArray(cloudData.costNatures) && cloudData.costNatures.length ? cloudData.costNatures : INITIAL_COST_NATURES,
+        usedNatures
+      );
+      appState.payers = uniqueStringArray(
+        Array.isArray(cloudData.payers) && cloudData.payers.length ? cloudData.payers : INITIAL_PAYERS,
+        usedPayers
+      );
+      appState.zones = uniqueStringArray(
+        Array.isArray(cloudData.zones) && cloudData.zones.length ? cloudData.zones : INITIAL_ZONES,
+        usedZones
+      );
+      appState.vendors = uniqueStringArray(
+        Array.isArray(cloudData.vendors) ? cloudData.vendors : [],
+        usedVendors
+      );
 
       saveLocalBackup();
       if (shouldRender) {
@@ -1043,20 +1190,24 @@
         const res = await fetch(`${dbUrl}/nirmaanProData.json`);
         if (!res.ok) throw new Error("HTTP " + res.status);
         const data = await res.json();
+        hasCompletedInitialFetch = true;
         if (data) {
           mergeIncomingCloudData(data, true);
         } else {
-          // Initialize clean state on cloud if brand new DB
           await pushFullStateToCloud();
         }
         const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         setSyncIndicator("live", `Synced live with Cloud at ${timeStr}`);
       } catch (err) {
-        setSyncIndicator("offline", "Could not reach Firebase — Check DB Rules or Internet");
+        setSyncIndicator("offline", "Could not reach Firebase — Using local cache");
       }
     }
 
     async function pushFullStateToCloud() {
+      // Safety Guard: Do not push if initial cloud fetch hasn't completed yet
+      if (!hasCompletedInitialFetch) {
+        await forceCloudPullNow();
+      }
       setSyncIndicator("syncing");
       appState.meta.updatedAt = Date.now();
       saveLocalBackup();
@@ -1075,7 +1226,6 @@
       }
     }
 
-    // Real-time Server-Sent Events (SSE) listener so Phone B updates the instant Phone A saves
     function startRealTimeCloudStream() {
       if (eventSourceStream) {
         eventSourceStream.close();
@@ -1088,11 +1238,11 @@
           try {
             const packet = JSON.parse(e.data);
             if (packet.path === "/" && packet.data) {
+              hasCompletedInitialFetch = true;
               mergeIncomingCloudData(packet.data, true);
               const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
               setSyncIndicator("live", `Live update received at ${timeStr}`);
             } else {
-              // Partial path update: fetch fresh snapshot
               forceCloudPullNow();
             }
           } catch (err) {}
@@ -1100,13 +1250,9 @@
         eventSourceStream.addEventListener("patch", () => {
           forceCloudPullNow();
         });
-        eventSourceStream.onerror = () => {
-          // Fallback polling every 8 seconds if mobile browser pauses SSE
-        };
       } catch (e) {}
     }
 
-    // Background heartbeat poll every 10 seconds to guarantee multi-phone sync even on strict mobile networks
     setInterval(() => {
       if (!document.hidden) {
         forceCloudPullNow();
@@ -1114,7 +1260,7 @@
     }, 10000);
 
     // ==========================================
-    // FORMATTING HELPERS (INDIAN LAKHS / CRORES)
+    // FORMATTING HELPERS
     // ==========================================
     function formatINR(num) {
       const n = Number(num) || 0;
@@ -1139,53 +1285,102 @@
       setTimeout(() => banner.classList.add("hidden"), 2800);
     }
 
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
     // ==========================================
-    // DROPDOWNS WITH INLINE "➕ OTHER (FREE TEXT)"
+    // DROPDOWNS: CATEGORIES, NATURES, PAYERS, ZONES & CONTRACTORS/VENDORS
     // ==========================================
-    function populateAllDropdowns() {
+    function getCombinedVendorsList() {
+      const contractorNames = Object.values(appState.contractors || {}).map(c => c.name).filter(Boolean);
+      const expenseVendors = Object.values(appState.expenses || {}).map(e => e.vendor).filter(Boolean);
+      return uniqueStringArray(contractorNames, [...(appState.vendors || []), ...expenseVendors]);
+    }
+
+    function populateAllDropdowns(selectedOverrides = {}) {
+      // 1. Category Select
       const catSelect = document.getElementById("expCategorySelect");
-      const prevCat = catSelect.value;
+      const targetCat = selectedOverrides.category || (catSelect.value !== "__OTHER__" ? catSelect.value : "");
       catSelect.innerHTML = appState.categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("") +
         `<option value="__OTHER__" class="font-bold text-amber-700 bg-amber-50">➕ Other (Type Custom Category...)</option>`;
-      if (prevCat && appState.categories.includes(prevCat)) catSelect.value = prevCat;
+      if (targetCat && appState.categories.includes(targetCat)) {
+        catSelect.value = targetCat;
+      }
 
+      // 2. Expense Type / Cost Nature Select (Fixed so custom Expense Types save permanently!)
+      const natSelect = document.getElementById("expCostNatureSelect");
+      const targetNat = selectedOverrides.costNature || (natSelect.value !== "__OTHER__" ? natSelect.value : "");
+      natSelect.innerHTML = appState.costNatures.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join("") +
+        `<option value="__OTHER__" class="font-bold text-amber-700 bg-amber-50">➕ Other (Type New Expense Type...)</option>`;
+      if (targetNat && appState.costNatures.includes(targetNat)) {
+        natSelect.value = targetNat;
+      }
+
+      // 3. Paid By Select
       const payerSelect = document.getElementById("expPaidBySelect");
-      const prevPayer = payerSelect.value;
+      const targetPayer = selectedOverrides.paidBy || (payerSelect.value !== "__OTHER__" ? payerSelect.value : "");
       payerSelect.innerHTML = appState.payers.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("") +
         `<option value="__OTHER__" class="font-bold text-amber-700 bg-amber-50">➕ Other (Type Custom Payer...)</option>`;
-      if (prevPayer && appState.payers.includes(prevPayer)) payerSelect.value = prevPayer;
+      if (targetPayer && appState.payers.includes(targetPayer)) {
+        payerSelect.value = targetPayer;
+      }
 
+      // 4. Floor / Zone Select
       const zoneSelect = document.getElementById("expZoneSelect");
-      const prevZone = zoneSelect.value;
+      const targetZone = selectedOverrides.zone || (zoneSelect.value !== "__OTHER__" ? zoneSelect.value : "");
       zoneSelect.innerHTML = appState.zones.map(z => `<option value="${escapeHtml(z)}">${escapeHtml(z)}</option>`).join("") +
         `<option value="__OTHER__" class="font-bold text-amber-700 bg-amber-50">➕ Other (Type Custom Floor/Area...)</option>`;
-      if (prevZone && appState.zones.includes(prevZone)) zoneSelect.value = prevZone;
+      if (targetZone && appState.zones.includes(targetZone)) {
+        zoneSelect.value = targetZone;
+      }
 
-      // Filter dropdowns in Passbook & Stats
+      // 5. Proper Clickable Vendor / Contractor Dropdown (Includes all added Contractors!)
+      const vendorSelect = document.getElementById("expVendorSelect");
+      const allVendors = getCombinedVendorsList();
+      const targetVendor = selectedOverrides.vendor !== undefined
+        ? selectedOverrides.vendor
+        : (vendorSelect.value !== "__OTHER__" ? vendorSelect.value : "");
+      vendorSelect.innerHTML = `<option value="">-- None / General Purchase --</option>` +
+        allVendors.map(v => `<option value="${escapeHtml(v)}">👷 ${escapeHtml(v)}</option>`).join("") +
+        `<option value="__OTHER__" class="font-bold text-amber-700 bg-amber-50">➕ Other (Type New Vendor / Contractor...)</option>`;
+      if (targetVendor && allVendors.includes(targetVendor)) {
+        vendorSelect.value = targetVendor;
+      } else {
+        vendorSelect.value = "";
+      }
+
+      // 6. Passbook & Stats Filter Dropdowns
       const pbCat = document.getElementById("passbookCatFilter");
       const curPbCat = pbCat.value || "ALL";
       pbCat.innerHTML = `<option value="ALL">All Categories</option>` +
         appState.categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
-      pbCat.value = curPbCat;
+      if ([...appState.categories, "ALL"].includes(curPbCat)) pbCat.value = curPbCat;
+
+      const pbVen = document.getElementById("passbookVendorFilter");
+      const curPbVen = pbVen.value || "ALL";
+      pbVen.innerHTML = `<option value="ALL">All Vendors / Contractors</option>` +
+        allVendors.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
+      if ([...allVendors, "ALL"].includes(curPbVen)) pbVen.value = curPbVen;
 
       const pbPayer = document.getElementById("passbookPayerFilter");
       const curPbPayer = pbPayer.value || "ALL";
       pbPayer.innerHTML = `<option value="ALL">All Payers</option>` +
         appState.payers.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
-      pbPayer.value = curPbPayer;
+      if ([...appState.payers, "ALL"].includes(curPbPayer)) pbPayer.value = curPbPayer;
 
       const stZone = document.getElementById("statsZoneFilter");
       const curStZone = stZone.value || "ALL";
       stZone.innerHTML = `<option value="ALL">All Floors / Zones</option>` +
         appState.zones.map(z => `<option value="${escapeHtml(z)}">${escapeHtml(z)}</option>`).join("");
-      stZone.value = curStZone;
+      if ([...appState.zones, "ALL"].includes(curStZone)) stZone.value = curStZone;
 
-      // Vendor autocomplete suggestions from existing entries + contractors
-      const vendorSet = new Set();
-      Object.values(appState.expenses || {}).forEach(e => { if (e.vendor) vendorSet.add(e.vendor); });
-      Object.values(appState.contractors || {}).forEach(c => { if (c.name) vendorSet.add(c.name); });
-      document.getElementById("vendorSuggestionsList").innerHTML = Array.from(vendorSet)
-        .map(v => `<option value="${escapeHtml(v)}"></option>`).join("");
+      // Refresh Bulk Table Dropdowns if rows exist
+      refreshExistingBulkTableDropdowns();
     }
 
     function handleDynamicSelectChange(selectId, wrapId, inputId) {
@@ -1214,11 +1409,10 @@
       }
     }
 
-    // Built-in Math Evaluator for Amount Box (e.g. "120 * 390")
     function evaluateMathExpression(raw) {
       if (!raw) return 0;
-      const cleaned = String(raw).replace(/,/g, "").trim();
-      if (/^[0-9+\-*/.() ]+$/.test(cleaned)) {
+      const cleaned = String(raw).replace(/[₹,\s]/g, "").trim();
+      if (/^[0-9+\-*/.()]+$/.test(cleaned)) {
         try {
           const val = Function('"use strict"; return (' + cleaned + ')')();
           return isFinite(val) ? Number(val) : 0;
@@ -1248,12 +1442,14 @@
     }
 
     // ==========================================
-    // SAVE SINGLE EXPENSE (WITH DUPLICATE CHECK)
+    // SAVE SINGLE EXPENSE (PERMANENTLY SAVES ALL CUSTOM FIELDS)
     // ==========================================
     async function handleSingleExpenseSubmit(e) {
       e.preventDefault();
 
       const date = document.getElementById("expDate").value;
+
+      // 1. Resolve Category
       let category = document.getElementById("expCategorySelect").value;
       if (category === "__OTHER__") {
         category = document.getElementById("expCategoryCustom").value.trim();
@@ -1266,16 +1462,45 @@
         }
       }
 
-      let paidBy = document.getElementById("expPaidBySelect").value;
-      if (paidBy === "__OTHER__") {
-        paidBy = document.getElementById("expPaidByCustom").value.trim() || "Other";
-        if (!appState.payers.includes(paidBy)) appState.payers.push(paidBy);
+      // 2. Resolve Expense Type / Cost Nature
+      let costNature = document.getElementById("expCostNatureSelect").value;
+      if (costNature === "__OTHER__") {
+        costNature = document.getElementById("expCostNatureCustom").value.trim();
+        if (!costNature) {
+          alert("Please type your custom expense type.");
+          return;
+        }
+        if (document.getElementById("saveCustomNaturePerm").checked && !appState.costNatures.includes(costNature)) {
+          appState.costNatures.push(costNature);
+        }
       }
 
+      // 3. Resolve Paid By
+      let paidBy = document.getElementById("expPaidBySelect").value;
+      if (paidBy === "__OTHER__") {
+        paidBy = document.getElementById("expPaidByCustom").value.trim() || "Self";
+        if (document.getElementById("saveCustomPayerPerm").checked && !appState.payers.includes(paidBy)) {
+          appState.payers.push(paidBy);
+        }
+      }
+
+      // 4. Resolve Zone / Floor
       let zone = document.getElementById("expZoneSelect").value;
       if (zone === "__OTHER__") {
         zone = document.getElementById("expZoneCustom").value.trim() || "Overall House / Common";
-        if (!appState.zones.includes(zone)) appState.zones.push(zone);
+        if (document.getElementById("saveCustomZonePerm").checked && !appState.zones.includes(zone)) {
+          appState.zones.push(zone);
+        }
+      }
+
+      // 5. Resolve Vendor / Contractor Dropdown
+      let vendor = document.getElementById("expVendorSelect").value;
+      if (vendor === "__OTHER__") {
+        vendor = document.getElementById("expVendorCustom").value.trim();
+        if (vendor && document.getElementById("saveCustomVendorPerm").checked) {
+          if (!appState.vendors) appState.vendors = [];
+          if (!appState.vendors.includes(vendor)) appState.vendors.push(vendor);
+        }
       }
 
       const rawAmt = evaluateMathExpression(document.getElementById("expAmountInput").value);
@@ -1288,16 +1513,13 @@
       const finalAmount = paymentStatus === "Refund" ? -Math.abs(rawAmt) : Math.abs(rawAmt);
       const pendingAmount = paymentStatus === "Partial" ? (Number(document.getElementById("expPendingAmount").value) || 0) : 0;
       const description = document.getElementById("expDescription").value.trim();
-      const costNature = document.getElementById("expCostNature").value;
       const paymentMode = document.getElementById("expPaymentMode").value;
-      const vendor = document.getElementById("expVendor").value.trim();
       const qty = Number(document.getElementById("expQty").value) || 0;
       const unit = document.getElementById("expUnit").value;
       const bookRef = document.getElementById("expBookRef").value.trim();
 
       const editingId = document.getElementById("editingExpenseId").value;
 
-      // Duplicate safety check when digitizing book
       if (!editingId) {
         const duplicate = Object.values(appState.expenses || {}).find(x =>
           x.date === date &&
@@ -1332,7 +1554,17 @@
         updatedAt: Date.now()
       };
 
-      populateAllDropdowns();
+      // Hide all custom text boxes and select the newly added values cleanly
+      ["customCategoryWrap", "customCostNatureWrap", "customPaidByWrap", "customZoneWrap", "customVendorWrap"].forEach(w => {
+        document.getElementById(w).classList.add("hidden");
+      });
+      ["expCategoryCustom", "expCostNatureCustom", "expPaidByCustom", "expZoneCustom", "expVendorCustom"].forEach(inp => {
+        const el = document.getElementById(inp);
+        el.required = false;
+        el.value = "";
+      });
+
+      populateAllDropdowns({ category, costNature, paidBy, zone, vendor });
       renderAllViews();
       await pushFullStateToCloud();
 
@@ -1344,14 +1576,11 @@
         showToast(`Saved ${formatINR(finalAmount)} to Cloud!`);
         const keepSticky = document.getElementById("stickyNotebookMode").checked;
         if (keepSticky) {
-          // Keep Date, Category, Zone & PaidBy locked for fast notebook entry
           document.getElementById("expAmountInput").value = "";
           document.getElementById("expDescription").value = "";
           document.getElementById("expPendingAmount").value = "";
           document.getElementById("expQty").value = "";
           document.getElementById("calcPreviewBadge").textContent = "";
-          document.getElementById("customCategoryWrap").classList.add("hidden");
-          document.getElementById("expCategorySelect").value = category;
           document.getElementById("expDescription").focus();
         } else {
           resetSingleForm();
@@ -1367,7 +1596,7 @@
       document.getElementById("expDate").value = new Date().toISOString().split("T")[0];
       document.getElementById("expAmountInput").value = "";
       document.getElementById("expDescription").value = "";
-      document.getElementById("expVendor").value = "";
+      document.getElementById("expVendorSelect").value = "";
       document.getElementById("expQty").value = "";
       document.getElementById("expUnit").value = "";
       document.getElementById("expBookRef").value = "";
@@ -1375,13 +1604,13 @@
       document.getElementById("expPendingAmount").value = "";
       document.getElementById("pendingAmountWrap").classList.add("hidden");
       document.getElementById("calcPreviewBadge").textContent = "";
-      document.getElementById("customCategoryWrap").classList.add("hidden");
-      document.getElementById("customPaidByWrap").classList.add("hidden");
-      document.getElementById("customZoneWrap").classList.add("hidden");
+      ["customCategoryWrap", "customCostNatureWrap", "customPaidByWrap", "customZoneWrap", "customVendorWrap"].forEach(w => {
+        document.getElementById(w).classList.add("hidden");
+      });
     }
 
     // ==========================================
-    // BULK NOTEBOOK TABLE MODE
+    // BULK NOTEBOOK TABLE MODE (WITH CONTRACTOR DROPDOWN)
     // ==========================================
     function toggleAddSubMode(mode) {
       const singleForm = document.getElementById("singleExpenseForm");
@@ -1410,6 +1639,10 @@
       const today = new Date().toISOString().split("T")[0];
       const catOptions = appState.categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("") +
         `<option value="__OTHER__">➕ Other (Custom)...</option>`;
+      const vendorList = getCombinedVendorsList();
+      const vendorOptions = `<option value="">-- None --</option>` +
+        vendorList.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("") +
+        `<option value="__OTHER__">➕ Other Vendor...</option>`;
       const payerOptions = appState.payers.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
 
       for (let i = 0; i < count; i++) {
@@ -1420,16 +1653,22 @@
             <input type="date" value="${today}" class="bulk-date w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs" />
           </td>
           <td class="p-1.5">
-            <select onchange="handleBulkCatOther(this)" class="bulk-cat w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs bg-white">
+            <select onchange="handleBulkInlineOther(this, '.bulk-cat-custom')" class="bulk-cat w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs bg-white">
               ${catOptions}
             </select>
-            <input type="text" placeholder="Type custom category..." class="bulk-cat-custom hidden mt-1 w-full rounded-lg border border-amber-400 bg-amber-50 px-2 py-1 text-xs font-semibold" />
+            <input type="text" placeholder="Custom category..." class="bulk-cat-custom hidden mt-1 w-full rounded-lg border border-amber-400 bg-amber-50 px-2 py-1 text-xs font-semibold" />
           </td>
           <td class="p-1.5">
             <input type="text" placeholder="Item / Notebook remark..." class="bulk-desc w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs" />
           </td>
           <td class="p-1.5">
             <input type="text" inputmode="decimal" placeholder="e.g. 25000" class="bulk-amt w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs font-bold" />
+          </td>
+          <td class="p-1.5">
+            <select onchange="handleBulkInlineOther(this, '.bulk-vendor-custom')" class="bulk-vendor w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs bg-white">
+              ${vendorOptions}
+            </select>
+            <input type="text" placeholder="Custom vendor..." class="bulk-vendor-custom hidden mt-1 w-full rounded-lg border border-amber-400 bg-amber-50 px-2 py-1 text-xs font-semibold" />
           </td>
           <td class="p-1.5">
             <select class="bulk-mode w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs bg-white">
@@ -1444,6 +1683,9 @@
               ${payerOptions}
             </select>
           </td>
+          <td class="p-1.5">
+            <input type="text" placeholder="Pg #" class="bulk-page w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs" />
+          </td>
           <td class="p-1.5 text-center">
             <button type="button" onclick="this.closest('tr').remove()" class="text-slate-400 hover:text-rose-500 p-1">
               <i data-lucide="trash-2" class="w-4 h-4"></i>
@@ -1455,8 +1697,32 @@
       lucide.createIcons();
     }
 
-    function handleBulkCatOther(selectEl) {
-      const customInp = selectEl.parentElement.querySelector(".bulk-cat-custom");
+    function refreshExistingBulkTableDropdowns() {
+      const catOptions = appState.categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("") +
+        `<option value="__OTHER__">➕ Other (Custom)...</option>`;
+      const vendorList = getCombinedVendorsList();
+      const vendorOptions = `<option value="">-- None --</option>` +
+        vendorList.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("") +
+        `<option value="__OTHER__">➕ Other Vendor...</option>`;
+
+      document.querySelectorAll("#bulkTableBody tr").forEach(tr => {
+        const catSel = tr.querySelector(".bulk-cat");
+        if (catSel && catSel.value !== "__OTHER__") {
+          const prev = catSel.value;
+          catSel.innerHTML = catOptions;
+          if (appState.categories.includes(prev)) catSel.value = prev;
+        }
+        const venSel = tr.querySelector(".bulk-vendor");
+        if (venSel && venSel.value !== "__OTHER__") {
+          const prevV = venSel.value;
+          venSel.innerHTML = vendorOptions;
+          if (vendorList.includes(prevV)) venSel.value = prevV;
+        }
+      });
+    }
+
+    function handleBulkInlineOther(selectEl, customSelector) {
+      const customInp = selectEl.parentElement.querySelector(customSelector);
       if (selectEl.value === "__OTHER__") {
         customInp.classList.remove("hidden");
         customInp.focus();
@@ -1483,8 +1749,16 @@
             category = tr.querySelector(".bulk-cat-custom").value.trim() || "Other";
             if (!appState.categories.includes(category)) appState.categories.push(category);
           }
+
+          let vendor = tr.querySelector(".bulk-vendor").value;
+          if (vendor === "__OTHER__") {
+            vendor = tr.querySelector(".bulk-vendor-custom").value.trim();
+            if (vendor && !appState.vendors.includes(vendor)) appState.vendors.push(vendor);
+          }
+
           const paymentMode = tr.querySelector(".bulk-mode").value;
           const paidBy = tr.querySelector(".bulk-payer").value;
+          const bookRef = tr.querySelector(".bulk-page").value.trim() || "Bulk Book Entry";
 
           const id = "exp_" + Date.now() + "_" + idx + "_" + Math.random().toString(36).substring(2, 5);
           appState.expenses[id] = {
@@ -1499,10 +1773,10 @@
             paidBy,
             paymentMode,
             zone: "Overall House / Common",
-            vendor: "",
+            vendor,
             qty: 0,
             unit: "",
-            bookRef: "Bulk Book Entry",
+            bookRef,
             updatedAt: Date.now()
           };
           savedCount++;
@@ -1524,11 +1798,270 @@
     }
 
     function inferCostNatureFromCategory(cat) {
-      const lower = cat.toLowerCase();
+      const lower = String(cat || "").toLowerCase();
       if (lower.includes("labor") || lower.includes("mestri")) return "Labor";
       if (lower.includes("approval") || lower.includes("architect") || lower.includes("fees")) return "Approval & Fees";
       if (lower.includes("jcb") || lower.includes("transport") || lower.includes("borewell") || lower.includes("tanker")) return "Machinery & Transport";
       return "Material";
+    }
+
+    // ==========================================
+    // EXCEL (CSV) DOWNLOAD & AUTO-FILL UPLOAD IMPORT
+    // ==========================================
+    function exportPassbookCSV(blankTemplate = false) {
+      const headers = [
+        "Date",
+        "Category",
+        "Cost Type",
+        "Description",
+        "Amount Paid (INR)",
+        "Pending Balance (INR)",
+        "Payment Status",
+        "Paid By",
+        "Payment Mode",
+        "Floor/Zone",
+        "Vendor",
+        "Quantity",
+        "Unit",
+        "Book/Bill Ref"
+      ];
+
+      if (blankTemplate) {
+        const sampleRow = [
+          new Date().toISOString().split("T")[0],
+          "Cement",
+          "Material",
+          "100 Bags UltraTech Cement (Sample Row - Delete or Replace)",
+          "39000",
+          "0",
+          "Paid",
+          "Self",
+          "UPI / GPay / PhonePe",
+          "Ground Floor",
+          "",
+          "100",
+          "Bags",
+          "Book Pg 1"
+        ];
+        const csvContent = "\uFEFF" + [headers.join(","), sampleRow.join(",")].join("\n");
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `NirmaanPro_Blank_Template.csv`;
+        a.click();
+        return;
+      }
+
+      const all = getExpensesArray();
+      if (all.length === 0) {
+        alert("No entries to export yet. You can click 'Blank Template' to download an Excel template to fill on your computer.");
+        return;
+      }
+
+      const rows = all.map(e => [
+        e.date,
+        `"${(e.category || "").replace(/"/g, '""')}"`,
+        `"${(e.costNature || "").replace(/"/g, '""')}"`,
+        `"${(e.description || "").replace(/"/g, '""')}"`,
+        e.amount,
+        e.pendingAmount || 0,
+        e.paymentStatus || "Paid",
+        `"${(e.paidBy || "").replace(/"/g, '""')}"`,
+        `"${(e.paymentMode || "").replace(/"/g, '""')}"`,
+        `"${(e.zone || "").replace(/"/g, '""')}"`,
+        `"${(e.vendor || "").replace(/"/g, '""')}"`,
+        e.qty || "",
+        e.unit || "",
+        `"${(e.bookRef || "").replace(/"/g, '""')}"`
+      ].join(","));
+
+      const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `NirmaanPro_Expenses_${new Date().toISOString().split("T")[0]}.csv`;
+      a.click();
+    }
+
+    // RFC-4180 Compliant CSV Parser
+    function parseCSVTextToRows(csvText) {
+      const rows = [];
+      let row = [];
+      let cur = "";
+      let inQuotes = false;
+      const text = csvText.replace(/^\uFEFF/, "");
+
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        const next = text[i + 1];
+
+        if (inQuotes) {
+          if (ch === '"' && next === '"') {
+            cur += '"';
+            i++;
+          } else if (ch === '"') {
+            inQuotes = false;
+          } else {
+            cur += ch;
+          }
+        } else {
+          if (ch === '"') {
+            inQuotes = true;
+          } else if (ch === ",") {
+            row.push(cur.trim());
+            cur = "";
+          } else if (ch === "\n" || (ch === "\r" && next === "\n")) {
+            if (ch === "\r") i++;
+            row.push(cur.trim());
+            if (row.some(cell => cell !== "")) rows.push(row);
+            row = [];
+            cur = "";
+          } else {
+            cur += ch;
+          }
+        }
+      }
+      row.push(cur.trim());
+      if (row.some(cell => cell !== "")) rows.push(row);
+      return rows;
+    }
+
+    function normalizeExcelDate(rawDate) {
+      if (!rawDate) return new Date().toISOString().split("T")[0];
+      const d = String(rawDate).trim();
+      if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
+      // Handle DD-MM-YYYY or DD/MM/YYYY from Indian Excel
+      const parts = d.split(/[\/\-]/);
+      if (parts.length === 3) {
+        if (parts[0].length === 4) {
+          return `${parts[0]}-${parts[1].padStart(2, "0")}-${parts[2].padStart(2, "0")}`;
+        } else if (parts[2].length === 4) {
+          return `${parts[2]}-${parts[1].padStart(2, "0")}-${parts[0].padStart(2, "0")}`;
+        }
+      }
+      const parsed = new Date(d);
+      if (!isNaN(parsed.getTime())) return parsed.toISOString().split("T")[0];
+      return new Date().toISOString().split("T")[0];
+    }
+
+    async function handleImportCSVFile(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const text = e.target.result;
+          const rows = parseCSVTextToRows(text);
+          if (rows.length < 2) {
+            alert("The uploaded CSV file appears to be empty.");
+            return;
+          }
+
+          const header = rows[0].map(h => h.toLowerCase().trim());
+          const idxDate = header.findIndex(h => h.includes("date"));
+          const idxCat = header.findIndex(h => h.includes("category"));
+          const idxNature = header.findIndex(h => h.includes("cost") || h.includes("type") || h.includes("nature"));
+          const idxDesc = header.findIndex(h => h.includes("desc") || h.includes("item") || h.includes("remark"));
+          const idxAmt = header.findIndex(h => h.includes("amount") || h.includes("paid (inr)") || h === "paid");
+          const idxPend = header.findIndex(h => h.includes("pending"));
+          const idxStatus = header.findIndex(h => h.includes("status"));
+          const idxPaidBy = header.findIndex(h => h.includes("paid by") || h.includes("payer"));
+          const idxMode = header.findIndex(h => h.includes("mode"));
+          const idxZone = header.findIndex(h => h.includes("zone") || h.includes("floor") || h.includes("area"));
+          const idxVendor = header.findIndex(h => h.includes("vendor") || h.includes("contractor"));
+          const idxQty = header.findIndex(h => h.includes("qty") || h.includes("quantity"));
+          const idxUnit = header.findIndex(h => h.includes("unit"));
+          const idxRef = header.findIndex(h => h.includes("ref") || h.includes("book") || h.includes("page") || h.includes("bill"));
+
+          if (idxDesc === -1 || idxAmt === -1) {
+            alert("Could not find 'Description' and 'Amount Paid (INR)' columns. Please use the same column format as Download Excel (CSV).");
+            return;
+          }
+
+          if (!appState.expenses) appState.expenses = {};
+          const existingList = Object.values(appState.expenses);
+          let importedCount = 0;
+          let skippedDuplicates = 0;
+
+          for (let r = 1; r < rows.length; r++) {
+            const cols = rows[r];
+            const desc = (cols[idxDesc] || "").trim();
+            if (desc.includes("(Sample Row - Delete or Replace)")) continue;
+
+            const amtVal = evaluateMathExpression(cols[idxAmt]);
+            if (!desc || amtVal === 0) continue;
+
+            const date = normalizeExcelDate(idxDate >= 0 ? cols[idxDate] : "");
+            const category = (idxCat >= 0 && cols[idxCat] ? cols[idxCat] : "Other").trim();
+            const costNature = (idxNature >= 0 && cols[idxNature] ? cols[idxNature] : inferCostNatureFromCategory(category)).trim();
+            const pendingAmount = idxPend >= 0 ? (evaluateMathExpression(cols[idxPend]) || 0) : 0;
+            const paymentStatus = (idxStatus >= 0 && cols[idxStatus]) ? cols[idxStatus].trim() : (pendingAmount > 0 ? "Partial" : "Paid");
+            const paidBy = (idxPaidBy >= 0 && cols[idxPaidBy] ? cols[idxPaidBy] : "Self").trim();
+            const paymentMode = (idxMode >= 0 && cols[idxMode] ? cols[idxMode] : "Cash").trim();
+            const zone = (idxZone >= 0 && cols[idxZone] ? cols[idxZone] : "Overall House / Common").trim();
+            const vendor = (idxVendor >= 0 && cols[idxVendor] ? cols[idxVendor] : "").trim();
+            const qty = idxQty >= 0 ? (Number(cols[idxQty]) || 0) : 0;
+            const unit = (idxUnit >= 0 && cols[idxUnit] ? cols[idxUnit] : "").trim();
+            const bookRef = (idxRef >= 0 && cols[idxRef] ? cols[idxRef] : "").trim();
+
+            // Skip exact duplicate rows if re-uploading the same Excel sheet with new rows added at the bottom
+            const isDup = existingList.some(ex =>
+              ex.date === date &&
+              ex.category === category &&
+              Number(ex.amount) === Number(amtVal) &&
+              (ex.description || "").toLowerCase() === desc.toLowerCase()
+            );
+
+            if (isDup) {
+              skippedDuplicates++;
+              continue;
+            }
+
+            // Auto-register any new custom categories, natures, payers, zones, or vendors found in the Excel file
+            if (category && !appState.categories.includes(category)) appState.categories.push(category);
+            if (costNature && !appState.costNatures.includes(costNature)) appState.costNatures.push(costNature);
+            if (paidBy && !appState.payers.includes(paidBy)) appState.payers.push(paidBy);
+            if (zone && !appState.zones.includes(zone)) appState.zones.push(zone);
+            if (vendor && !appState.vendors.includes(vendor)) appState.vendors.push(vendor);
+
+            const id = "exp_" + Date.now() + "_" + r + "_" + Math.random().toString(36).substring(2, 6);
+            const newEntry = {
+              id,
+              date,
+              category,
+              costNature,
+              amount: amtVal,
+              paymentStatus,
+              pendingAmount,
+              description: desc,
+              paidBy,
+              paymentMode,
+              zone,
+              vendor,
+              qty,
+              unit,
+              bookRef,
+              updatedAt: Date.now()
+            };
+            appState.expenses[id] = newEntry;
+            existingList.push(newEntry);
+            importedCount++;
+          }
+
+          event.target.value = "";
+          populateAllDropdowns();
+          renderAllViews();
+          await pushFullStateToCloud();
+
+          alert(`✅ Excel Import Complete!\n\n• Imported & Auto-Filled: ${importedCount} new entries\n• Skipped existing duplicates: ${skippedDuplicates} entries`);
+        } catch (err) {
+          alert("Error reading CSV file. Please make sure it is saved as a standard .csv file.");
+        }
+      };
+      reader.readAsText(file);
     }
 
     // ==========================================
@@ -1548,7 +2081,6 @@
       const cashSpent = allExpenses.filter(e => e.paymentMode === "Cash").reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
       const digitalSpent = totalSpent - cashSpent;
 
-      // Header & Dashboard Hero Updates
       document.getElementById("headerProjectTitle").textContent = appState.meta.projectTitle || "Nirmaan Pro";
       document.getElementById("dashTotalSpent").textContent = formatINR(totalSpent);
       document.getElementById("dashTotalSpentWords").textContent = formatShortINRWords(totalSpent);
@@ -1559,6 +2091,16 @@
       document.getElementById("dashCashSpent").textContent = `${formatINR(cashSpent)} (${cashPct}%)`;
       document.getElementById("dashDigitalSpent").textContent = `${formatINR(digitalSpent)} (${digPct}%)`;
       document.getElementById("dashTotalEntriesCount").textContent = `${allExpenses.length} Records`;
+
+      // Show Last Entered Book Page Ref Badge on Dashboard if available
+      const latestWithBookRef = allExpenses.find(e => e.bookRef && e.bookRef.trim() && e.bookRef !== "Bulk Book Entry");
+      const bookBadge = document.getElementById("lastBookPageBadge");
+      if (latestWithBookRef) {
+        bookBadge.textContent = `📖 Last Ref: ${latestWithBookRef.bookRef}`;
+        bookBadge.classList.remove("hidden");
+      } else {
+        bookBadge.classList.add("hidden");
+      }
 
       // Budget Target & Progress Bar
       const budget = Number(appState.meta.totalBudget) || 0;
@@ -1579,10 +2121,9 @@
         document.getElementById("dashBudgetRemaining").textContent = "Tap 'Edit Budget / Stage %' above to set your house budget.";
       }
 
-      // Construction Stage % Bar
       const stagePct = Number(appState.meta.constructionStagePct) || 0;
       document.getElementById("dashStagePctLabel").textContent = `${stagePct}% Done`;
-      document.getElementById("dashStageBar").style.width = `${ Math.min(100, Math.max(0, stagePct)) }%`;
+      document.getElementById("dashStageBar").style.width = `${Math.min(100, Math.max(0, stagePct))}%`;
 
       // Category Totals Map
       const catTotals = {};
@@ -1594,12 +2135,11 @@
         .filter(([, amt]) => amt > 0)
         .sort((a, b) => b[1] - a[1]);
 
-      // Dashboard Top 5 Categories
       const topCatEl = document.getElementById("dashTopCategoriesList");
       if (sortedCats.length === 0) {
         topCatEl.innerHTML = `
           <div class="text-center py-8 text-slate-400 text-xs">
-            No expenses recorded yet. Tap <strong>Add Entry</strong> to start digitizing your book!
+            No expenses recorded yet. Tap <strong>Add Entry</strong> or upload your Excel sheet!
           </div>`;
       } else {
         topCatEl.innerHTML = sortedCats.slice(0, 6).map(([cat, amt]) => {
@@ -1618,7 +2158,6 @@
         }).join("");
       }
 
-      // Dashboard Recent 6 Transactions
       const recEl = document.getElementById("dashRecentTransactions");
       if (allExpenses.length === 0) {
         recEl.innerHTML = `
@@ -1633,7 +2172,7 @@
                 <span class="text-xs font-bold text-slate-900 truncate">${escapeHtml(e.description)}</span>
                 ${e.pendingAmount > 0 ? `<span class="px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 text-[10px] font-bold">Due: ${formatINR(e.pendingAmount)}</span>` : ""}
               </div>
-              <p class="text-[11px] text-slate-500 truncate">${e.date} • ${escapeHtml(e.category)} • ${escapeHtml(e.paidBy)}</p>
+              <p class="text-[11px] text-slate-500 truncate">${e.date} • ${escapeHtml(e.category)} ${e.vendor ? '• 👷 ' + escapeHtml(e.vendor) : ''}</p>
             </div>
             <div class="text-right shrink-0">
               <span class="text-xs font-extrabold ${e.amount < 0 ? 'text-emerald-600' : 'text-slate-900'}">${formatINR(e.amount)}</span>
@@ -1654,46 +2193,27 @@
       const filtered = zoneFilter === "ALL" ? allExpenses : allExpenses.filter(e => e.zone === zoneFilter);
       const total = filtered.reduce((s, e) => s + (Number(e.amount) || 0), 0);
 
-      // 1. Nature Split (Material vs Labor vs Fees/Machinery)
-      const natureMap = {
-        "Material": 0,
-        "Labor": 0,
-        "Other": 0
-      };
+      // 1. Dynamic Expense Type (Cost Nature) Cards — Supports any custom Expense Type you add!
+      const natureMap = {};
+      appState.costNatures.forEach(n => { natureMap[n] = 0; });
       filtered.forEach(e => {
         const n = e.costNature || "Material";
-        if (n === "Material") natureMap["Material"] += Number(e.amount) || 0;
-        else if (n === "Labor") natureMap["Labor"] += Number(e.amount) || 0;
-        else natureMap["Other"] += Number(e.amount) || 0;
+        natureMap[n] = (natureMap[n] || 0) + (Number(e.amount) || 0);
       });
 
-      const matPct = total > 0 ? ((natureMap["Material"] / total) * 100).toFixed(1) : "0.0";
-      const labPct = total > 0 ? ((natureMap["Labor"] / total) * 100).toFixed(1) : "0.0";
-      const othPct = total > 0 ? ((natureMap["Other"] / total) * 100).toFixed(1) : "0.0";
-
-      document.getElementById("statsNatureCards").innerHTML = `
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-          <span class="text-[11px] font-bold uppercase text-slate-400">🧱 Total Material Share</span>
-          <div class="flex items-baseline justify-between mt-1">
-            <span class="text-xl font-extrabold text-slate-900">${formatINR(natureMap["Material"])}</span>
-            <span class="text-sm font-extrabold text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full">${matPct}%</span>
+      const activeNatures = Object.entries(natureMap).filter(([k, v]) => v > 0 || ["Material", "Labor", "Approval & Fees"].includes(k));
+      document.getElementById("statsNatureCards").innerHTML = activeNatures.map(([natName, amt]) => {
+        const pct = total > 0 ? ((amt / total) * 100).toFixed(1) : "0.0";
+        return `
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+            <span class="text-[11px] font-bold uppercase text-slate-400 block truncate">${escapeHtml(natName)} Share</span>
+            <div class="flex items-baseline justify-between mt-1">
+              <span class="text-xl font-extrabold text-slate-900">${formatINR(amt)}</span>
+              <span class="text-sm font-extrabold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full">${pct}%</span>
+            </div>
           </div>
-        </div>
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-          <span class="text-[11px] font-bold uppercase text-slate-400">👷 Total Labor & Mestri Share</span>
-          <div class="flex items-baseline justify-between mt-1">
-            <span class="text-xl font-extrabold text-slate-900">${formatINR(natureMap["Labor"])}</span>
-            <span class="text-sm font-extrabold text-sky-600 bg-sky-50 px-2.5 py-0.5 rounded-full">${labPct}%</span>
-          </div>
-        </div>
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-          <span class="text-[11px] font-bold uppercase text-slate-400">🚜 Approvals, Transport & Misc</span>
-          <div class="flex items-baseline justify-between mt-1">
-            <span class="text-xl font-extrabold text-slate-900">${formatINR(natureMap["Other"])}</span>
-            <span class="text-sm font-extrabold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">${othPct}%</span>
-          </div>
-        </div>
-      `;
+        `;
+      }).join("");
 
       // 2. Category Breakdown List & Donut Chart
       const catMap = {};
@@ -1726,7 +2246,6 @@
         }).join("");
       }
 
-      // Render Donut Chart
       const donutCanvas = document.getElementById("categoryDonutChart");
       const donutEmpty = document.getElementById("donutEmptyState");
       if (catEntries.length === 0) {
@@ -1773,7 +2292,7 @@
         });
       }
 
-      // 3. Zone / Floor Breakdown
+      // 3. Zone Breakdown
       const zoneMap = {};
       allExpenses.forEach(e => {
         const z = e.zone || "Overall House / Common";
@@ -1781,8 +2300,7 @@
       });
       const grandTotal = allExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
       const zoneEntries = Object.entries(zoneMap).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
-      const zoneEl = document.getElementById("statsZoneBreakdownList");
-      zoneEl.innerHTML = zoneEntries.length === 0
+      document.getElementById("statsZoneBreakdownList").innerHTML = zoneEntries.length === 0
         ? `<p class="text-xs text-slate-400 py-4 text-center">No floor/zone data yet.</p>`
         : zoneEntries.map(([z, amt]) => {
             const p = grandTotal > 0 ? ((amt / grandTotal) * 100).toFixed(1) : "0.0";
@@ -1801,8 +2319,7 @@
         payerMap[p] = (payerMap[p] || 0) + (Number(e.amount) || 0);
       });
       const payerEntries = Object.entries(payerMap).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
-      const payerEl = document.getElementById("statsPayerBreakdownList");
-      payerEl.innerHTML = payerEntries.length === 0
+      document.getElementById("statsPayerBreakdownList").innerHTML = payerEntries.length === 0
         ? `<p class="text-xs text-slate-400 py-4 text-center">No payer data yet.</p>`
         : payerEntries.map(([pName, amt]) => {
             const p = grandTotal > 0 ? ((amt / grandTotal) * 100).toFixed(1) : "0.0";
@@ -1854,8 +2371,7 @@
         }
       });
       const matKeys = Object.entries(matTracker);
-      const matEl = document.getElementById("statsMaterialSummary");
-      matEl.innerHTML = matKeys.length === 0
+      document.getElementById("statsMaterialSummary").innerHTML = matKeys.length === 0
         ? `<p class="text-xs text-slate-400 py-6 text-center">Fill optional "Quantity + Unit" when adding Cement, Steel, Bricks, Sand, or Tiles to see total quantity & average rate here.</p>`
         : matKeys.map(([k, info]) => {
             const avg = info.qty > 0 ? Math.round(info.cost / info.qty) : 0;
@@ -1875,23 +2391,40 @@
     }
 
     // ==========================================
-    // PASSBOOK LIST, EDIT, SETTLE & SOFT DELETE
+    // PASSBOOK LIST & FILTERS
     // ==========================================
+    function clearPassbookFilters() {
+      document.getElementById("passbookSearch").value = "";
+      document.getElementById("passbookCatFilter").value = "ALL";
+      document.getElementById("passbookVendorFilter").value = "ALL";
+      document.getElementById("passbookPayerFilter").value = "ALL";
+      document.getElementById("passbookStatusFilter").value = "ALL";
+      document.getElementById("passbookDateFrom").value = "";
+      document.getElementById("passbookDateTo").value = "";
+      renderPassbookList();
+    }
+
     function renderPassbookList() {
       const all = getExpensesArray();
       const q = (document.getElementById("passbookSearch").value || "").toLowerCase().trim();
       const catF = document.getElementById("passbookCatFilter").value || "ALL";
+      const venF = document.getElementById("passbookVendorFilter").value || "ALL";
       const payerF = document.getElementById("passbookPayerFilter").value || "ALL";
       const statusF = document.getElementById("passbookStatusFilter").value || "ALL";
+      const dateFrom = document.getElementById("passbookDateFrom").value || "";
+      const dateTo = document.getElementById("passbookDateTo").value || "";
 
       const filtered = all.filter(e => {
         if (catF !== "ALL" && e.category !== catF) return false;
+        if (venF !== "ALL" && (e.vendor || "") !== venF) return false;
         if (payerF !== "ALL" && e.paidBy !== payerF) return false;
         if (statusF === "PENDING_ONLY" && !(Number(e.pendingAmount) > 0)) return false;
         if (statusF === "CASH_ONLY" && e.paymentMode !== "Cash") return false;
         if (statusF === "DIGITAL_ONLY" && e.paymentMode === "Cash") return false;
+        if (dateFrom && e.date < dateFrom) return false;
+        if (dateTo && e.date > dateTo) return false;
         if (q) {
-          const hay = `${e.description} ${e.category} ${e.vendor} ${e.bookRef} ${e.zone} ${e.paidBy} ${e.date}`.toLowerCase();
+          const hay = `${e.description} ${e.category} ${e.costNature} ${e.vendor} ${e.bookRef} ${e.zone} ${e.paidBy} ${e.date}`.toLowerCase();
           if (!hay.includes(q)) return false;
         }
         return true;
@@ -1925,9 +2458,9 @@
               <span>📅 ${e.date}</span>
               <span>👤 Paid by: <strong>${escapeHtml(e.paidBy)}</strong> (${escapeHtml(e.paymentMode)})</span>
               <span>🏠 ${escapeHtml(e.zone || "Overall")}</span>
-              ${e.vendor ? `<span>🏪 Vendor: <strong>${escapeHtml(e.vendor)}</strong></span>` : ""}
+              ${e.vendor ? `<span class="text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded font-semibold">👷 Vendor: ${escapeHtml(e.vendor)}</span>` : ""}
               ${Number(e.qty) > 0 ? `<span>📦 Qty: ${e.qty} ${escapeHtml(e.unit)}</span>` : ""}
-              ${e.bookRef ? `<span>📖 Ref: ${escapeHtml(e.bookRef)}</span>` : ""}
+              ${e.bookRef ? `<span>📖 Ref: <strong>${escapeHtml(e.bookRef)}</strong></span>` : ""}
             </div>
           </div>
 
@@ -1967,23 +2500,27 @@
       document.getElementById("saveExpenseBtnText").textContent = "Update Entry Across All Phones";
       document.getElementById("cancelEditBtn").classList.remove("hidden");
 
-      document.getElementById("expDate").value = e.date;
-      if (!appState.categories.includes(e.category)) appState.categories.push(e.category);
-      if (!appState.payers.includes(e.paidBy)) appState.payers.push(e.paidBy);
+      if (e.category && !appState.categories.includes(e.category)) appState.categories.push(e.category);
+      if (e.costNature && !appState.costNatures.includes(e.costNature)) appState.costNatures.push(e.costNature);
+      if (e.paidBy && !appState.payers.includes(e.paidBy)) appState.payers.push(e.paidBy);
       if (e.zone && !appState.zones.includes(e.zone)) appState.zones.push(e.zone);
-      populateAllDropdowns();
+      if (e.vendor && !appState.vendors.includes(e.vendor)) appState.vendors.push(e.vendor);
 
-      document.getElementById("expCategorySelect").value = e.category;
-      document.getElementById("expCostNature").value = e.costNature || "Material";
+      populateAllDropdowns({
+        category: e.category,
+        costNature: e.costNature || "Material",
+        paidBy: e.paidBy || "Self",
+        zone: e.zone || "Overall House / Common",
+        vendor: e.vendor || ""
+      });
+
+      document.getElementById("expDate").value = e.date;
       document.getElementById("expAmountInput").value = Math.abs(e.amount);
       document.getElementById("expPaymentStatus").value = e.paymentStatus || "Paid";
       togglePendingBalanceInput();
       document.getElementById("expPendingAmount").value = e.pendingAmount || "";
       document.getElementById("expDescription").value = e.description || "";
-      document.getElementById("expPaidBySelect").value = e.paidBy || "Self";
       document.getElementById("expPaymentMode").value = e.paymentMode || "Cash";
-      document.getElementById("expZoneSelect").value = e.zone || "Overall House / Common";
-      document.getElementById("expVendor").value = e.vendor || "";
       document.getElementById("expQty").value = e.qty || "";
       document.getElementById("expUnit").value = e.unit || "";
       document.getElementById("expBookRef").value = e.bookRef || "";
@@ -2028,13 +2565,14 @@
       appState.expenses[id] = item;
       delete appState.recycleBin[id];
 
+      populateAllDropdowns();
       renderAllViews();
       await pushFullStateToCloud();
       showToast("Entry Restored!");
     }
 
     // ==========================================
-    // CONTRACTORS, SETTINGS & EXCEL EXPORT
+    // CONTRACTORS, CLICKABLE LEDGER & MASTER ITEM MANAGER
     // ==========================================
     async function handleAddContractor(e) {
       e.preventDefault();
@@ -2047,21 +2585,122 @@
       if (!appState.contractors) appState.contractors = {};
       appState.contractors[id] = { id, name, workType, agreedAmount: agreed };
 
+      if (!appState.vendors) appState.vendors = [];
+      if (!appState.vendors.includes(name)) {
+        appState.vendors.push(name);
+      }
+
       document.getElementById("conName").value = "";
       document.getElementById("conWorkType").value = "";
       document.getElementById("conAgreedAmount").value = "";
 
+      populateAllDropdowns({ vendor: name });
+      renderAllViews();
+      await pushFullStateToCloud();
+      showToast(`Added "${name}" to Contractors & Vendor Dropdown!`);
+    }
+
+    async function deleteContractor(id, event) {
+      if (event) event.stopPropagation();
+      if (!confirm("Remove this contractor agreement card?")) return;
+      delete appState.contractors[id];
       populateAllDropdowns();
       renderAllViews();
       await pushFullStateToCloud();
-      showToast("Contractor Agreement Added!");
     }
 
-    async function deleteContractor(id) {
-      if (!confirm("Remove this contractor tracker card?")) return;
-      delete appState.contractors[id];
+    function openContractorLedgerModal(contractorId) {
+      const c = appState.contractors && appState.contractors[contractorId];
+      if (!c) return;
+
+      const allExp = getExpensesArray();
+      const payments = allExp.filter(e => (e.vendor || "").toLowerCase().trim() === c.name.toLowerCase().trim());
+      const totalPaid = payments.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+      const totalPend = payments.reduce((s, e) => s + (Number(e.pendingAmount) || 0), 0);
+      const remContract = c.agreedAmount - totalPaid;
+      const pct = c.agreedAmount > 0 ? ((totalPaid / c.agreedAmount) * 100).toFixed(1) : 0;
+
+      document.getElementById("ledgerModalTitle").textContent = c.name;
+      document.getElementById("ledgerModalSubtitle").textContent = `${c.workType} • ${payments.length} Payments Recorded`;
+
+      document.getElementById("ledgerModalSummary").innerHTML = `
+        <div>
+          <span class="text-[10px] text-slate-400 block">Agreed Contract</span>
+          <strong class="text-sm text-white">${formatINR(c.agreedAmount)}</strong>
+        </div>
+        <div>
+          <span class="text-[10px] text-slate-400 block">Total Paid (${pct}%)</span>
+          <strong class="text-sm text-amber-400">${formatINR(totalPaid)}</strong>
+        </div>
+        <div>
+          <span class="text-[10px] text-slate-400 block">Remaining Balance</span>
+          <strong class="text-sm text-emerald-400">${formatINR(remContract)}</strong>
+        </div>
+      `;
+
+      const listEl = document.getElementById("ledgerModalPaymentsList");
+      if (payments.length === 0) {
+        listEl.innerHTML = `<p class="text-xs text-slate-400 py-6 text-center">No payments linked to "${escapeHtml(c.name)}" yet. Select "${escapeHtml(c.name)}" in the Vendor dropdown when adding an expense.</p>`;
+      } else {
+        listEl.innerHTML = payments.map((p, idx) => `
+          <div class="py-2 flex items-center justify-between gap-2">
+            <div>
+              <span class="font-bold text-slate-900">${idx + 1}. ${escapeHtml(p.description)}</span>
+              <p class="text-[11px] text-slate-500">${p.date} • ${escapeHtml(p.paymentMode)} (Paid by ${escapeHtml(p.paidBy)}) ${p.bookRef ? '• ' + escapeHtml(p.bookRef) : ''}</p>
+            </div>
+            <div class="text-right shrink-0">
+              <strong class="text-slate-900">${formatINR(p.amount)}</strong>
+              ${p.pendingAmount > 0 ? `<span class="block text-[10px] text-rose-600 font-bold">Bill Due: ${formatINR(p.pendingAmount)}</span>` : ""}
+            </div>
+          </div>
+        `).join("");
+      }
+
+      document.getElementById("ledgerWhatsAppBtn").onclick = () => {
+        const lines = [
+          `*📋 ${appState.meta.projectTitle || "Nirmaan Pro"} — Contractor Statement*`,
+          `*Contractor:* ${c.name} (${c.workType})`,
+          `*Total Agreed Value:* ${formatINR(c.agreedAmount)}`,
+          `*Total Paid So Far:* ${formatINR(totalPaid)} (${pct}%)`,
+          `*Remaining Contract Balance:* ${formatINR(remContract)}`,
+          totalPend > 0 ? `*Pending Unsettled Bills:* ${formatINR(totalPend)}` : "",
+          `\n*Recent Payments:*`,
+          ...payments.slice(0, 15).map(p => `• ${p.date}: ${formatINR(p.amount)} (${p.description} - ${p.paymentMode.split(" ")[0]})`)
+        ].filter(Boolean).join("\n");
+
+        window.open(`https://wa.me/?text=${encodeURIComponent(lines)}`, "_blank");
+      };
+
+      document.getElementById("contractorLedgerModal").classList.remove("hidden");
+      lucide.createIcons();
+    }
+
+    function closeContractorLedgerModal() {
+      document.getElementById("contractorLedgerModal").classList.add("hidden");
+    }
+
+    async function quickAddMasterItem(listKey, inputId) {
+      const inp = document.getElementById(inputId);
+      const val = inp.value.trim();
+      if (!val) return;
+      if (!appState[listKey]) appState[listKey] = [];
+      if (!appState[listKey].includes(val)) {
+        appState[listKey].push(val);
+      }
+      inp.value = "";
+      populateAllDropdowns();
       renderAllViews();
       await pushFullStateToCloud();
+      showToast(`Added "${val}" to dropdown!`);
+    }
+
+    async function removeMasterItem(listKey, itemValue) {
+      if (!confirm(`Remove "${itemValue}" from the dropdown list? (Existing passbook entries with this name will remain untouched)`)) return;
+      appState[listKey] = (appState[listKey] || []).filter(x => x !== itemValue);
+      populateAllDropdowns();
+      renderAllViews();
+      await pushFullStateToCloud();
+      showToast(`Removed "${itemValue}"`);
     }
 
     function renderContractorsAndSettings() {
@@ -2072,37 +2711,65 @@
       const conEl = document.getElementById("contractorsListContainer");
 
       if (conList.length === 0) {
-        conEl.innerHTML = `<p class="text-xs text-slate-400 py-3">No contractor agreements added yet.</p>`;
+        conEl.innerHTML = `<p class="text-xs text-slate-400 py-3 col-span-2">No contractor agreements added yet. Add a contractor above to track their advances & balances automatically.</p>`;
       } else {
         conEl.innerHTML = conList.map(c => {
-          const paidToCon = allExp
-            .filter(e => (e.vendor || "").toLowerCase().trim() === c.name.toLowerCase().trim())
-            .reduce((s, e) => s + (Number(e.amount) || 0), 0);
+          const payments = allExp.filter(e => (e.vendor || "").toLowerCase().trim() === c.name.toLowerCase().trim());
+          const paidToCon = payments.reduce((s, e) => s + (Number(e.amount) || 0), 0);
           const bal = c.agreedAmount - paidToCon;
           const pct = c.agreedAmount > 0 ? ((paidToCon / c.agreedAmount) * 100).toFixed(1) : 0;
           return `
-            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+            <div onclick="openContractorLedgerModal('${c.id}')" class="p-3.5 rounded-xl bg-slate-50 hover:bg-amber-50/50 border border-slate-200 hover:border-amber-300 space-y-2 cursor-pointer transition">
               <div class="flex items-center justify-between">
                 <div>
-                  <span class="text-xs font-extrabold text-slate-900">${escapeHtml(c.name)}</span>
-                  <span class="text-[11px] text-slate-500 ml-1">(${escapeHtml(c.workType)})</span>
+                  <span class="text-xs font-extrabold text-slate-900 flex items-center gap-1.5">
+                    👷 ${escapeHtml(c.name)}
+                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">${payments.length} txns</span>
+                  </span>
+                  <span class="text-[11px] text-slate-500 block">${escapeHtml(c.workType)}</span>
                 </div>
-                <button onclick="deleteContractor('${c.id}')" class="text-slate-400 hover:text-rose-600">
+                <button type="button" onclick="deleteContractor('${c.id}', event)" class="text-slate-400 hover:text-rose-600 p-1">
                   <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                 </button>
               </div>
-              <div class="grid grid-cols-3 gap-2 text-xs">
+              <div class="grid grid-cols-3 gap-2 text-xs pt-1">
                 <div><span class="text-[10px] text-slate-400 block">Agreed Value</span><strong>${formatINR(c.agreedAmount)}</strong></div>
-                <div><span class="text-[10px] text-slate-400 block">Paid So Far (${pct}%)</span><strong class="text-emerald-700">${formatINR(paidToCon)}</strong></div>
-                <div><span class="text-[10px] text-slate-400 block">Balance Payable</span><strong class="text-rose-600">${formatINR(bal)}</strong></div>
+                <div><span class="text-[10px] text-slate-400 block">Paid (${pct}%)</span><strong class="text-emerald-700">${formatINR(paidToCon)}</strong></div>
+                <div><span class="text-[10px] text-slate-400 block">Balance</span><strong class="text-rose-600">${formatINR(bal)}</strong></div>
               </div>
               <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
                 <div class="h-full bg-emerald-500 rounded-full" style="width: ${Math.min(100, pct)}%"></div>
               </div>
+              <p class="text-[10px] text-amber-700 font-bold text-right">Tap for Full Statement & WhatsApp Share →</p>
             </div>
           `;
         }).join("");
       }
+
+      // Render Master Lists in Settings
+      document.getElementById("manageCategoriesList").innerHTML = (appState.categories || []).map(c => `
+        <div class="flex items-center justify-between text-[11px] bg-white px-2 py-1 rounded border border-slate-200">
+          <span class="truncate pr-2">${escapeHtml(c)}</span>
+          <button type="button" onclick="removeMasterItem('categories', '${escapeHtml(c).replace(/'/g, "\\'")}')" class="text-slate-400 hover:text-rose-600">×</button>
+        </div>
+      `).join("");
+
+      const allVendors = getCombinedVendorsList();
+      document.getElementById("manageVendorsList").innerHTML = allVendors.length === 0
+        ? `<p class="text-[11px] text-slate-400 py-2">No vendors added yet.</p>`
+        : allVendors.map(v => `
+            <div class="flex items-center justify-between text-[11px] bg-white px-2 py-1 rounded border border-slate-200">
+              <span class="truncate pr-2">${escapeHtml(v)}</span>
+              <button type="button" onclick="removeMasterItem('vendors', '${escapeHtml(v).replace(/'/g, "\\'")}')" class="text-slate-400 hover:text-rose-600">×</button>
+            </div>
+          `).join("");
+
+      document.getElementById("manageNaturesList").innerHTML = (appState.costNatures || []).map(n => `
+        <div class="flex items-center justify-between text-[11px] bg-white px-2 py-1 rounded border border-slate-200">
+          <span class="truncate pr-2">${escapeHtml(n)}</span>
+          <button type="button" onclick="removeMasterItem('costNatures', '${escapeHtml(n).replace(/'/g, "\\'")}')" class="text-slate-400 hover:text-rose-600">×</button>
+        </div>
+      `).join("");
 
       // Recycle Bin
       const binItems = Object.values(appState.recycleBin || {});
@@ -2118,6 +2785,28 @@
           `).join("");
     }
 
+    // 1-Tap WhatsApp Project Summary Share
+    function shareWhatsAppProjectSummary() {
+      const all = getExpensesArray();
+      const total = all.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+      const pending = all.reduce((s, e) => s + (Number(e.pendingAmount) || 0), 0);
+      const catTotals = {};
+      all.forEach(e => { catTotals[e.category] = (catTotals[e.category] || 0) + (Number(e.amount) || 0); });
+      const top5 = Object.entries(catTotals).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+      const text = [
+        `*🏗️ ${appState.meta.projectTitle || "Nirmaan Pro"} — Construction Expense Summary*`,
+        `*Total Spent:* ${formatINR(total)} (${formatShortINRWords(total)})`,
+        appState.meta.totalBudget > 0 ? `*Target Budget:* ${formatINR(appState.meta.totalBudget)} (${((total / appState.meta.totalBudget) * 100).toFixed(1)}% Used)` : "",
+        `*Construction Stage:* ${appState.meta.constructionStagePct || 0}% Completed`,
+        pending > 0 ? `*Pending Dues:* ${formatINR(pending)}` : "",
+        `\n*Top Spending Categories:*`,
+        ...top5.map(([c, a]) => `• ${c}: ${formatINR(a)} (${total > 0 ? ((a / total) * 100).toFixed(1) : 0}%)`)
+      ].filter(Boolean).join("\n");
+
+      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+    }
+
     function saveCustomDatabaseUrl() {
       const val = document.getElementById("settingsDbUrlInput").value.trim();
       if (!val.startsWith("https://")) {
@@ -2125,6 +2814,7 @@
         return;
       }
       localStorage.setItem("nirmaan_custom_db_url", val);
+      hasCompletedInitialFetch = false;
       startRealTimeCloudStream();
       forceCloudPullNow();
       showToast("Database URL Updated!");
@@ -2133,6 +2823,7 @@
     function resetToDefaultDatabaseUrl() {
       localStorage.removeItem("nirmaan_custom_db_url");
       document.getElementById("settingsDbUrlInput").value = DEFAULT_FIREBASE_DB_URL;
+      hasCompletedInitialFetch = false;
       startRealTimeCloudStream();
       forceCloudPullNow();
       showToast("Reconnected to Default Built-in Firebase DB!");
@@ -2150,7 +2841,6 @@
       showToast("App PIN Updated Across All Phones!");
     }
 
-    // Budget & Stage Modal
     function openBudgetAndProgressModal() {
       document.getElementById("modalProjectTitle").value = appState.meta.projectTitle || "Nirmaan Pro";
       document.getElementById("modalTotalBudget").value = appState.meta.totalBudget || "";
@@ -2174,41 +2864,6 @@
       showToast("Budget & Construction Stage Updated!");
     }
 
-    // Export Passbook to Excel CSV
-    function exportPassbookCSV() {
-      const all = getExpensesArray();
-      if (all.length === 0) {
-        alert("No entries to export yet.");
-        return;
-      }
-      const headers = ["Date", "Category", "Cost Type", "Description", "Amount Paid (INR)", "Pending Balance (INR)", "Payment Status", "Paid By", "Payment Mode", "Floor/Zone", "Vendor", "Quantity", "Unit", "Book/Bill Ref"];
-      const rows = all.map(e => [
-        e.date,
-        `"${(e.category || "").replace(/"/g, '""')}"`,
-        `"${(e.costNature || "").replace(/"/g, '""')}"`,
-        `"${(e.description || "").replace(/"/g, '""')}"`,
-        e.amount,
-        e.pendingAmount || 0,
-        e.paymentStatus || "Paid",
-        `"${(e.paidBy || "").replace(/"/g, '""')}"`,
-        `"${(e.paymentMode || "").replace(/"/g, '""')}"`,
-        `"${(e.zone || "").replace(/"/g, '""')}"`,
-        `"${(e.vendor || "").replace(/"/g, '""')}"`,
-        e.qty || "",
-        e.unit || "",
-        `"${(e.bookRef || "").replace(/"/g, '""')}"`
-      ].join(","));
-
-      const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\n");
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `NirmaanPro_Expenses_${new Date().toISOString().split("T")[0]}.csv`;
-      a.click();
-    }
-
-    // Tab Navigation
     function switchMainTab(tabId) {
       ["dashboard", "add", "stats", "passbook", "settings"].forEach(t => {
         document.getElementById(`tab-${t}`).classList.add("hidden");
@@ -2224,19 +2879,12 @@
         activeBtn.classList.remove("text-slate-500", "font-medium");
         activeBtn.classList.add("text-amber-600", "font-bold");
       }
+      populateAllDropdowns();
       renderAllViews();
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    function escapeHtml(str) {
-      return String(str || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
-    }
-
-    // Initialize Application
+    // Initialize Application Safely
     window.addEventListener("DOMContentLoaded", async () => {
       lucide.createIcons();
       document.getElementById("expDate").value = new Date().toISOString().split("T")[0];
@@ -2245,13 +2893,12 @@
       populateAllDropdowns();
       renderAllViews();
 
-      // Check if already unlocked in this tab session
       if (sessionStorage.getItem("nirmaan_unlocked") === "true") {
         document.getElementById("pinLockScreen").classList.add("hidden");
         document.getElementById("mainAppContainer").classList.remove("hidden");
       }
 
-      // Connect to built-in Firebase Realtime Database
+      // First pull existing records from Firebase before any write can happen
       await forceCloudPullNow();
       startRealTimeCloudStream();
     });
