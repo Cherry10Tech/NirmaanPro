@@ -10,6 +10,8 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- html2pdf.js for Direct PDF File Download & WhatsApp PDF Sharing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     body {
@@ -27,6 +29,11 @@
     }
     .shake { animation: shake 0.35s ease-in-out; }
     .pin-dot { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+    @media print {
+      body * { visibility: hidden; }
+      #printableAreaContainer, #printableAreaContainer * { visibility: visible; }
+      #printableAreaContainer { position: absolute; left: 0; top: 0; width: 100%; background: white; }
+    }
   </style>
 </head>
 <body class="min-h-screen pb-24 selection:bg-amber-500 selection:text-white">
@@ -40,7 +47,7 @@
         <span id="lockSyncDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
         <span id="lockSyncText">Cloud DB Connected</span>
       </span>
-      <span class="text-slate-500 font-mono">v3.0 Pro</span>
+      <span class="text-slate-500 font-mono">v4.0 Enterprise</span>
     </div>
 
     <div class="w-full max-w-xs flex flex-col items-center my-auto">
@@ -48,7 +55,7 @@
         <i data-lucide="hard-hat" class="w-9 h-9 text-slate-950 stroke-[2.2]"></i>
       </div>
       <h1 class="text-2xl font-extrabold tracking-tight text-white">Nirmaan Pro</h1>
-      <p class="text-xs text-slate-400 mt-1 text-center">Home Construction Ledger & Live Analytics</p>
+      <p class="text-xs text-slate-400 mt-1 text-center">Home Construction ERP & Live Cloud Ledger</p>
 
       <!-- 4 PIN Dots -->
       <div id="pinDotsContainer" class="flex items-center gap-4 my-7">
@@ -82,7 +89,7 @@
     </div>
 
     <div class="text-[11px] text-slate-500 text-center pb-2">
-      Protected by SHA-256 Verification • Real-Time Multi-Phone Sync
+      Protected by SHA-256 Verification • Atomic Real-Time Multi-Phone Sync
     </div>
   </div>
 
@@ -108,11 +115,14 @@
           </div>
         </div>
 
-        <!-- Live Sync Status Pill -->
         <div class="flex items-center gap-2">
+          <button onclick="exportFullPassbookPDF()" title="Download PDF Report" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 transition">
+            <i data-lucide="file-text" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span>PDF Report</span>
+          </button>
           <button onclick="shareWhatsAppProjectSummary()" title="Share Summary on WhatsApp" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 transition">
             <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
-            <span>Share Report</span>
+            <span>WhatsApp Summary</span>
           </button>
           <button onclick="switchMainTab('settings')" id="syncStatusBadge" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 transition">
             <span id="syncStatusDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -129,6 +139,22 @@
            TAB 1: DASHBOARD (HOME)
            ========================================== -->
       <section id="tab-dashboard" class="space-y-4">
+        <!-- Upcoming Payment / Due Date Reminder Banner -->
+        <div id="upcomingDuesBanner" class="hidden bg-rose-950 text-white rounded-2xl p-3.5 shadow-md border border-rose-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-rose-500/20 border border-rose-400/30 flex items-center justify-center text-rose-300 shrink-0">
+              <i data-lucide="bell-ring" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h4 class="text-xs font-extrabold text-rose-200 uppercase tracking-wider">Upcoming / Overdue Vendor Payments</h4>
+              <p id="upcomingDuesText" class="text-xs text-white mt-0.5"></p>
+            </div>
+          </div>
+          <button onclick="filterPassbookByPending()" class="px-3 py-1.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold shrink-0">
+            View & Settle Dues
+          </button>
+        </div>
+
         <!-- Hero Financial Summary Card -->
         <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 text-white rounded-2xl p-4 sm:p-5 shadow-lg border border-slate-800">
           <div class="flex flex-wrap items-start justify-between gap-3">
@@ -145,7 +171,7 @@
               </button>
               <button onclick="openBudgetAndProgressModal()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-200 flex items-center gap-1.5 transition">
                 <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-amber-400"></i>
-                Edit Budget / Stage %
+                Edit Budget / Sq.Ft / Stage %
               </button>
             </div>
           </div>
@@ -160,7 +186,7 @@
               <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
                 <div id="dashBudgetBar" class="h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full transition-all duration-500" style="width: 0%"></div>
               </div>
-              <p id="dashBudgetRemaining" class="text-[11px] text-slate-400 mt-1">Tap "Edit Budget / Stage %" to set your overall budget target.</p>
+              <p id="dashBudgetRemaining" class="text-[11px] text-slate-400 mt-1">Tap "Edit Budget / Sq.Ft / Stage %" to set your house budget.</p>
             </div>
 
             <div>
@@ -171,12 +197,12 @@
               <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
                 <div id="dashStageBar" class="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full transition-all duration-500" style="width: 0%"></div>
               </div>
-              <p id="dashStageNote" class="text-[11px] text-slate-400 mt-1">Update physical work % anytime to track cost vs. progress.</p>
+              <p id="dashStageForecast" class="text-[11px] text-slate-400 mt-1">Update physical work % anytime to track cost vs. progress.</p>
             </div>
           </div>
 
-          <!-- 4 Mini KPI Pills -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-4">
+          <!-- 5 Mini KPI Pills (Includes Live Cost per Sq.Ft) -->
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 mt-4">
             <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-2.5">
               <span class="text-[10px] uppercase tracking-wider text-slate-400 block">Pending Bills / Dues</span>
               <span id="dashPendingDues" class="text-sm sm:text-base font-bold text-rose-400 mt-0.5 block">₹0</span>
@@ -190,6 +216,10 @@
               <span id="dashDigitalSpent" class="text-sm sm:text-base font-bold text-sky-300 mt-0.5 block">₹0 (0%)</span>
             </div>
             <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-2.5">
+              <span class="text-[10px] uppercase tracking-wider text-slate-400 block">Cost Per Sq.Ft</span>
+              <span id="dashCostPerSqFt" class="text-sm sm:text-base font-bold text-amber-300 mt-0.5 block">Set Sq.Ft</span>
+            </div>
+            <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-2.5 col-span-2 sm:col-span-1">
               <span class="text-[10px] uppercase tracking-wider text-slate-400 block">Total Entries</span>
               <span id="dashTotalEntriesCount" class="text-sm sm:text-base font-bold text-white mt-0.5 block">0 Records</span>
             </div>
@@ -222,7 +252,6 @@
 
         <!-- Dashboard Two-Column Grid: Top Categories % & Recent Entries -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <!-- Top Categories % Share -->
           <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
             <div class="flex items-center justify-between mb-3">
               <div>
@@ -236,7 +265,6 @@
             <div id="dashTopCategoriesList" class="space-y-3"></div>
           </div>
 
-          <!-- Recent 6 Transactions -->
           <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
             <div class="flex items-center justify-between mb-3">
               <div>
@@ -256,7 +284,6 @@
            TAB 2: ADD EXPENSE (SINGLE + BULK TABLE)
            ========================================== -->
       <section id="tab-add" class="hidden space-y-4">
-        <!-- Mode Switcher Header -->
         <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-2">
           <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl w-full sm:w-auto">
             <button type="button" id="btnModeSingle" onclick="toggleAddSubMode('single')" class="flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold bg-slate-900 text-white shadow transition">
@@ -267,7 +294,6 @@
             </button>
           </div>
 
-          <!-- Notebook Sticky Toggle -->
           <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer select-none px-2.5 py-1.5 rounded-lg bg-amber-50 border border-amber-200">
             <input type="checkbox" id="stickyNotebookMode" checked class="rounded text-amber-600 focus:ring-amber-500 w-4 h-4" />
             <span>📌 Notebook Catch-Up Mode (Keep Date & Category locked after save)</span>
@@ -287,7 +313,7 @@
             </button>
           </div>
 
-          <!-- Row 1: Date, Category (with inline Other), Cost Nature (with inline Other) -->
+          <!-- Row 1: Date, Category, Expense Type -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Date *</label>
@@ -297,7 +323,6 @@
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Construction Category *</label>
               <select id="expCategorySelect" onchange="handleDynamicSelectChange('expCategorySelect', 'customCategoryWrap', 'expCategoryCustom')" required class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm font-medium bg-white focus:border-amber-500 focus:outline-none">
-                <!-- Populated dynamically -->
               </select>
               <div id="customCategoryWrap" class="hidden mt-2 p-2.5 rounded-xl bg-amber-50 border border-amber-300 space-y-2">
                 <input type="text" id="expCategoryCustom" placeholder="Type new category name..." class="w-full rounded-lg border border-amber-400 px-2.5 py-1.5 text-xs font-semibold bg-white focus:outline-none" />
@@ -311,7 +336,6 @@
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Expense Type (For % Split) *</label>
               <select id="expCostNatureSelect" onchange="handleDynamicSelectChange('expCostNatureSelect', 'customCostNatureWrap', 'expCostNatureCustom')" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm font-medium bg-white focus:border-amber-500 focus:outline-none">
-                <!-- Populated dynamically -->
               </select>
               <div id="customCostNatureWrap" class="hidden mt-2 p-2.5 rounded-xl bg-amber-50 border border-amber-300 space-y-2">
                 <input type="text" id="expCostNatureCustom" placeholder="Type new expense type..." class="w-full rounded-lg border border-amber-400 px-2.5 py-1.5 text-xs font-semibold bg-white focus:outline-none" />
@@ -323,7 +347,7 @@
             </div>
           </div>
 
-          <!-- Row 2: Amount (with built-in calculator) + Payment Status + Description -->
+          <!-- Row 2: Amount + Payment Status (with Pending Due & Due Date) + Description -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
             <div>
               <div class="flex justify-between items-center mb-1">
@@ -347,9 +371,15 @@
                 <option value="Partial">⏳ Advance / Partial (Balance Pending)</option>
                 <option value="Refund">↩️ Material Return / Refund (Minus ₹)</option>
               </select>
-              <div id="pendingAmountWrap" class="hidden mt-2">
-                <label class="block text-[11px] font-bold text-rose-600 mb-0.5">Pending Balance Still Owed (₹)</label>
-                <input type="number" id="expPendingAmount" placeholder="e.g. 15000" min="0" step="any" class="w-full rounded-lg border border-rose-300 px-2.5 py-1.5 text-xs font-bold text-rose-700 bg-white focus:outline-none" />
+              <div id="pendingAmountWrap" class="hidden mt-2 space-y-2 p-2 rounded-xl bg-rose-50 border border-rose-200">
+                <div>
+                  <label class="block text-[11px] font-bold text-rose-700 mb-0.5">Pending Balance Still Owed (₹)</label>
+                  <input type="number" id="expPendingAmount" placeholder="e.g. 15000" min="0" step="any" class="w-full rounded-lg border border-rose-300 px-2.5 py-1.5 text-xs font-bold text-rose-700 bg-white focus:outline-none" />
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-rose-700 mb-0.5">Due Date / PDC Reminder (Optional)</label>
+                  <input type="date" id="expDueDate" class="w-full rounded-lg border border-rose-300 px-2.5 py-1 text-xs bg-white focus:outline-none" />
+                </div>
               </div>
             </div>
 
@@ -400,18 +430,17 @@
             </div>
           </div>
 
-          <!-- Row 4: Proper Clickable Vendor/Contractor Dropdown, Quantity/Unit & Book Page Ref -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-2 border-t border-slate-100">
+          <!-- Row 4: Vendor/Contractor Dropdown, Quantity/Unit, Bill Type (GST/Non-GST) & Book Page Ref -->
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-3.5 pt-2 border-t border-slate-100">
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Vendor / Contractor (Dropdown)</label>
               <select id="expVendorSelect" onchange="handleDynamicSelectChange('expVendorSelect', 'customVendorWrap', 'expVendorCustom')" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold bg-white focus:border-amber-500 focus:outline-none">
-                <!-- Populated dynamically with Contractors + Past Vendors + Other -->
               </select>
               <div id="customVendorWrap" class="hidden mt-2 p-2.5 rounded-xl bg-amber-50 border border-amber-300 space-y-1.5">
                 <input type="text" id="expVendorCustom" placeholder="Type contractor or shop name..." class="w-full rounded-lg border border-amber-400 px-2.5 py-1.5 text-xs font-semibold bg-white focus:outline-none" />
                 <label class="flex items-center gap-1.5 text-[11px] font-medium text-amber-900 cursor-pointer">
                   <input type="checkbox" id="saveCustomVendorPerm" checked class="rounded text-amber-600" />
-                  Save vendor to dropdown for future entries
+                  Save vendor to dropdown
                 </label>
               </div>
             </div>
@@ -428,22 +457,29 @@
                   <option value="Bags">Bags</option>
                   <option value="Tons">Tons</option>
                   <option value="Kg">Kg</option>
-                  <option value="Loads / Tractor">Loads</option>
-                  <option value="Cubic Ft (CFT)">CFT</option>
+                  <option value="Loads">Loads</option>
+                  <option value="CFT">CFT</option>
                   <option value="Sq.Ft">Sq.Ft</option>
-                  <option value="Pieces / Nos">Nos / Pcs</option>
-                  <option value="Days / Shifts">Days</option>
+                  <option value="Nos / Pcs">Nos / Pcs</option>
+                  <option value="Days">Days</option>
                 </select>
               </div>
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1">Book Page No. / Bill Ref (Optional)</label>
+              <label class="block text-xs font-bold text-slate-600 mb-1">Bill / Invoice Type</label>
+              <select id="expBillType" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold bg-white focus:border-amber-500 focus:outline-none">
+                <option value="Normal / Cash Slip">📄 Normal / Cash Slip</option>
+                <option value="GST Tax Invoice">🧾 Official GST Invoice</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">Book Page No. / Bill Ref</label>
               <input type="text" id="expBookRef" placeholder="e.g. Page 12 / Bill #402" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-medium focus:border-amber-500 focus:outline-none" />
             </div>
           </div>
 
-          <!-- Submit Button -->
           <div class="pt-2 flex items-center justify-end gap-3">
             <button type="submit" id="saveExpenseBtn" class="w-full sm:w-auto px-8 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-slate-950 font-extrabold text-sm shadow-md flex items-center justify-center gap-2 transition">
               <i data-lucide="check-circle-2" class="w-4 h-4"></i>
@@ -484,9 +520,7 @@
                   <th class="py-2.5 px-2 w-9"></th>
                 </tr>
               </thead>
-              <tbody id="bulkTableBody" class="divide-y divide-slate-100 text-xs">
-                <!-- Rows added dynamically -->
-              </tbody>
+              <tbody id="bulkTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
             </table>
           </div>
         </div>
@@ -496,11 +530,10 @@
            TAB 3: STATS & % ANALYTICS
            ========================================== -->
       <section id="tab-stats" class="hidden space-y-4">
-        <!-- Stats Filter Bar -->
         <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 class="text-base font-extrabold text-slate-900">Complete Percentage (%) & Cost Analytics</h2>
-            <p class="text-xs text-slate-500">Every rupee broken down by Category %, Expense Type %, Floor/Zone %, and Payer %</p>
+            <h2 class="text-base font-extrabold text-slate-900">Complete Percentage (%) & Cost Intelligence</h2>
+            <p class="text-xs text-slate-500">Every rupee broken down by Category %, Sub-Budget Target %, ₹/Sq.Ft, Floor %, and Material Rate Inflation</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <select id="statsZoneFilter" onchange="renderAllViews()" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-bold bg-slate-50">
@@ -531,8 +564,8 @@
           <div class="lg:col-span-7 bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
             <div class="flex items-center justify-between mb-3">
               <div>
-                <h3 class="text-sm font-bold text-slate-900">Category-Wise Exact % & Amount</h3>
-                <p class="text-[11px] text-slate-500">Sorted from highest spending share to lowest</p>
+                <h3 class="text-sm font-bold text-slate-900">Category-Wise Exact %, Amount & Sub-Budgets</h3>
+                <p class="text-[11px] text-slate-500">Tap "Set Target" on any category to track category-level budget overruns</p>
               </div>
               <span id="statsCategoryCountBadge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">0 Categories</span>
             </div>
@@ -549,13 +582,13 @@
           </div>
 
           <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-            <h3 class="text-sm font-bold text-slate-900">Who Paid How Much (% Contribution)</h3>
-            <p class="text-[11px] text-slate-500 mb-3">Breakdown by Family Member & Payment Source</p>
+            <h3 class="text-sm font-bold text-slate-900">Who Paid How Much (% Contribution) & GST Split</h3>
+            <p class="text-[11px] text-slate-500 mb-3">Breakdown by Family Member & Official GST vs. Cash Bills</p>
             <div id="statsPayerBreakdownList" class="space-y-2.5"></div>
           </div>
         </div>
 
-        <!-- Monthly Spending Timeline Chart & Material Quantity Intelligence -->
+        <!-- Monthly Spending Timeline Chart & Material Price Inflation Intelligence -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
             <h3 class="text-sm font-bold text-slate-900">Monthly Spending Trend</h3>
@@ -566,34 +599,37 @@
           </div>
 
           <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-            <h3 class="text-sm font-bold text-slate-900">Material Quantity & Average Rate Tracker</h3>
-            <p class="text-[11px] text-slate-500 mb-3">Auto-calculated from entries where you filled Quantity + Unit</p>
+            <h3 class="text-sm font-bold text-slate-900">Material Quantity & Price Inflation Intelligence</h3>
+            <p class="text-[11px] text-slate-500 mb-3">Tracks Total Quantity + Min, Max, Average, and Latest Unit Rate</p>
             <div id="statsMaterialSummary" class="space-y-2 max-h-56 overflow-y-auto"></div>
           </div>
         </div>
       </section>
 
       <!-- ==========================================
-           TAB 4: PASSBOOK (ALL ENTRIES + EXCEL IMPORT/EXPORT)
+           TAB 4: PASSBOOK (ALL ENTRIES + GROUP BY + PDF/EXCEL)
            ========================================== -->
       <section id="tab-passbook" class="hidden space-y-4">
         <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div>
               <h2 class="text-base font-extrabold text-slate-900">Digital Construction Passbook</h2>
-              <p class="text-xs text-slate-500">Download to Excel, or upload your edited Excel (CSV) back to auto-fill all records</p>
+              <p class="text-xs text-slate-500">100% of records shown. Sort, group by page/category, or export to Excel & PDF.</p>
             </div>
-            <!-- Excel Download & Auto-Fill Upload Buttons -->
+            <!-- Excel & PDF Action Buttons -->
             <div class="flex flex-wrap items-center gap-2">
               <input type="file" id="csvFileInput" accept=".csv" onchange="handleImportCSVFile(event)" class="hidden" />
               <button type="button" onclick="document.getElementById('csvFileInput').click()" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-extrabold flex items-center gap-1.5 shadow-sm transition">
                 <i data-lucide="upload" class="w-3.5 h-3.5"></i> Upload Excel (CSV)
               </button>
               <button type="button" onclick="exportPassbookCSV(false)" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
-                <i data-lucide="download" class="w-3.5 h-3.5"></i> Download Excel (CSV)
+                <i data-lucide="download" class="w-3.5 h-3.5"></i> Download Excel
               </button>
-              <button type="button" onclick="exportPassbookCSV(true)" title="Download Blank CSV Template for Book Entry" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1 transition">
-                <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Blank Template
+              <button type="button" onclick="exportFullPassbookPDF()" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
+                <i data-lucide="file-text" class="w-3.5 h-3.5 text-amber-400"></i> Save / Share PDF
+              </button>
+              <button type="button" onclick="exportPassbookCSV(true)" title="Download Blank CSV Template" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1 transition">
+                <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Template
               </button>
             </div>
           </div>
@@ -614,29 +650,57 @@
               <option value="ALL">All Payers</option>
             </select>
             <select id="passbookStatusFilter" onchange="renderPassbookList()" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold bg-white">
-              <option value="ALL">All Statuses</option>
+              <option value="ALL">All Statuses & Bills</option>
               <option value="PENDING_ONLY">⏳ Pending Balance Only</option>
               <option value="CASH_ONLY">💵 Cash Only</option>
               <option value="DIGITAL_ONLY">🏦 UPI / Bank Only</option>
+              <option value="GST_ONLY">🧾 Official GST Bills Only</option>
             </select>
           </div>
 
-          <!-- Date Range Filter Row -->
-          <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
+          <!-- Date Range + Sort By + Group By Row -->
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs border-t border-slate-100">
             <div class="flex flex-wrap items-center gap-2">
-              <span class="font-bold text-slate-600">Date Filter:</span>
-              <input type="date" id="passbookDateFrom" onchange="renderPassbookList()" class="rounded-lg border border-slate-300 px-2.5 py-1 text-xs" />
+              <span class="font-bold text-slate-600">Date:</span>
+              <input type="date" id="passbookDateFrom" onchange="renderPassbookList()" class="rounded-lg border border-slate-300 px-2 py-1 text-xs" />
               <span class="text-slate-400">to</span>
-              <input type="date" id="passbookDateTo" onchange="renderPassbookList()" class="rounded-lg border border-slate-300 px-2.5 py-1 text-xs" />
-              <button type="button" onclick="clearPassbookFilters()" class="text-amber-600 hover:underline font-bold ml-1">Reset Filters</button>
+              <input type="date" id="passbookDateTo" onchange="renderPassbookList()" class="rounded-lg border border-slate-300 px-2 py-1 text-xs" />
             </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <select id="passbookSortBy" onchange="renderPassbookList()" class="rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-bold bg-slate-50">
+                <option value="DATE_DESC">Sort: Newest Date First</option>
+                <option value="DATE_ASC">Sort: Oldest Date First</option>
+                <option value="ADDED_DESC">Sort: Recently Added First</option>
+                <option value="AMT_DESC">Sort: Highest Amount First</option>
+                <option value="AMT_ASC">Sort: Lowest Amount First</option>
+              </select>
+
+              <select id="passbookGroupBy" onchange="renderPassbookList()" class="rounded-lg border border-amber-300 px-2.5 py-1 text-xs font-extrabold bg-amber-50 text-amber-900">
+                <option value="NONE">View: Standard List (All)</option>
+                <option value="MONTH">Group By: Month</option>
+                <option value="CATEGORY">Group By: Category</option>
+                <option value="VENDOR">Group By: Vendor / Contractor</option>
+                <option value="BOOK_PAGE">Group By: Book Page / Ref</option>
+              </select>
+
+              <button type="button" onclick="clearPassbookFilters()" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold">
+                Reset All Filters
+              </button>
+            </div>
+          </div>
+
+          <!-- Active Filter Alert Banner (Prevents Confusion if Filters Hide Entries) -->
+          <div id="activeFilterNotice" class="hidden px-3 py-2 rounded-xl bg-amber-100 border border-amber-300 text-amber-950 text-xs flex items-center justify-between">
+            <span id="activeFilterNoticeText" class="font-bold">Filters are active.</span>
+            <button onclick="clearPassbookFilters()" class="px-2.5 py-1 rounded-lg bg-slate-900 text-white text-[11px] font-bold">Show All Records</button>
           </div>
 
           <!-- Filtered Total Bar -->
           <div class="flex flex-wrap items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl bg-slate-900 text-white text-xs">
-            <span id="passbookFilteredCount">Showing 0 entries</span>
+            <span id="passbookFilteredCount" class="font-bold">Showing 0 entries</span>
             <div class="flex items-center gap-4">
-              <span>Filtered Paid Total: <strong id="passbookFilteredTotal" class="text-amber-400 text-sm">₹0</strong></span>
+              <span>Displayed Paid Total: <strong id="passbookFilteredTotal" class="text-amber-400 text-sm">₹0</strong></span>
               <span>Pending: <strong id="passbookFilteredPending" class="text-rose-400">₹0</strong></span>
             </div>
           </div>
@@ -650,19 +714,20 @@
            TAB 5: SETTINGS, CONTRACTORS & CLOUD SYNC
            ========================================== -->
       <section id="tab-settings" class="hidden space-y-4">
-        <!-- Contractor Milestone & Agreement Tracker (CLICKABLE LEDGER) -->
+        <!-- Contractor Milestone, Extra Work & Retention Tracker -->
         <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-3">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-base font-extrabold text-slate-900">Contractor Running Account (RA) Tracker</h3>
-              <p class="text-xs text-slate-500">Add your contractors below. Their names automatically appear in the <strong>Add Expense Vendor Dropdown</strong>. Tap any contractor card to view their full payment history!</p>
+              <h3 class="text-base font-extrabold text-slate-900">Contractor Running Account (RA) & Retention Tracker</h3>
+              <p class="text-xs text-slate-500">Tap any contractor card to open their full statement, add Extra Work / Retention %, or share their complete PDF & WhatsApp report!</p>
             </div>
           </div>
 
-          <form onsubmit="handleAddContractor(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 pt-1">
-            <input type="text" id="conName" required placeholder="Contractor / Vendor Name" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold" />
-            <input type="text" id="conWorkType" required placeholder="Work (e.g. Civil Masonry / Plumbing)" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold" />
-            <input type="number" id="conAgreedAmount" required min="1" placeholder="Total Agreed Value (₹)" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold" />
+          <form onsubmit="handleAddContractor(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-2.5 pt-1">
+            <input type="text" id="conName" required placeholder="Contractor / Vendor Name *" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold" />
+            <input type="text" id="conWorkType" required placeholder="Work (e.g. Civil / Plumbing) *" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold" />
+            <input type="number" id="conAgreedAmount" required min="1" step="any" placeholder="Base Agreed Value (₹) *" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold" />
+            <input type="number" id="conExtraAmount" min="0" step="any" placeholder="Extra Work ₹ (Opt)" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold" />
             <button type="submit" class="rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs py-2 px-4 shadow-sm">
               + Add Contractor
             </button>
@@ -671,7 +736,7 @@
           <div id="contractorsListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2"></div>
         </div>
 
-        <!-- Manage Dropdown Lists (Categories, Expense Types, Vendors, Payers, Zones) -->
+        <!-- Manage Dropdown Lists -->
         <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-3">
           <div>
             <h3 class="text-sm font-extrabold text-slate-900">Manage Dropdown Options (Add or Remove)</h3>
@@ -679,7 +744,6 @@
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
-            <!-- Manage Categories -->
             <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
               <span class="text-xs font-extrabold text-slate-800 block">Construction Categories</span>
               <div class="flex gap-1.5">
@@ -689,7 +753,6 @@
               <div id="manageCategoriesList" class="max-h-36 overflow-y-auto space-y-1 pr-1"></div>
             </div>
 
-            <!-- Manage Vendors / Contractors -->
             <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
               <span class="text-xs font-extrabold text-slate-800 block">Saved Vendors / Shops</span>
               <div class="flex gap-1.5">
@@ -699,7 +762,6 @@
               <div id="manageVendorsList" class="max-h-36 overflow-y-auto space-y-1 pr-1"></div>
             </div>
 
-            <!-- Manage Expense Types & Payers -->
             <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
               <span class="text-xs font-extrabold text-slate-800 block">Expense Types (% Split)</span>
               <div class="flex gap-1.5">
@@ -711,21 +773,30 @@
           </div>
         </div>
 
-        <!-- Live Cloud Database Connection Box -->
+        <!-- Live Cloud Database Connection & Full System Snapshot Backup -->
         <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-3">
-          <div class="flex items-start justify-between gap-3">
+          <div class="flex flex-wrap items-start justify-between gap-3">
             <div class="flex items-center gap-2.5">
               <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
                 <i data-lucide="database" class="w-5 h-5"></i>
               </div>
               <div>
-                <h2 class="text-base font-extrabold text-slate-900">Real-Time Cloud Database (Pre-Connected)</h2>
+                <h2 class="text-base font-extrabold text-slate-900">Real-Time Cloud Database & Total System Backup</h2>
                 <p class="text-xs text-slate-500">Protected by Cloud Overwrite Guard—updating code on GitHub will never erase your Firebase data.</p>
               </div>
             </div>
-            <button onclick="forceCloudPullNow()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 flex items-center gap-1.5">
-              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Sync Now
-            </button>
+            <div class="flex items-center gap-2">
+              <button onclick="forceCloudPullNow()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Sync Now
+              </button>
+              <button onclick="downloadFullSystemSnapshot()" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1.5">
+                <i data-lucide="hard-drive-download" class="w-3.5 h-3.5 text-amber-400"></i> Full Backup File
+              </button>
+              <input type="file" id="jsonRestoreInput" accept=".json" onchange="restoreFullSystemSnapshot(event)" class="hidden" />
+              <button onclick="document.getElementById('jsonRestoreInput').click()" class="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold">
+                Restore Backup
+              </button>
+            </div>
           </div>
 
           <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
@@ -800,12 +871,12 @@
   </div>
 
   <!-- ==========================================
-       MODAL 1: EDIT TARGET BUDGET & STAGE %
+       MODAL 1: EDIT TARGET BUDGET, SQ.FT & STAGE %
        ========================================== -->
   <div id="budgetModal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-        <h3 class="text-base font-extrabold text-slate-900">Project Budget & Construction Stage</h3>
+        <h3 class="text-base font-extrabold text-slate-900">Project Budget, Area (Sq.Ft) & Stage</h3>
         <button onclick="closeBudgetAndProgressModal()" class="text-slate-400 hover:text-slate-600">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
@@ -813,11 +884,17 @@
       <div class="space-y-3">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">Project / House Title</label>
-          <input type="text" id="modalProjectTitle" placeholder="e.g. Our Dream Home Construction" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold" />
+          <input type="text" id="modalProjectTitle" placeholder="e.g. Nirmaan Pro — Our Home" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold" />
         </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Overall Estimated Construction Budget (₹)</label>
-          <input type="number" id="modalTotalBudget" min="0" step="any" placeholder="e.g. 7500000" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-bold" />
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Estimated Total Budget (₹)</label>
+            <input type="number" id="modalTotalBudget" min="0" step="any" placeholder="e.g. 7500000" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-bold" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Total Built-Up Area (Sq.Ft)</label>
+            <input type="number" id="modalBuiltUpSqFt" min="0" step="any" placeholder="e.g. 2400" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-bold" />
+          </div>
         </div>
         <div>
           <div class="flex justify-between text-xs font-bold text-slate-700 mb-1">
@@ -835,33 +912,124 @@
   </div>
 
   <!-- ==========================================
-       MODAL 2: CLICKABLE CONTRACTOR LEDGER STATEMENT
+       MODAL 2: CONTRACTOR FULL LEDGER, EXTRA WORK & PDF/WHATSAPP SHARE
        ========================================== -->
-  <div id="contractorLedgerModal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-5 shadow-xl space-y-4 max-h-[85vh] flex flex-col">
-      <div class="flex items-start justify-between border-b border-slate-100 pb-3">
+  <div id="contractorLedgerModal" class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-4 sm:p-5 shadow-2xl space-y-3.5 max-h-[90vh] flex flex-col">
+      <div class="flex items-start justify-between border-b border-slate-100 pb-2.5">
         <div>
-          <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-600">Contractor Running Account Ledger</span>
-          <h3 id="ledgerModalTitle" class="text-base font-extrabold text-slate-900">Contractor Name</h3>
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-600">Contractor Running Account (RA) Statement</span>
+          <h3 id="ledgerModalTitle" class="text-base sm:text-lg font-extrabold text-slate-900">Contractor Name</h3>
           <p id="ledgerModalSubtitle" class="text-xs text-slate-500"></p>
         </div>
-        <button onclick="closeContractorLedgerModal()" class="text-slate-400 hover:text-slate-600">
+        <button onclick="closeContractorLedgerModal()" class="text-slate-400 hover:text-slate-600 p-1">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
-      <div id="ledgerModalSummary" class="grid grid-cols-3 gap-2 bg-slate-900 text-white p-3 rounded-xl text-xs"></div>
+      <!-- Editable Base Agreement, Extra Work & Retention % inside Modal -->
+      <div class="grid grid-cols-3 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs">
+        <div>
+          <label class="text-[10px] font-bold text-slate-500 block">Base Contract (₹)</label>
+          <input type="number" id="ledgerEditBase" onchange="saveContractorTermsInline()" class="w-full mt-0.5 rounded-lg border border-slate-300 px-2 py-1 text-xs font-bold bg-white" />
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-500 block">Extra Work ₹ (+)</label>
+          <input type="number" id="ledgerEditExtra" onchange="saveContractorTermsInline()" class="w-full mt-0.5 rounded-lg border border-slate-300 px-2 py-1 text-xs font-bold bg-white" />
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-500 block">Retention Hold (%)</label>
+          <input type="number" id="ledgerEditRetention" min="0" max="50" step="0.5" onchange="saveContractorTermsInline()" class="w-full mt-0.5 rounded-lg border border-slate-300 px-2 py-1 text-xs font-bold bg-white" />
+        </div>
+      </div>
 
-      <div id="ledgerModalPaymentsList" class="flex-1 overflow-y-auto space-y-2 pr-1 divide-y divide-slate-100 text-xs"></div>
+      <!-- Summary KPI Strip -->
+      <div id="ledgerModalSummary" class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-slate-900 text-white p-3 rounded-xl text-xs"></div>
 
-      <div class="flex items-center justify-between pt-3 border-t border-slate-100">
-        <button type="button" id="ledgerWhatsAppBtn" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5">
-          <i data-lucide="share-2" class="w-3.5 h-3.5"></i> Share Statement on WhatsApp
-        </button>
+      <!-- Complete Chronological Payment Table (100% of Payments) -->
+      <div class="flex-1 overflow-y-auto border border-slate-200 rounded-xl">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead class="bg-slate-100 text-[10px] uppercase text-slate-600 sticky top-0">
+            <tr>
+              <th class="py-2 px-2.5">#</th>
+              <th class="py-2 px-2.5">Date</th>
+              <th class="py-2 px-2.5">Description / Ref</th>
+              <th class="py-2 px-2.5">Mode / Payer</th>
+              <th class="py-2 px-2.5 text-right">Amount Paid</th>
+            </tr>
+          </thead>
+          <tbody id="ledgerModalPaymentsList" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+
+      <!-- Action Footer: Full WhatsApp Text + Direct PDF Download/Share -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" id="ledgerWhatsAppBtn" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold flex items-center gap-1.5 shadow-sm">
+            <i data-lucide="message-circle" class="w-4 h-4"></i> WhatsApp All Payments
+          </button>
+          <button type="button" id="ledgerPdfBtn" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold flex items-center gap-1.5 shadow-sm">
+            <i data-lucide="file-down" class="w-4 h-4 text-amber-400"></i> Download / Share PDF Statement
+          </button>
+        </div>
         <button type="button" onclick="closeContractorLedgerModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-xs font-bold text-slate-700">Close</button>
       </div>
     </div>
   </div>
+
+  <!-- ==========================================
+       MODAL 3: PARTIAL / FULL PENDING BILL SETTLEMENT
+       ========================================== -->
+  <div id="settleDueModal" class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div>
+          <span class="text-[10px] font-extrabold uppercase text-emerald-600">Vendor Balance Payment</span>
+          <h3 class="text-base font-extrabold text-slate-900">Settle Pending Due (Full or Part)</h3>
+        </div>
+        <button onclick="closeSettleDueModal()" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <input type="hidden" id="settleExpenseId" value="" />
+      <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1">
+        <p id="settleItemTitle" class="font-extrabold text-slate-900"></p>
+        <p class="text-slate-500">Current Pending Balance: <strong id="settleCurrentPending" class="text-rose-600">₹0</strong></p>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Amount Paying Now (₹) *</label>
+          <input type="number" id="settlePayNowInput" min="1" step="any" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-extrabold text-emerald-700" />
+          <p class="text-[10px] text-slate-400 mt-0.5">Enter full pending amount to clear due, or a smaller amount for partial payment.</p>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Payment Date</label>
+            <input type="date" id="settlePayDate" class="w-full rounded-xl border border-slate-300 px-2.5 py-1.5 text-xs font-semibold" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Payment Mode</label>
+            <select id="settlePayMode" class="w-full rounded-xl border border-slate-300 px-2.5 py-1.5 text-xs font-semibold bg-white">
+              <option value="Cash">💵 Cash</option>
+              <option value="UPI / GPay / PhonePe">📱 UPI / GPay</option>
+              <option value="Bank Transfer (NEFT/RTGS/IMPS)">🏦 Bank Transfer</option>
+              <option value="Cheque">🎫 Cheque</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="closeSettleDueModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-xs font-bold text-slate-600">Cancel</button>
+        <button type="button" onclick="confirmSettleDuePayment()" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold">Confirm Payment</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Offscreen Clean Printable PDF Template Container -->
+  <div id="pdfRenderWrapper" class="fixed -left-[9999px] top-0 w-[800px] bg-white p-8 text-slate-900"></div>
 
   <!-- Toast Notification -->
   <div id="toastBanner" class="fixed top-16 right-4 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold shadow-lg border border-slate-700 flex items-center gap-2">
@@ -869,7 +1037,7 @@
   </div>
 
   <!-- ==========================================
-       JAVASCRIPT ENGINE (v3.0 COMPLETE)
+       JAVASCRIPT ENGINE (v4.0 ENTERPRISE)
        ========================================== -->
   <script>
     // 1. BUILT-IN FIREBASE REALTIME DATABASE URL
@@ -878,7 +1046,6 @@
     // 2. VERIFIED SHA-256 HASH FOR PIN 9975
     const DEFAULT_PIN_SHA256 = "8220f2490226f57d84e902e082394a175d988ebcc2bc4523295d6210c849f83f";
 
-    // Pre-loaded Indian Construction Defaults
     const INITIAL_CATEGORIES = [
       "Excavation & Earthwork",
       "Cement",
@@ -936,11 +1103,11 @@
       "Exterior & Compound Wall"
     ];
 
-    // Application State (Zero Dummy Data + Full Lists)
     let appState = {
       meta: {
         projectTitle: "Nirmaan Pro",
         totalBudget: 0,
+        builtUpSqFt: 0,
         constructionStagePct: 0,
         pinHash: DEFAULT_PIN_SHA256,
         updatedAt: 0
@@ -949,15 +1116,17 @@
       costNatures: [...INITIAL_COST_NATURES],
       payers: [...INITIAL_PAYERS],
       zones: [...INITIAL_ZONES],
-      vendors: [],       // Explicit saved vendors list
-      expenses: {},      // Map of id -> expense
-      contractors: {},   // Map of id -> contractor
-      recycleBin: {}     // Map of id -> deleted expense
+      vendors: [],
+      categoryBudgets: {}, // Map of category -> sub-budget target in INR
+      expenses: {},
+      contractors: {},
+      recycleBin: {}
     };
 
     let enteredPin = "";
     let eventSourceStream = null;
-    let hasCompletedInitialFetch = false; // CRITICAL GUARD: Prevents overwriting cloud before first pull
+    let hasCompletedInitialFetch = false;
+    let activeLedgerContractorId = null;
     let categoryChartInstance = null;
     let monthlyChartInstance = null;
 
@@ -976,7 +1145,7 @@
     }
 
     // ==========================================
-    // PIN LOCK LOGIC (WITH SELF-HEALING 9975 HASH)
+    // PIN LOCK LOGIC
     // ==========================================
     function pressPinDigit(digit) {
       if (enteredPin.length >= 4) return;
@@ -1031,9 +1200,6 @@
         updatePinDotsUI();
         populateAllDropdowns();
         renderAllViews();
-        if (hasCompletedInitialFetch) {
-          pushFullStateToCloud();
-        }
       } else {
         const container = document.getElementById("pinDotsContainer");
         container.classList.add("shake");
@@ -1063,7 +1229,7 @@
     });
 
     // ==========================================
-    // REAL-TIME FIREBASE SYNC ENGINE (WITH DATA SAFETY GUARD)
+    // REAL-TIME FIREBASE SYNC ENGINE (NON-DESTRUCTIVE PATCH + ATOMIC WRITES)
     // ==========================================
     function setSyncIndicator(status, message) {
       const badge = document.getElementById("syncStatusBadge");
@@ -1096,13 +1262,15 @@
 
     function saveLocalBackup() {
       try {
-        localStorage.setItem("nirmaan_state_cache_v3", JSON.stringify(appState));
+        localStorage.setItem("nirmaan_state_cache_v4", JSON.stringify(appState));
       } catch (e) {}
     }
 
     function loadLocalBackup() {
       try {
-        const raw = localStorage.getItem("nirmaan_state_cache_v3") || localStorage.getItem("nirmaan_state_cache_v2");
+        const raw = localStorage.getItem("nirmaan_state_cache_v4") ||
+                    localStorage.getItem("nirmaan_state_cache_v3") ||
+                    localStorage.getItem("nirmaan_state_cache_v2");
         if (raw) {
           const parsed = JSON.parse(raw);
           mergeIncomingCloudData(parsed, false);
@@ -1110,7 +1278,6 @@
       } catch (e) {}
     }
 
-    // Helper: Merge arrays uniquely without losing custom items
     function uniqueStringArray(arr1 = [], arr2 = []) {
       const set = new Set();
       [...arr1, ...arr2].forEach(item => {
@@ -1119,6 +1286,19 @@
         }
       });
       return Array.from(set);
+    }
+
+    // Normalize expenses map in case Firebase ever returns array or uncleaned keys
+    function normalizeObjectMap(rawMap) {
+      if (!rawMap || typeof rawMap !== "object") return {};
+      const clean = {};
+      Object.entries(rawMap).forEach(([k, val]) => {
+        if (val && typeof val === "object") {
+          const id = val.id || k;
+          clean[id] = { ...val, id };
+        }
+      });
+      return clean;
     }
 
     function mergeIncomingCloudData(cloudData, shouldRender = true) {
@@ -1132,27 +1312,28 @@
         appState.meta = {
           projectTitle: cloudData.meta.projectTitle || "Nirmaan Pro",
           totalBudget: Number(cloudData.meta.totalBudget) || 0,
+          builtUpSqFt: Number(cloudData.meta.builtUpSqFt) || 0,
           constructionStagePct: Number(cloudData.meta.constructionStagePct) || 0,
           pinHash: incomingPin,
           updatedAt: cloudData.meta.updatedAt || Date.now()
         };
       }
 
-      appState.expenses = cloudData.expenses || {};
-      appState.contractors = cloudData.contractors || {};
-      appState.recycleBin = cloudData.recycleBin || {};
+      appState.expenses = normalizeObjectMap(cloudData.expenses);
+      appState.contractors = normalizeObjectMap(cloudData.contractors);
+      appState.recycleBin = normalizeObjectMap(cloudData.recycleBin);
+      appState.categoryBudgets = cloudData.categoryBudgets || appState.categoryBudgets || {};
 
-      // Extract any custom categories, natures, payers, zones, and vendors used inside expenses/contractors so nothing is ever lost
       const expList = Object.values(appState.expenses);
       const conList = Object.values(appState.contractors);
 
-      const usedCats = expList.map(e => e.category).filter(Boolean);
-      const usedNatures = expList.map(e => e.costNature).filter(Boolean);
-      const usedPayers = expList.map(e => e.paidBy).filter(Boolean);
-      const usedZones = expList.map(e => e.zone).filter(Boolean);
+      const usedCats = expList.map(e => (e.category || "").trim()).filter(Boolean);
+      const usedNatures = expList.map(e => (e.costNature || "").trim()).filter(Boolean);
+      const usedPayers = expList.map(e => (e.paidBy || "").trim()).filter(Boolean);
+      const usedZones = expList.map(e => (e.zone || "").trim()).filter(Boolean);
       const usedVendors = [
-        ...conList.map(c => c.name).filter(Boolean),
-        ...expList.map(e => e.vendor).filter(Boolean)
+        ...conList.map(c => (c.name || "").trim()).filter(Boolean),
+        ...expList.map(e => (e.vendor || "").trim()).filter(Boolean)
       ];
 
       appState.categories = uniqueStringArray(
@@ -1203,8 +1384,8 @@
       }
     }
 
+    // Non-Destructive PATCH to Cloud
     async function pushFullStateToCloud() {
-      // Safety Guard: Do not push if initial cloud fetch hasn't completed yet
       if (!hasCompletedInitialFetch) {
         await forceCloudPullNow();
       }
@@ -1214,7 +1395,7 @@
       const dbUrl = getActiveDbUrl();
       try {
         const res = await fetch(`${dbUrl}/nirmaanProData.json`, {
-          method: "PUT",
+          method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(appState)
         });
@@ -1294,11 +1475,11 @@
     }
 
     // ==========================================
-    // DROPDOWNS: CATEGORIES, NATURES, PAYERS, ZONES & CONTRACTORS/VENDORS
+    // DROPDOWNS & MASTER LISTS
     // ==========================================
     function getCombinedVendorsList() {
-      const contractorNames = Object.values(appState.contractors || {}).map(c => c.name).filter(Boolean);
-      const expenseVendors = Object.values(appState.expenses || {}).map(e => e.vendor).filter(Boolean);
+      const contractorNames = Object.values(appState.contractors || {}).map(c => (c.name || "").trim()).filter(Boolean);
+      const expenseVendors = Object.values(appState.expenses || {}).map(e => (e.vendor || "").trim()).filter(Boolean);
       return uniqueStringArray(contractorNames, [...(appState.vendors || []), ...expenseVendors]);
     }
 
@@ -1308,38 +1489,30 @@
       const targetCat = selectedOverrides.category || (catSelect.value !== "__OTHER__" ? catSelect.value : "");
       catSelect.innerHTML = appState.categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("") +
         `<option value="__OTHER__" class="font-bold text-amber-700 bg-amber-50">➕ Other (Type Custom Category...)</option>`;
-      if (targetCat && appState.categories.includes(targetCat)) {
-        catSelect.value = targetCat;
-      }
+      if (targetCat && appState.categories.includes(targetCat)) catSelect.value = targetCat;
 
-      // 2. Expense Type / Cost Nature Select (Fixed so custom Expense Types save permanently!)
+      // 2. Expense Type Select
       const natSelect = document.getElementById("expCostNatureSelect");
       const targetNat = selectedOverrides.costNature || (natSelect.value !== "__OTHER__" ? natSelect.value : "");
       natSelect.innerHTML = appState.costNatures.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join("") +
         `<option value="__OTHER__" class="font-bold text-amber-700 bg-amber-50">➕ Other (Type New Expense Type...)</option>`;
-      if (targetNat && appState.costNatures.includes(targetNat)) {
-        natSelect.value = targetNat;
-      }
+      if (targetNat && appState.costNatures.includes(targetNat)) natSelect.value = targetNat;
 
       // 3. Paid By Select
       const payerSelect = document.getElementById("expPaidBySelect");
       const targetPayer = selectedOverrides.paidBy || (payerSelect.value !== "__OTHER__" ? payerSelect.value : "");
       payerSelect.innerHTML = appState.payers.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("") +
         `<option value="__OTHER__" class="font-bold text-amber-700 bg-amber-50">➕ Other (Type Custom Payer...)</option>`;
-      if (targetPayer && appState.payers.includes(targetPayer)) {
-        payerSelect.value = targetPayer;
-      }
+      if (targetPayer && appState.payers.includes(targetPayer)) payerSelect.value = targetPayer;
 
       // 4. Floor / Zone Select
       const zoneSelect = document.getElementById("expZoneSelect");
       const targetZone = selectedOverrides.zone || (zoneSelect.value !== "__OTHER__" ? zoneSelect.value : "");
       zoneSelect.innerHTML = appState.zones.map(z => `<option value="${escapeHtml(z)}">${escapeHtml(z)}</option>`).join("") +
         `<option value="__OTHER__" class="font-bold text-amber-700 bg-amber-50">➕ Other (Type Custom Floor/Area...)</option>`;
-      if (targetZone && appState.zones.includes(targetZone)) {
-        zoneSelect.value = targetZone;
-      }
+      if (targetZone && appState.zones.includes(targetZone)) zoneSelect.value = targetZone;
 
-      // 5. Proper Clickable Vendor / Contractor Dropdown (Includes all added Contractors!)
+      // 5. Vendor / Contractor Dropdown
       const vendorSelect = document.getElementById("expVendorSelect");
       const allVendors = getCombinedVendorsList();
       const targetVendor = selectedOverrides.vendor !== undefined
@@ -1354,32 +1527,31 @@
         vendorSelect.value = "";
       }
 
-      // 6. Passbook & Stats Filter Dropdowns
+      // 6. Passbook & Stats Filters
       const pbCat = document.getElementById("passbookCatFilter");
       const curPbCat = pbCat.value || "ALL";
       pbCat.innerHTML = `<option value="ALL">All Categories</option>` +
         appState.categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
-      if ([...appState.categories, "ALL"].includes(curPbCat)) pbCat.value = curPbCat;
+      pbCat.value = [...appState.categories, "ALL"].includes(curPbCat) ? curPbCat : "ALL";
 
       const pbVen = document.getElementById("passbookVendorFilter");
       const curPbVen = pbVen.value || "ALL";
       pbVen.innerHTML = `<option value="ALL">All Vendors / Contractors</option>` +
         allVendors.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
-      if ([...allVendors, "ALL"].includes(curPbVen)) pbVen.value = curPbVen;
+      pbVen.value = [...allVendors, "ALL"].includes(curPbVen) ? curPbVen : "ALL";
 
       const pbPayer = document.getElementById("passbookPayerFilter");
       const curPbPayer = pbPayer.value || "ALL";
       pbPayer.innerHTML = `<option value="ALL">All Payers</option>` +
         appState.payers.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
-      if ([...appState.payers, "ALL"].includes(curPbPayer)) pbPayer.value = curPbPayer;
+      pbPayer.value = [...appState.payers, "ALL"].includes(curPbPayer) ? curPbPayer : "ALL";
 
       const stZone = document.getElementById("statsZoneFilter");
       const curStZone = stZone.value || "ALL";
       stZone.innerHTML = `<option value="ALL">All Floors / Zones</option>` +
         appState.zones.map(z => `<option value="${escapeHtml(z)}">${escapeHtml(z)}</option>`).join("");
-      if ([...appState.zones, "ALL"].includes(curStZone)) stZone.value = curStZone;
+      stZone.value = [...appState.zones, "ALL"].includes(curStZone) ? curStZone : "ALL";
 
-      // Refresh Bulk Table Dropdowns if rows exist
       refreshExistingBulkTableDropdowns();
     }
 
@@ -1406,6 +1578,7 @@
       } else {
         wrap.classList.add("hidden");
         document.getElementById("expPendingAmount").value = "";
+        document.getElementById("expDueDate").value = "";
       }
     }
 
@@ -1442,40 +1615,31 @@
     }
 
     // ==========================================
-    // SAVE SINGLE EXPENSE (PERMANENTLY SAVES ALL CUSTOM FIELDS)
+    // SAVE SINGLE EXPENSE
     // ==========================================
     async function handleSingleExpenseSubmit(e) {
       e.preventDefault();
 
-      const date = document.getElementById("expDate").value;
+      const date = document.getElementById("expDate").value || new Date().toISOString().split("T")[0];
 
-      // 1. Resolve Category
       let category = document.getElementById("expCategorySelect").value;
       if (category === "__OTHER__") {
         category = document.getElementById("expCategoryCustom").value.trim();
-        if (!category) {
-          alert("Please type your custom category name.");
-          return;
-        }
+        if (!category) { alert("Please type your custom category name."); return; }
         if (document.getElementById("saveCustomCategoryPerm").checked && !appState.categories.includes(category)) {
           appState.categories.push(category);
         }
       }
 
-      // 2. Resolve Expense Type / Cost Nature
       let costNature = document.getElementById("expCostNatureSelect").value;
       if (costNature === "__OTHER__") {
         costNature = document.getElementById("expCostNatureCustom").value.trim();
-        if (!costNature) {
-          alert("Please type your custom expense type.");
-          return;
-        }
+        if (!costNature) { alert("Please type your custom expense type."); return; }
         if (document.getElementById("saveCustomNaturePerm").checked && !appState.costNatures.includes(costNature)) {
           appState.costNatures.push(costNature);
         }
       }
 
-      // 3. Resolve Paid By
       let paidBy = document.getElementById("expPaidBySelect").value;
       if (paidBy === "__OTHER__") {
         paidBy = document.getElementById("expPaidByCustom").value.trim() || "Self";
@@ -1484,7 +1648,6 @@
         }
       }
 
-      // 4. Resolve Zone / Floor
       let zone = document.getElementById("expZoneSelect").value;
       if (zone === "__OTHER__") {
         zone = document.getElementById("expZoneCustom").value.trim() || "Overall House / Common";
@@ -1493,7 +1656,6 @@
         }
       }
 
-      // 5. Resolve Vendor / Contractor Dropdown
       let vendor = document.getElementById("expVendorSelect").value;
       if (vendor === "__OTHER__") {
         vendor = document.getElementById("expVendorCustom").value.trim();
@@ -1512,17 +1674,19 @@
       const paymentStatus = document.getElementById("expPaymentStatus").value;
       const finalAmount = paymentStatus === "Refund" ? -Math.abs(rawAmt) : Math.abs(rawAmt);
       const pendingAmount = paymentStatus === "Partial" ? (Number(document.getElementById("expPendingAmount").value) || 0) : 0;
+      const dueDate = paymentStatus === "Partial" ? (document.getElementById("expDueDate").value || "") : "";
       const description = document.getElementById("expDescription").value.trim();
-      const paymentMode = document.getElementById("expPaymentMode").value;
+      const paymentMode = document.getElementById("expPaymentMode").value || "Cash";
       const qty = Number(document.getElementById("expQty").value) || 0;
-      const unit = document.getElementById("expUnit").value;
+      const unit = document.getElementById("expUnit").value || "";
+      const billType = document.getElementById("expBillType").value || "Normal / Cash Slip";
       const bookRef = document.getElementById("expBookRef").value.trim();
 
       const editingId = document.getElementById("editingExpenseId").value;
 
       if (!editingId) {
         const duplicate = Object.values(appState.expenses || {}).find(x =>
-          x.date === date &&
+          x && x.date === date &&
           x.category === category &&
           Math.abs(Number(x.amount)) === Math.abs(finalAmount)
         );
@@ -1538,23 +1702,24 @@
       appState.expenses[id] = {
         id,
         date,
-        category,
-        costNature,
+        category: category.trim(),
+        costNature: costNature.trim(),
         amount: finalAmount,
         paymentStatus,
         pendingAmount,
+        dueDate,
         description,
-        paidBy,
+        paidBy: paidBy.trim(),
         paymentMode,
-        zone,
-        vendor,
+        zone: zone.trim(),
+        vendor: (vendor || "").trim(),
         qty,
         unit,
+        billType,
         bookRef,
         updatedAt: Date.now()
       };
 
-      // Hide all custom text boxes and select the newly added values cleanly
       ["customCategoryWrap", "customCostNatureWrap", "customPaidByWrap", "customZoneWrap", "customVendorWrap"].forEach(w => {
         document.getElementById(w).classList.add("hidden");
       });
@@ -1579,6 +1744,7 @@
           document.getElementById("expAmountInput").value = "";
           document.getElementById("expDescription").value = "";
           document.getElementById("expPendingAmount").value = "";
+          document.getElementById("expDueDate").value = "";
           document.getElementById("expQty").value = "";
           document.getElementById("calcPreviewBadge").textContent = "";
           document.getElementById("expDescription").focus();
@@ -1599,9 +1765,11 @@
       document.getElementById("expVendorSelect").value = "";
       document.getElementById("expQty").value = "";
       document.getElementById("expUnit").value = "";
+      document.getElementById("expBillType").value = "Normal / Cash Slip";
       document.getElementById("expBookRef").value = "";
       document.getElementById("expPaymentStatus").value = "Paid";
       document.getElementById("expPendingAmount").value = "";
+      document.getElementById("expDueDate").value = "";
       document.getElementById("pendingAmountWrap").classList.add("hidden");
       document.getElementById("calcPreviewBadge").textContent = "";
       ["customCategoryWrap", "customCostNatureWrap", "customPaidByWrap", "customZoneWrap", "customVendorWrap"].forEach(w => {
@@ -1610,7 +1778,7 @@
     }
 
     // ==========================================
-    // BULK NOTEBOOK TABLE MODE (WITH CONTRACTOR DROPDOWN)
+    // BULK NOTEBOOK TABLE MODE
     // ==========================================
     function toggleAddSubMode(mode) {
       const singleForm = document.getElementById("singleExpenseForm");
@@ -1756,26 +1924,28 @@
             if (vendor && !appState.vendors.includes(vendor)) appState.vendors.push(vendor);
           }
 
-          const paymentMode = tr.querySelector(".bulk-mode").value;
-          const paidBy = tr.querySelector(".bulk-payer").value;
+          const paymentMode = tr.querySelector(".bulk-mode").value || "Cash";
+          const paidBy = tr.querySelector(".bulk-payer").value || "Self";
           const bookRef = tr.querySelector(".bulk-page").value.trim() || "Bulk Book Entry";
 
           const id = "exp_" + Date.now() + "_" + idx + "_" + Math.random().toString(36).substring(2, 5);
           appState.expenses[id] = {
             id,
             date,
-            category,
+            category: category.trim(),
             costNature: inferCostNatureFromCategory(category),
             amount: amt,
             paymentStatus: "Paid",
             pendingAmount: 0,
+            dueDate: "",
             description: desc,
-            paidBy,
+            paidBy: paidBy.trim(),
             paymentMode,
             zone: "Overall House / Common",
-            vendor,
+            vendor: (vendor || "").trim(),
             qty: 0,
             unit: "",
+            billType: "Normal / Cash Slip",
             bookRef,
             updatedAt: Date.now()
           };
@@ -1794,7 +1964,7 @@
       renderAllViews();
       await pushFullStateToCloud();
       showToast(`Saved ${savedCount} Notebook Entries to Cloud!`);
-      switchMainTab("dashboard");
+      switchMainTab("passbook");
     }
 
     function inferCostNatureFromCategory(cat) {
@@ -1816,6 +1986,7 @@
         "Description",
         "Amount Paid (INR)",
         "Pending Balance (INR)",
+        "Due Date",
         "Payment Status",
         "Paid By",
         "Payment Mode",
@@ -1823,6 +1994,7 @@
         "Vendor",
         "Quantity",
         "Unit",
+        "Bill Type",
         "Book/Bill Ref"
       ];
 
@@ -1834,6 +2006,7 @@
           "100 Bags UltraTech Cement (Sample Row - Delete or Replace)",
           "39000",
           "0",
+          "",
           "Paid",
           "Self",
           "UPI / GPay / PhonePe",
@@ -1841,6 +2014,7 @@
           "",
           "100",
           "Bags",
+          "GST Tax Invoice",
           "Book Pg 1"
         ];
         const csvContent = "\uFEFF" + [headers.join(","), sampleRow.join(",")].join("\n");
@@ -1855,25 +2029,27 @@
 
       const all = getExpensesArray();
       if (all.length === 0) {
-        alert("No entries to export yet. You can click 'Blank Template' to download an Excel template to fill on your computer.");
+        alert("No entries to export yet.");
         return;
       }
 
       const rows = all.map(e => [
-        e.date,
-        `"${(e.category || "").replace(/"/g, '""')}"`,
-        `"${(e.costNature || "").replace(/"/g, '""')}"`,
-        `"${(e.description || "").replace(/"/g, '""')}"`,
-        e.amount,
+        e.date || "",
+        `"${String(e.category || "").replace(/"/g, '""')}"`,
+        `"${String(e.costNature || "").replace(/"/g, '""')}"`,
+        `"${String(e.description || "").replace(/"/g, '""')}"`,
+        e.amount || 0,
         e.pendingAmount || 0,
+        e.dueDate || "",
         e.paymentStatus || "Paid",
-        `"${(e.paidBy || "").replace(/"/g, '""')}"`,
-        `"${(e.paymentMode || "").replace(/"/g, '""')}"`,
-        `"${(e.zone || "").replace(/"/g, '""')}"`,
-        `"${(e.vendor || "").replace(/"/g, '""')}"`,
+        `"${String(e.paidBy || "").replace(/"/g, '""')}"`,
+        `"${String(e.paymentMode || "").replace(/"/g, '""')}"`,
+        `"${String(e.zone || "").replace(/"/g, '""')}"`,
+        `"${String(e.vendor || "").replace(/"/g, '""')}"`,
         e.qty || "",
         e.unit || "",
-        `"${(e.bookRef || "").replace(/"/g, '""')}"`
+        `"${String(e.billType || "Normal / Cash Slip").replace(/"/g, '""')}"`,
+        `"${String(e.bookRef || "").replace(/"/g, '""')}"`
       ].join(","));
 
       const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\n");
@@ -1885,7 +2061,6 @@
       a.click();
     }
 
-    // RFC-4180 Compliant CSV Parser
     function parseCSVTextToRows(csvText) {
       const rows = [];
       let row = [];
@@ -1932,7 +2107,6 @@
       if (!rawDate) return new Date().toISOString().split("T")[0];
       const d = String(rawDate).trim();
       if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
-      // Handle DD-MM-YYYY or DD/MM/YYYY from Indian Excel
       const parts = d.split(/[\/\-]/);
       if (parts.length === 3) {
         if (parts[0].length === 4) {
@@ -1961,12 +2135,13 @@
           }
 
           const header = rows[0].map(h => h.toLowerCase().trim());
-          const idxDate = header.findIndex(h => h.includes("date"));
+          const idxDate = header.findIndex(h => h.includes("date") && !h.includes("due"));
           const idxCat = header.findIndex(h => h.includes("category"));
-          const idxNature = header.findIndex(h => h.includes("cost") || h.includes("type") || h.includes("nature"));
+          const idxNature = header.findIndex(h => h.includes("cost") || h.includes("nature"));
           const idxDesc = header.findIndex(h => h.includes("desc") || h.includes("item") || h.includes("remark"));
           const idxAmt = header.findIndex(h => h.includes("amount") || h.includes("paid (inr)") || h === "paid");
           const idxPend = header.findIndex(h => h.includes("pending"));
+          const idxDue = header.findIndex(h => h.includes("due date"));
           const idxStatus = header.findIndex(h => h.includes("status"));
           const idxPaidBy = header.findIndex(h => h.includes("paid by") || h.includes("payer"));
           const idxMode = header.findIndex(h => h.includes("mode"));
@@ -1974,10 +2149,11 @@
           const idxVendor = header.findIndex(h => h.includes("vendor") || h.includes("contractor"));
           const idxQty = header.findIndex(h => h.includes("qty") || h.includes("quantity"));
           const idxUnit = header.findIndex(h => h.includes("unit"));
-          const idxRef = header.findIndex(h => h.includes("ref") || h.includes("book") || h.includes("page") || h.includes("bill"));
+          const idxBillType = header.findIndex(h => h.includes("bill type") || h.includes("gst"));
+          const idxRef = header.findIndex(h => h.includes("ref") || h.includes("book") || h.includes("page"));
 
           if (idxDesc === -1 || idxAmt === -1) {
-            alert("Could not find 'Description' and 'Amount Paid (INR)' columns. Please use the same column format as Download Excel (CSV).");
+            alert("Could not find 'Description' and 'Amount Paid (INR)' columns. Please use the same column format as Download Excel.");
             return;
           }
 
@@ -1998,6 +2174,7 @@
             const category = (idxCat >= 0 && cols[idxCat] ? cols[idxCat] : "Other").trim();
             const costNature = (idxNature >= 0 && cols[idxNature] ? cols[idxNature] : inferCostNatureFromCategory(category)).trim();
             const pendingAmount = idxPend >= 0 ? (evaluateMathExpression(cols[idxPend]) || 0) : 0;
+            const dueDate = (idxDue >= 0 && cols[idxDue]) ? normalizeExcelDate(cols[idxDue]) : "";
             const paymentStatus = (idxStatus >= 0 && cols[idxStatus]) ? cols[idxStatus].trim() : (pendingAmount > 0 ? "Partial" : "Paid");
             const paidBy = (idxPaidBy >= 0 && cols[idxPaidBy] ? cols[idxPaidBy] : "Self").trim();
             const paymentMode = (idxMode >= 0 && cols[idxMode] ? cols[idxMode] : "Cash").trim();
@@ -2005,14 +2182,14 @@
             const vendor = (idxVendor >= 0 && cols[idxVendor] ? cols[idxVendor] : "").trim();
             const qty = idxQty >= 0 ? (Number(cols[idxQty]) || 0) : 0;
             const unit = (idxUnit >= 0 && cols[idxUnit] ? cols[idxUnit] : "").trim();
+            const billType = (idxBillType >= 0 && cols[idxBillType] ? cols[idxBillType] : "Normal / Cash Slip").trim();
             const bookRef = (idxRef >= 0 && cols[idxRef] ? cols[idxRef] : "").trim();
 
-            // Skip exact duplicate rows if re-uploading the same Excel sheet with new rows added at the bottom
             const isDup = existingList.some(ex =>
-              ex.date === date &&
+              ex && ex.date === date &&
               ex.category === category &&
               Number(ex.amount) === Number(amtVal) &&
-              (ex.description || "").toLowerCase() === desc.toLowerCase()
+              String(ex.description || "").toLowerCase() === desc.toLowerCase()
             );
 
             if (isDup) {
@@ -2020,7 +2197,6 @@
               continue;
             }
 
-            // Auto-register any new custom categories, natures, payers, zones, or vendors found in the Excel file
             if (category && !appState.categories.includes(category)) appState.categories.push(category);
             if (costNature && !appState.costNatures.includes(costNature)) appState.costNatures.push(costNature);
             if (paidBy && !appState.payers.includes(paidBy)) appState.payers.push(paidBy);
@@ -2029,21 +2205,8 @@
 
             const id = "exp_" + Date.now() + "_" + r + "_" + Math.random().toString(36).substring(2, 6);
             const newEntry = {
-              id,
-              date,
-              category,
-              costNature,
-              amount: amtVal,
-              paymentStatus,
-              pendingAmount,
-              description: desc,
-              paidBy,
-              paymentMode,
-              zone,
-              vendor,
-              qty,
-              unit,
-              bookRef,
+              id, date, category, costNature, amount: amtVal, paymentStatus, pendingAmount,
+              dueDate, description: desc, paidBy, paymentMode, zone, vendor, qty, unit, billType, bookRef,
               updatedAt: Date.now()
             };
             appState.expenses[id] = newEntry;
@@ -2065,20 +2228,45 @@
     }
 
     // ==========================================
-    // RENDER DASHBOARD, STATS % & CHARTS
+    // 100% NULL-SAFE GET EXPENSES ARRAY (FIXES PASSBOOK MISSING BUG)
     // ==========================================
-    function getExpensesArray() {
-      return Object.values(appState.expenses || {}).sort((a, b) => {
-        if (b.date !== a.date) return b.date.localeCompare(a.date);
-        return (b.updatedAt || 0) - (a.updatedAt || 0);
+    function getExpensesArray(sortMode = "DATE_DESC") {
+      const rawList = Object.values(appState.expenses || {}).filter(e => e && typeof e === "object" && e.amount !== undefined);
+      return rawList.sort((a, b) => {
+        const dA = String(a.date || "1970-01-01");
+        const dB = String(b.date || "1970-01-01");
+        const uA = Number(a.updatedAt) || 0;
+        const uB = Number(b.updatedAt) || 0;
+        const amtA = Number(a.amount) || 0;
+        const amtB = Number(b.amount) || 0;
+
+        if (sortMode === "DATE_ASC") {
+          if (dA !== dB) return dA.localeCompare(dB);
+          return uA - uB;
+        }
+        if (sortMode === "ADDED_DESC") {
+          return uB - uA;
+        }
+        if (sortMode === "AMT_DESC") {
+          return amtB - amtA;
+        }
+        if (sortMode === "AMT_ASC") {
+          return amtA - amtB;
+        }
+        // Default DATE_DESC
+        if (dB !== dA) return dB.localeCompare(dA);
+        return uB - uA;
       });
     }
 
+    // ==========================================
+    // RENDER DASHBOARD, STATS % & CHARTS
+    // ==========================================
     function renderAllViews() {
-      const allExpenses = getExpensesArray();
+      const allExpenses = getExpensesArray("DATE_DESC");
       const totalSpent = allExpenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
       const totalPending = allExpenses.reduce((sum, e) => sum + (Number(e.pendingAmount) || 0), 0);
-      const cashSpent = allExpenses.filter(e => e.paymentMode === "Cash").reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+      const cashSpent = allExpenses.filter(e => String(e.paymentMode || "Cash") === "Cash").reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
       const digitalSpent = totalSpent - cashSpent;
 
       document.getElementById("headerProjectTitle").textContent = appState.meta.projectTitle || "Nirmaan Pro";
@@ -2092,8 +2280,31 @@
       document.getElementById("dashDigitalSpent").textContent = `${formatINR(digitalSpent)} (${digPct}%)`;
       document.getElementById("dashTotalEntriesCount").textContent = `${allExpenses.length} Records`;
 
-      // Show Last Entered Book Page Ref Badge on Dashboard if available
-      const latestWithBookRef = allExpenses.find(e => e.bookRef && e.bookRef.trim() && e.bookRef !== "Bulk Book Entry");
+      // Live Cost Per Sq.Ft Benchmark
+      const sqFt = Number(appState.meta.builtUpSqFt) || 0;
+      const sqFtEl = document.getElementById("dashCostPerSqFt");
+      if (sqFt > 0) {
+        const perSqFt = Math.round(totalSpent / sqFt);
+        sqFtEl.textContent = `${formatINR(perSqFt)} / Sq.Ft`;
+      } else {
+        sqFtEl.textContent = "Tap Edit to Set";
+      }
+
+      // Upcoming Due Date Alert Banner
+      const pendingItems = allExpenses.filter(e => Number(e.pendingAmount) > 0);
+      const dueBanner = document.getElementById("upcomingDuesBanner");
+      if (pendingItems.length > 0) {
+        const withDueDates = pendingItems.filter(e => e.dueDate);
+        dueBanner.classList.remove("hidden");
+        document.getElementById("upcomingDuesText").textContent =
+          `${pendingItems.length} unsettled bill(s) totaling ${formatINR(totalPending)}` +
+          (withDueDates.length ? ` • Next Due: ${withDueDates[0].dueDate} (${withDueDates[0].description})` : "");
+      } else {
+        dueBanner.classList.add("hidden");
+      }
+
+      // Last Entered Book Page Badge
+      const latestWithBookRef = allExpenses.find(e => e.bookRef && String(e.bookRef).trim() && e.bookRef !== "Bulk Book Entry");
       const bookBadge = document.getElementById("lastBookPageBadge");
       if (latestWithBookRef) {
         bookBadge.textContent = `📖 Last Ref: ${latestWithBookRef.bookRef}`;
@@ -2113,22 +2324,30 @@
         const rem = budget - totalSpent;
         document.getElementById("dashBudgetRemaining").textContent = rem >= 0
           ? `Remaining Budget: ${formatINR(rem)} (${formatShortINRWords(rem)})`
-          : `Over Budget by ${formatINR(Math.abs(rem))}`;
+          : `⚠️ Over Budget by ${formatINR(Math.abs(rem))}`;
       } else {
         document.getElementById("dashBudgetTarget").textContent = "Not Set";
         document.getElementById("dashBudgetPct").textContent = "0% Used";
         document.getElementById("dashBudgetBar").style.width = "0%";
-        document.getElementById("dashBudgetRemaining").textContent = "Tap 'Edit Budget / Stage %' above to set your house budget.";
+        document.getElementById("dashBudgetRemaining").textContent = "Tap 'Edit Budget / Sq.Ft / Stage %' above to set your house budget.";
       }
 
+      // Stage % & Final Cost Forecaster
       const stagePct = Number(appState.meta.constructionStagePct) || 0;
       document.getElementById("dashStagePctLabel").textContent = `${stagePct}% Done`;
       document.getElementById("dashStageBar").style.width = `${Math.min(100, Math.max(0, stagePct))}%`;
+      const forecastEl = document.getElementById("dashStageForecast");
+      if (stagePct >= 5 && totalSpent > 0) {
+        const projectedTotal = Math.round((totalSpent / stagePct) * 100);
+        forecastEl.textContent = `At ${stagePct}% completion, projected 100% cost is ~${formatINR(projectedTotal)} (${formatShortINRWords(projectedTotal)})`;
+      } else {
+        forecastEl.textContent = "Update physical work % anytime to see projected final house cost.";
+      }
 
-      // Category Totals Map
+      // Top Categories
       const catTotals = {};
       allExpenses.forEach(e => {
-        const c = e.category || "Uncategorized";
+        const c = (e.category || "Uncategorized").trim();
         catTotals[c] = (catTotals[c] || 0) + (Number(e.amount) || 0);
       });
       const sortedCats = Object.entries(catTotals)
@@ -2137,10 +2356,7 @@
 
       const topCatEl = document.getElementById("dashTopCategoriesList");
       if (sortedCats.length === 0) {
-        topCatEl.innerHTML = `
-          <div class="text-center py-8 text-slate-400 text-xs">
-            No expenses recorded yet. Tap <strong>Add Entry</strong> or upload your Excel sheet!
-          </div>`;
+        topCatEl.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">No expenses recorded yet. Tap <strong>Add Entry</strong>!</div>`;
       } else {
         topCatEl.innerHTML = sortedCats.slice(0, 6).map(([cat, amt]) => {
           const pct = totalSpent > 0 ? ((amt / totalSpent) * 100).toFixed(1) : 0;
@@ -2158,28 +2374,29 @@
         }).join("");
       }
 
+      // Recent 6 Transactions (100% Null-Safe Payment Mode)
       const recEl = document.getElementById("dashRecentTransactions");
       if (allExpenses.length === 0) {
-        recEl.innerHTML = `
-          <div class="text-center py-8 text-slate-400 text-xs">
-            Your passbook is currently empty (₹0).
-          </div>`;
+        recEl.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">Your passbook is currently empty (₹0).</div>`;
       } else {
-        recEl.innerHTML = allExpenses.slice(0, 6).map(e => `
-          <div class="py-2.5 flex items-center justify-between gap-2">
-            <div class="min-w-0">
-              <div class="flex items-center gap-1.5">
-                <span class="text-xs font-bold text-slate-900 truncate">${escapeHtml(e.description)}</span>
-                ${e.pendingAmount > 0 ? `<span class="px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 text-[10px] font-bold">Due: ${formatINR(e.pendingAmount)}</span>` : ""}
+        recEl.innerHTML = allExpenses.slice(0, 6).map(e => {
+          const modeLabel = String(e.paymentMode || "Cash").split(" ")[0];
+          return `
+            <div class="py-2.5 flex items-center justify-between gap-2">
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-xs font-bold text-slate-900 truncate">${escapeHtml(e.description)}</span>
+                  ${Number(e.pendingAmount) > 0 ? `<span class="px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 text-[10px] font-bold">Due: ${formatINR(e.pendingAmount)}</span>` : ""}
+                </div>
+                <p class="text-[11px] text-slate-500 truncate">${e.date || ""} • ${escapeHtml(e.category)} ${e.vendor ? '• 👷 ' + escapeHtml(e.vendor) : ''}</p>
               </div>
-              <p class="text-[11px] text-slate-500 truncate">${e.date} • ${escapeHtml(e.category)} ${e.vendor ? '• 👷 ' + escapeHtml(e.vendor) : ''}</p>
+              <div class="text-right shrink-0">
+                <span class="text-xs font-extrabold ${Number(e.amount) < 0 ? 'text-emerald-600' : 'text-slate-900'}">${formatINR(e.amount)}</span>
+                <span class="block text-[10px] text-slate-400">${escapeHtml(modeLabel)}</span>
+              </div>
             </div>
-            <div class="text-right shrink-0">
-              <span class="text-xs font-extrabold ${e.amount < 0 ? 'text-emerald-600' : 'text-slate-900'}">${formatINR(e.amount)}</span>
-              <span class="block text-[10px] text-slate-400">${escapeHtml(e.paymentMode.split(" ")[0])}</span>
-            </div>
-          </div>
-        `).join("");
+          `;
+        }).join("");
       }
 
       renderStatsTab(allExpenses);
@@ -2188,25 +2405,55 @@
       lucide.createIcons();
     }
 
+    function filterPassbookByPending() {
+      switchMainTab("passbook");
+      document.getElementById("passbookStatusFilter").value = "PENDING_ONLY";
+      renderPassbookList();
+    }
+
+    // ==========================================
+    // STATS TAB (WITH CATEGORY SUB-BUDGETS & MATERIAL PRICE INFLATION)
+    // ==========================================
+    async function setCategorySubBudgetPrompt(catName) {
+      const current = (appState.categoryBudgets && appState.categoryBudgets[catName]) || "";
+      const raw = prompt(`Set Target Sub-Budget (₹) for "${catName}":\n(Leave 0 or blank to remove target)`, current);
+      if (raw === null) return;
+      const val = Number(raw) || 0;
+      if (!appState.categoryBudgets) appState.categoryBudgets = {};
+      if (val > 0) {
+        appState.categoryBudgets[catName] = val;
+      } else {
+        delete appState.categoryBudgets[catName];
+      }
+      renderAllViews();
+      await pushFullStateToCloud();
+      showToast(`Updated budget target for ${catName}`);
+    }
+
     function renderStatsTab(allExpenses) {
       const zoneFilter = document.getElementById("statsZoneFilter").value || "ALL";
-      const filtered = zoneFilter === "ALL" ? allExpenses : allExpenses.filter(e => e.zone === zoneFilter);
+      const filtered = zoneFilter === "ALL" ? allExpenses : allExpenses.filter(e => (e.zone || "") === zoneFilter);
       const total = filtered.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+      const sqFt = Number(appState.meta.builtUpSqFt) || 0;
 
-      // 1. Dynamic Expense Type (Cost Nature) Cards — Supports any custom Expense Type you add!
+      // 1. Dynamic Expense Type Cards (With ₹/Sq.Ft breakdown)
       const natureMap = {};
       appState.costNatures.forEach(n => { natureMap[n] = 0; });
       filtered.forEach(e => {
-        const n = e.costNature || "Material";
+        const n = (e.costNature || "Material").trim();
         natureMap[n] = (natureMap[n] || 0) + (Number(e.amount) || 0);
       });
 
       const activeNatures = Object.entries(natureMap).filter(([k, v]) => v > 0 || ["Material", "Labor", "Approval & Fees"].includes(k));
       document.getElementById("statsNatureCards").innerHTML = activeNatures.map(([natName, amt]) => {
         const pct = total > 0 ? ((amt / total) * 100).toFixed(1) : "0.0";
+        const sqFtText = sqFt > 0 ? `${formatINR(Math.round(amt / sqFt))}/Sq.Ft` : "";
         return `
           <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-            <span class="text-[11px] font-bold uppercase text-slate-400 block truncate">${escapeHtml(natName)} Share</span>
+            <div class="flex justify-between items-center">
+              <span class="text-[11px] font-bold uppercase text-slate-400 truncate">${escapeHtml(natName)} Share</span>
+              ${sqFtText ? `<span class="text-[10px] font-bold text-slate-500">${sqFtText}</span>` : ""}
+            </div>
             <div class="flex items-baseline justify-between mt-1">
               <span class="text-xl font-extrabold text-slate-900">${formatINR(amt)}</span>
               <span class="text-sm font-extrabold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full">${pct}%</span>
@@ -2215,10 +2462,11 @@
         `;
       }).join("");
 
-      // 2. Category Breakdown List & Donut Chart
+      // 2. Category Breakdown List & Sub-Budget Overrun Tracker
       const catMap = {};
       filtered.forEach(e => {
-        catMap[e.category] = (catMap[e.category] || 0) + (Number(e.amount) || 0);
+        const c = (e.category || "Other").trim();
+        catMap[c] = (catMap[c] || 0) + (Number(e.amount) || 0);
       });
       const catEntries = Object.entries(catMap).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
       document.getElementById("statsCategoryCountBadge").textContent = `${catEntries.length} Active Categories`;
@@ -2229,23 +2477,33 @@
       } else {
         fullCatEl.innerHTML = catEntries.map(([cat, amt], idx) => {
           const pct = total > 0 ? ((amt / total) * 100).toFixed(2) : "0.00";
+          const subTarget = (appState.categoryBudgets && Number(appState.categoryBudgets[cat])) || 0;
+          const subPct = subTarget > 0 ? ((amt / subTarget) * 100).toFixed(0) : 0;
+          const barColor = subTarget > 0
+            ? (amt > subTarget ? "bg-rose-600" : (subPct >= 85 ? "bg-amber-500" : "bg-emerald-600"))
+            : "bg-slate-900";
+
           return `
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70">
-              <div class="flex items-center justify-between text-xs mb-1">
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70 space-y-1">
+              <div class="flex items-center justify-between text-xs">
                 <span class="font-bold text-slate-800">${idx + 1}. ${escapeHtml(cat)}</span>
                 <div class="flex items-center gap-2">
+                  <button type="button" onclick="setCategorySubBudgetPrompt('${escapeHtml(cat).replace(/'/g, "\\'")}')" class="text-[10px] font-bold text-slate-500 hover:text-amber-700 underline">
+                    ${subTarget > 0 ? `Target: ${formatINR(subTarget)} (${subPct}%)` : "+ Set Target"}
+                  </button>
                   <span class="font-extrabold text-slate-900">${formatINR(amt)}</span>
                   <span class="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-800 font-extrabold text-[11px]">${pct}%</span>
                 </div>
               </div>
               <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                <div class="h-full bg-slate-900 rounded-full" style="width: ${Math.min(100, pct)}%"></div>
+                <div class="h-full ${barColor} rounded-full" style="width: ${Math.min(100, subTarget > 0 ? subPct : pct)}%"></div>
               </div>
             </div>
           `;
         }).join("");
       }
 
+      // Donut Chart
       const donutCanvas = document.getElementById("categoryDonutChart");
       const donutEmpty = document.getElementById("donutEmptyState");
       if (catEntries.length === 0) {
@@ -2295,7 +2553,7 @@
       // 3. Zone Breakdown
       const zoneMap = {};
       allExpenses.forEach(e => {
-        const z = e.zone || "Overall House / Common";
+        const z = (e.zone || "Overall House / Common").trim();
         zoneMap[z] = (zoneMap[z] || 0) + (Number(e.amount) || 0);
       });
       const grandTotal = allExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
@@ -2312,14 +2570,18 @@
             `;
           }).join("");
 
-      // 4. Payer Breakdown
+      // 4. Payer Breakdown + GST vs Cash Slip Summary
       const payerMap = {};
+      let gstTotal = 0;
       allExpenses.forEach(e => {
-        const p = e.paidBy || "Self";
+        const p = (e.paidBy || "Self").trim();
         payerMap[p] = (payerMap[p] || 0) + (Number(e.amount) || 0);
+        if (e.billType === "GST Tax Invoice") gstTotal += Number(e.amount) || 0;
       });
       const payerEntries = Object.entries(payerMap).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
-      document.getElementById("statsPayerBreakdownList").innerHTML = payerEntries.length === 0
+      const gstPct = grandTotal > 0 ? ((gstTotal / grandTotal) * 100).toFixed(1) : "0.0";
+
+      document.getElementById("statsPayerBreakdownList").innerHTML = (payerEntries.length === 0
         ? `<p class="text-xs text-slate-400 py-4 text-center">No payer data yet.</p>`
         : payerEntries.map(([pName, amt]) => {
             const p = grandTotal > 0 ? ((amt / grandTotal) * 100).toFixed(1) : "0.0";
@@ -2329,13 +2591,17 @@
                 <span class="font-bold text-slate-900">${formatINR(amt)} <span class="text-sky-600 ml-1">(${p}%)</span></span>
               </div>
             `;
-          }).join("");
+          }).join("")) +
+          `<div class="mt-2 p-2.5 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-between text-xs">
+            <span class="font-bold text-amber-950">🧾 Official GST Tax Invoices</span>
+            <span class="font-extrabold text-amber-900">${formatINR(gstTotal)} (${gstPct}%)</span>
+          </div>`;
 
       // 5. Monthly Bar Chart
       const monthMap = {};
       filtered.forEach(e => {
-        if (e.date && e.date.length >= 7) {
-          const ym = e.date.slice(0, 7);
+        if (e.date && String(e.date).length >= 7) {
+          const ym = String(e.date).slice(0, 7);
           monthMap[ym] = (monthMap[ym] || 0) + (Number(e.amount) || 0);
         }
       });
@@ -2360,30 +2626,54 @@
         }
       });
 
-      // 6. Material Quantity & Average Unit Rate Tracker
+      // 6. Material Quantity & Price Inflation Tracker (Min, Max, Avg, Latest Rate)
       const matTracker = {};
-      allExpenses.forEach(e => {
-        if (Number(e.qty) > 0 && e.unit) {
+      // Process chronologically from oldest to newest to track latest rate accurately
+      const chronological = [...allExpenses].reverse();
+      chronological.forEach(e => {
+        const q = Number(e.qty) || 0;
+        const amt = Number(e.amount) || 0;
+        if (q > 0 && amt > 0 && e.unit) {
           const key = `${e.category} (${e.unit})`;
-          if (!matTracker[key]) matTracker[key] = { qty: 0, cost: 0, unit: e.unit };
-          matTracker[key].qty += Number(e.qty);
-          matTracker[key].cost += Number(e.amount) || 0;
+          const unitRate = amt / q;
+          if (!matTracker[key]) {
+            matTracker[key] = {
+              qty: 0,
+              cost: 0,
+              unit: e.unit,
+              minRate: unitRate,
+              maxRate: unitRate,
+              latestRate: unitRate
+            };
+          }
+          matTracker[key].qty += q;
+          matTracker[key].cost += amt;
+          if (unitRate < matTracker[key].minRate) matTracker[key].minRate = unitRate;
+          if (unitRate > matTracker[key].maxRate) matTracker[key].maxRate = unitRate;
+          matTracker[key].latestRate = unitRate;
         }
       });
+
       const matKeys = Object.entries(matTracker);
       document.getElementById("statsMaterialSummary").innerHTML = matKeys.length === 0
-        ? `<p class="text-xs text-slate-400 py-6 text-center">Fill optional "Quantity + Unit" when adding Cement, Steel, Bricks, Sand, or Tiles to see total quantity & average rate here.</p>`
+        ? `<p class="text-xs text-slate-400 py-6 text-center">Fill optional "Quantity + Unit" when adding Cement, Steel, Bricks, Sand, or Tiles to track Min/Max/Avg & Latest rates here.</p>`
         : matKeys.map(([k, info]) => {
-            const avg = info.qty > 0 ? Math.round(info.cost / info.qty) : 0;
+            const avg = Math.round(info.cost / info.qty);
+            const latest = Math.round(info.latestRate);
+            const diff = latest - avg;
+            const diffBadge = diff > 0
+              ? `<span class="text-[10px] font-bold text-rose-600">🔺 +₹${diff} vs avg</span>`
+              : (diff < 0 ? `<span class="text-[10px] font-bold text-emerald-600">🟢 -₹${Math.abs(diff)} below avg</span>` : `<span class="text-[10px] text-slate-400">On Avg</span>`);
+
             return `
-              <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
-                <div>
-                  <span class="font-bold text-slate-900 block">${escapeHtml(k)}</span>
-                  <span class="text-[11px] text-slate-500">Total Bought: <strong>${info.qty} ${escapeHtml(info.unit)}</strong></span>
+              <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1 text-xs">
+                <div class="flex items-center justify-between">
+                  <span class="font-extrabold text-slate-900">${escapeHtml(k)}</span>
+                  <span class="font-extrabold text-amber-700">Avg: ${formatINR(avg)}/${escapeHtml(info.unit)}</span>
                 </div>
-                <div class="text-right">
-                  <span class="font-extrabold text-amber-700">Avg: ${formatINR(avg)} / ${escapeHtml(info.unit)}</span>
-                  <span class="block text-[10px] text-slate-400">Total: ${formatINR(info.cost)}</span>
+                <div class="flex flex-wrap items-center justify-between text-[11px] text-slate-500">
+                  <span>Total: <strong>${info.qty} ${escapeHtml(info.unit)}</strong> (${formatINR(info.cost)})</span>
+                  <span>Min: ₹${Math.round(info.minRate)} • Max: ₹${Math.round(info.maxRate)} • Latest: <strong>₹${latest}</strong> (${diffBadge})</span>
                 </div>
               </div>
             `;
@@ -2391,7 +2681,7 @@
     }
 
     // ==========================================
-    // PASSBOOK LIST & FILTERS
+    // PASSBOOK LIST, SORTING, GROUPING & CLONE ENTRY
     // ==========================================
     function clearPassbookFilters() {
       document.getElementById("passbookSearch").value = "";
@@ -2401,11 +2691,15 @@
       document.getElementById("passbookStatusFilter").value = "ALL";
       document.getElementById("passbookDateFrom").value = "";
       document.getElementById("passbookDateTo").value = "";
+      document.getElementById("passbookSortBy").value = "DATE_DESC";
+      document.getElementById("passbookGroupBy").value = "NONE";
       renderPassbookList();
     }
 
-    function renderPassbookList() {
-      const all = getExpensesArray();
+    function getFilteredPassbookExpenses() {
+      const sortBy = document.getElementById("passbookSortBy") ? document.getElementById("passbookSortBy").value : "DATE_DESC";
+      const all = getExpensesArray(sortBy);
+
       const q = (document.getElementById("passbookSearch").value || "").toLowerCase().trim();
       const catF = document.getElementById("passbookCatFilter").value || "ALL";
       const venF = document.getElementById("passbookVendorFilter").value || "ALL";
@@ -2414,67 +2708,64 @@
       const dateFrom = document.getElementById("passbookDateFrom").value || "";
       const dateTo = document.getElementById("passbookDateTo").value || "";
 
+      const isAnyFilterActive = Boolean(
+        q || catF !== "ALL" || venF !== "ALL" || payerF !== "ALL" || statusF !== "ALL" || dateFrom || dateTo
+      );
+
       const filtered = all.filter(e => {
-        if (catF !== "ALL" && e.category !== catF) return false;
-        if (venF !== "ALL" && (e.vendor || "") !== venF) return false;
-        if (payerF !== "ALL" && e.paidBy !== payerF) return false;
+        if (catF !== "ALL" && (e.category || "").trim() !== catF) return false;
+        if (venF !== "ALL" && (e.vendor || "").trim() !== venF) return false;
+        if (payerF !== "ALL" && (e.paidBy || "").trim() !== payerF) return false;
         if (statusF === "PENDING_ONLY" && !(Number(e.pendingAmount) > 0)) return false;
-        if (statusF === "CASH_ONLY" && e.paymentMode !== "Cash") return false;
-        if (statusF === "DIGITAL_ONLY" && e.paymentMode === "Cash") return false;
-        if (dateFrom && e.date < dateFrom) return false;
-        if (dateTo && e.date > dateTo) return false;
+        if (statusF === "CASH_ONLY" && String(e.paymentMode || "Cash") !== "Cash") return false;
+        if (statusF === "DIGITAL_ONLY" && String(e.paymentMode || "Cash") === "Cash") return false;
+        if (statusF === "GST_ONLY" && e.billType !== "GST Tax Invoice") return false;
+        if (dateFrom && String(e.date || "") < dateFrom) return false;
+        if (dateTo && String(e.date || "") > dateTo) return false;
         if (q) {
-          const hay = `${e.description} ${e.category} ${e.costNature} ${e.vendor} ${e.bookRef} ${e.zone} ${e.paidBy} ${e.date}`.toLowerCase();
+          const hay = `${e.description || ""} ${e.category || ""} ${e.costNature || ""} ${e.vendor || ""} ${e.bookRef || ""} ${e.zone || ""} ${e.paidBy || ""} ${e.date || ""}`.toLowerCase();
           if (!hay.includes(q)) return false;
         }
         return true;
       });
 
-      const sumPaid = filtered.reduce((s, e) => s + (Number(e.amount) || 0), 0);
-      const sumPend = filtered.reduce((s, e) => s + (Number(e.pendingAmount) || 0), 0);
+      return { all, filtered, isAnyFilterActive };
+    }
 
-      document.getElementById("passbookFilteredCount").textContent = `Showing ${filtered.length} of ${all.length} entries`;
-      document.getElementById("passbookFilteredTotal").textContent = formatINR(sumPaid);
-      document.getElementById("passbookFilteredPending").textContent = formatINR(sumPend);
-
-      const container = document.getElementById("passbookEntriesContainer");
-      if (filtered.length === 0) {
-        container.innerHTML = `
-          <div class="bg-white rounded-2xl p-8 text-center text-slate-400 text-xs border border-slate-200">
-            No matching passbook entries found.
-          </div>`;
-        return;
-      }
-
-      container.innerHTML = filtered.map(e => `
+    function renderSinglePassbookCardHtml(e) {
+      return `
         <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div class="space-y-1 min-w-0">
             <div class="flex flex-wrap items-center gap-1.5">
-              <span class="px-2 py-0.5 rounded-md bg-slate-900 text-white text-[10px] font-bold">${escapeHtml(e.category)}</span>
-              <span class="text-xs font-extrabold text-slate-900">${escapeHtml(e.description)}</span>
-              ${Number(e.pendingAmount) > 0 ? `<span class="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[10px] font-extrabold">Pending Balance: ${formatINR(e.pendingAmount)}</span>` : ""}
+              <span class="px-2 py-0.5 rounded-md bg-slate-900 text-white text-[10px] font-bold">${escapeHtml(e.category || "Other")}</span>
+              <span class="text-xs font-extrabold text-slate-900">${escapeHtml(e.description || "")}</span>
+              ${e.billType === "GST Tax Invoice" ? `<span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 text-[10px] font-bold">🧾 GST</span>` : ""}
+              ${Number(e.pendingAmount) > 0 ? `<span class="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[10px] font-extrabold">Pending: ${formatINR(e.pendingAmount)} ${e.dueDate ? '(Due: ' + e.dueDate + ')' : ''}</span>` : ""}
             </div>
             <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-500">
-              <span>📅 ${e.date}</span>
-              <span>👤 Paid by: <strong>${escapeHtml(e.paidBy)}</strong> (${escapeHtml(e.paymentMode)})</span>
+              <span>📅 ${escapeHtml(e.date || "No Date")}</span>
+              <span>👤 Paid by: <strong>${escapeHtml(e.paidBy || "Self")}</strong> (${escapeHtml(e.paymentMode || "Cash")})</span>
               <span>🏠 ${escapeHtml(e.zone || "Overall")}</span>
-              ${e.vendor ? `<span class="text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded font-semibold">👷 Vendor: ${escapeHtml(e.vendor)}</span>` : ""}
-              ${Number(e.qty) > 0 ? `<span>📦 Qty: ${e.qty} ${escapeHtml(e.unit)}</span>` : ""}
+              ${e.vendor ? `<span class="text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded font-semibold">👷 ${escapeHtml(e.vendor)}</span>` : ""}
+              ${Number(e.qty) > 0 ? `<span>📦 Qty: ${e.qty} ${escapeHtml(e.unit || "")}</span>` : ""}
               ${e.bookRef ? `<span>📖 Ref: <strong>${escapeHtml(e.bookRef)}</strong></span>` : ""}
             </div>
           </div>
 
-          <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-100">
+          <div class="flex items-center justify-between sm:justify-end gap-2.5 w-full sm:w-auto border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-100">
             <div class="text-left sm:text-right">
-              <span class="text-base font-extrabold ${e.amount < 0 ? 'text-emerald-600' : 'text-slate-900'}">${formatINR(e.amount)}</span>
+              <span class="text-base font-extrabold ${Number(e.amount) < 0 ? 'text-emerald-600' : 'text-slate-900'}">${formatINR(e.amount)}</span>
               <span class="block text-[10px] text-slate-400">${escapeHtml(e.costNature || "Material")}</span>
             </div>
-            <div class="flex items-center gap-1.5">
+            <div class="flex items-center gap-1">
               ${Number(e.pendingAmount) > 0 ? `
-                <button onclick="settlePendingExpense('${e.id}')" title="Mark Pending Balance as Paid" class="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-bold">
+                <button onclick="openSettleDueModal('${e.id}')" title="Settle Full or Partial Due" class="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-bold">
                   Settle Due
                 </button>
               ` : ""}
+              <button onclick="cloneExpenseEntry('${e.id}')" title="Clone / Repeat This Expense" class="p-2 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              </button>
               <button onclick="startEditingExpense('${e.id}')" title="Edit Entry" class="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700">
                 <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
               </button>
@@ -2484,8 +2775,99 @@
             </div>
           </div>
         </div>
-      `).join("");
+      `;
+    }
+
+    function renderPassbookList() {
+      const { all, filtered, isAnyFilterActive } = getFilteredPassbookExpenses();
+      const groupBy = document.getElementById("passbookGroupBy") ? document.getElementById("passbookGroupBy").value : "NONE";
+
+      const sumPaid = filtered.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+      const sumPend = filtered.reduce((s, e) => s + (Number(e.pendingAmount) || 0), 0);
+
+      document.getElementById("passbookFilteredCount").textContent = `Showing ${filtered.length} of ${all.length} total records`;
+      document.getElementById("passbookFilteredTotal").textContent = formatINR(sumPaid);
+      document.getElementById("passbookFilteredPending").textContent = formatINR(sumPend);
+
+      const noticeEl = document.getElementById("activeFilterNotice");
+      if (isAnyFilterActive && filtered.length < all.length) {
+        noticeEl.classList.remove("hidden");
+        document.getElementById("activeFilterNoticeText").textContent =
+          `Filter active: Showing ${filtered.length} of ${all.length} entries (${all.length - filtered.length} hidden by filter).`;
+      } else {
+        noticeEl.classList.add("hidden");
+      }
+
+      const container = document.getElementById("passbookEntriesContainer");
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl p-8 text-center text-slate-400 text-xs border border-slate-200 space-y-2">
+            <p>No matching passbook entries found.</p>
+            ${isAnyFilterActive ? `<button onclick="clearPassbookFilters()" class="px-3 py-1.5 rounded-xl bg-slate-900 text-white font-bold">Reset Filters to View All ${all.length} Records</button>` : ""}
+          </div>`;
+        return;
+      }
+
+      if (groupBy === "NONE") {
+        container.innerHTML = filtered.map(e => renderSinglePassbookCardHtml(e)).join("");
+      } else {
+        // Grouped View (By Month, Category, Vendor, or Book Page)
+        const groups = {};
+        filtered.forEach(e => {
+          let key = "Other";
+          if (groupBy === "MONTH") key = e.date && String(e.date).length >= 7 ? String(e.date).slice(0, 7) : "Unknown Month";
+          else if (groupBy === "CATEGORY") key = (e.category || "Uncategorized").trim();
+          else if (groupBy === "VENDOR") key = (e.vendor || "General / No Vendor").trim();
+          else if (groupBy === "BOOK_PAGE") key = (e.bookRef || "No Book Page Ref").trim();
+
+          if (!groups[key]) groups[key] = { items: [], total: 0 };
+          groups[key].items.push(e);
+          groups[key].total += Number(e.amount) || 0;
+        });
+
+        container.innerHTML = Object.entries(groups).map(([gName, gData]) => `
+          <div class="space-y-2 bg-slate-200/60 p-3 rounded-2xl border border-slate-300/80">
+            <div class="flex items-center justify-between px-1">
+              <span class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">${escapeHtml(gName)} (${gData.items.length} entries)</span>
+              <span class="text-xs font-extrabold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full">Group Total: ${formatINR(gData.total)}</span>
+            </div>
+            <div class="space-y-2">
+              ${gData.items.map(item => renderSinglePassbookCardHtml(item)).join("")}
+            </div>
+          </div>
+        `).join("");
+      }
+
       lucide.createIcons();
+    }
+
+    // 1-Tap Clone / Repeat Expense
+    function cloneExpenseEntry(id) {
+      const e = appState.expenses[id];
+      if (!e) return;
+
+      switchMainTab("add");
+      toggleAddSubMode("single");
+      resetSingleForm();
+
+      populateAllDropdowns({
+        category: e.category,
+        costNature: e.costNature || "Material",
+        paidBy: e.paidBy || "Self",
+        zone: e.zone || "Overall House / Common",
+        vendor: e.vendor || ""
+      });
+
+      document.getElementById("expDate").value = new Date().toISOString().split("T")[0];
+      document.getElementById("expAmountInput").value = Math.abs(e.amount);
+      document.getElementById("expDescription").value = e.description || "";
+      document.getElementById("expPaymentMode").value = e.paymentMode || "Cash";
+      document.getElementById("expQty").value = e.qty || "";
+      document.getElementById("expUnit").value = e.unit || "";
+      document.getElementById("expBillType").value = e.billType || "Normal / Cash Slip";
+      handleAmountMathPreview();
+      showToast("Cloned! Check date/amount and tap Save.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     function startEditingExpense(id) {
@@ -2519,29 +2901,62 @@
       document.getElementById("expPaymentStatus").value = e.paymentStatus || "Paid";
       togglePendingBalanceInput();
       document.getElementById("expPendingAmount").value = e.pendingAmount || "";
+      document.getElementById("expDueDate").value = e.dueDate || "";
       document.getElementById("expDescription").value = e.description || "";
       document.getElementById("expPaymentMode").value = e.paymentMode || "Cash";
       document.getElementById("expQty").value = e.qty || "";
       document.getElementById("expUnit").value = e.unit || "";
+      document.getElementById("expBillType").value = e.billType || "Normal / Cash Slip";
       document.getElementById("expBookRef").value = e.bookRef || "";
       handleAmountMathPreview();
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    async function settlePendingExpense(id) {
+    // ==========================================
+    // PARTIAL / FULL DUE SETTLEMENT MODAL
+    // ==========================================
+    function openSettleDueModal(id) {
       const e = appState.expenses[id];
       if (!e || !(Number(e.pendingAmount) > 0)) return;
-      const confirmSettle = confirm(`Settle Pending Balance of ${formatINR(e.pendingAmount)} for "${e.description}"?\n\nThis will add ${formatINR(e.pendingAmount)} to the paid amount and set Pending Balance to ₹0.`);
-      if (!confirmSettle) return;
+      document.getElementById("settleExpenseId").value = id;
+      document.getElementById("settleItemTitle").textContent = `${e.description} (${e.category})`;
+      document.getElementById("settleCurrentPending").textContent = formatINR(e.pendingAmount);
+      document.getElementById("settlePayNowInput").value = e.pendingAmount;
+      document.getElementById("settlePayDate").value = new Date().toISOString().split("T")[0];
+      document.getElementById("settlePayMode").value = e.paymentMode || "Cash";
+      document.getElementById("settleDueModal").classList.remove("hidden");
+    }
 
-      e.amount = (Number(e.amount) || 0) + Number(e.pendingAmount);
-      e.pendingAmount = 0;
-      e.paymentStatus = "Paid";
+    function closeSettleDueModal() {
+      document.getElementById("settleDueModal").classList.add("hidden");
+    }
+
+    async function confirmSettleDuePayment() {
+      const id = document.getElementById("settleExpenseId").value;
+      const e = appState.expenses[id];
+      if (!e) return;
+
+      const payNow = Number(document.getElementById("settlePayNowInput").value) || 0;
+      const curPend = Number(e.pendingAmount) || 0;
+      if (payNow <= 0 || payNow > curPend) {
+        alert(`Please enter an amount between ₹1 and ${formatINR(curPend)}.`);
+        return;
+      }
+
+      const payDate = document.getElementById("settlePayDate").value || new Date().toISOString().split("T")[0];
+      const payMode = document.getElementById("settlePayMode").value || "Cash";
+
+      e.amount = (Number(e.amount) || 0) + payNow;
+      e.pendingAmount = curPend - payNow;
+      e.paymentStatus = e.pendingAmount === 0 ? "Paid" : "Partial";
+      if (e.pendingAmount === 0) e.dueDate = "";
+      e.description = `${e.description} [Settled ${formatINR(payNow)} on ${payDate} via ${payMode.split(" ")[0]}]`;
       e.updatedAt = Date.now();
 
+      closeSettleDueModal();
       renderAllViews();
       await pushFullStateToCloud();
-      showToast("Pending Balance Settled!");
+      showToast(e.pendingAmount === 0 ? "Pending Due Fully Settled!" : `Partial Payment Saved! Remaining Due: ${formatINR(e.pendingAmount)}`);
     }
 
     async function softDeleteExpense(id) {
@@ -2572,18 +2987,26 @@
     }
 
     // ==========================================
-    // CONTRACTORS, CLICKABLE LEDGER & MASTER ITEM MANAGER
+    // CONTRACTORS, EXTRA WORK, RETENTION & COMPLETE WHATSAPP / PDF EXPORT
     // ==========================================
     async function handleAddContractor(e) {
       e.preventDefault();
       const name = document.getElementById("conName").value.trim();
       const workType = document.getElementById("conWorkType").value.trim();
       const agreed = Number(document.getElementById("conAgreedAmount").value) || 0;
+      const extra = Number(document.getElementById("conExtraAmount").value) || 0;
       if (!name || agreed <= 0) return;
 
       const id = "con_" + Date.now();
       if (!appState.contractors) appState.contractors = {};
-      appState.contractors[id] = { id, name, workType, agreedAmount: agreed };
+      appState.contractors[id] = {
+        id,
+        name,
+        workType,
+        agreedAmount: agreed,
+        extraWorkAmount: extra,
+        retentionPct: 0
+      };
 
       if (!appState.vendors) appState.vendors = [];
       if (!appState.vendors.includes(name)) {
@@ -2593,6 +3016,7 @@
       document.getElementById("conName").value = "";
       document.getElementById("conWorkType").value = "";
       document.getElementById("conAgreedAmount").value = "";
+      document.getElementById("conExtraAmount").value = "";
 
       populateAllDropdowns({ vendor: name });
       renderAllViews();
@@ -2609,66 +3033,132 @@
       await pushFullStateToCloud();
     }
 
+    async function saveContractorTermsInline() {
+      if (!activeLedgerContractorId) return;
+      const c = appState.contractors[activeLedgerContractorId];
+      if (!c) return;
+      c.agreedAmount = Number(document.getElementById("ledgerEditBase").value) || 0;
+      c.extraWorkAmount = Number(document.getElementById("ledgerEditExtra").value) || 0;
+      c.retentionPct = Number(document.getElementById("ledgerEditRetention").value) || 0;
+      openContractorLedgerModal(activeLedgerContractorId);
+      renderAllViews();
+      await pushFullStateToCloud();
+    }
+
     function openContractorLedgerModal(contractorId) {
+      activeLedgerContractorId = contractorId;
       const c = appState.contractors && appState.contractors[contractorId];
       if (!c) return;
 
-      const allExp = getExpensesArray();
+      // Sort payments chronologically (Oldest to Newest) for a proper statement
+      const allExp = getExpensesArray("DATE_ASC");
       const payments = allExp.filter(e => (e.vendor || "").toLowerCase().trim() === c.name.toLowerCase().trim());
+
+      const baseContract = Number(c.agreedAmount) || 0;
+      const extraWork = Number(c.extraWorkAmount) || 0;
+      const totalRevisedContract = baseContract + extraWork;
+      const retentionPct = Number(c.retentionPct) || 0;
+      const retentionHoldAmt = Math.round(totalRevisedContract * (retentionPct / 100));
+
       const totalPaid = payments.reduce((s, e) => s + (Number(e.amount) || 0), 0);
       const totalPend = payments.reduce((s, e) => s + (Number(e.pendingAmount) || 0), 0);
-      const remContract = c.agreedAmount - totalPaid;
-      const pct = c.agreedAmount > 0 ? ((totalPaid / c.agreedAmount) * 100).toFixed(1) : 0;
+      const remContract = totalRevisedContract - totalPaid;
+      const netPayableBeforeRelease = remContract - retentionHoldAmt;
+      const pct = totalRevisedContract > 0 ? ((totalPaid / totalRevisedContract) * 100).toFixed(1) : "0.0";
 
       document.getElementById("ledgerModalTitle").textContent = c.name;
-      document.getElementById("ledgerModalSubtitle").textContent = `${c.workType} • ${payments.length} Payments Recorded`;
+      document.getElementById("ledgerModalSubtitle").textContent = `${c.workType} • Total ${payments.length} Payments Recorded (100% Complete List)`;
+
+      document.getElementById("ledgerEditBase").value = baseContract;
+      document.getElementById("ledgerEditExtra").value = extraWork;
+      document.getElementById("ledgerEditRetention").value = retentionPct;
 
       document.getElementById("ledgerModalSummary").innerHTML = `
         <div>
-          <span class="text-[10px] text-slate-400 block">Agreed Contract</span>
-          <strong class="text-sm text-white">${formatINR(c.agreedAmount)}</strong>
+          <span class="text-[10px] text-slate-400 block">Revised Total Contract</span>
+          <strong class="text-sm text-white">${formatINR(totalRevisedContract)}</strong>
+          ${extraWork > 0 ? `<span class="block text-[9px] text-amber-300">Base ${formatINR(baseContract)} + Extra ${formatINR(extraWork)}</span>` : ""}
         </div>
         <div>
           <span class="text-[10px] text-slate-400 block">Total Paid (${pct}%)</span>
           <strong class="text-sm text-amber-400">${formatINR(totalPaid)}</strong>
+          <span class="block text-[9px] text-slate-400">${payments.length} installments</span>
         </div>
         <div>
-          <span class="text-[10px] text-slate-400 block">Remaining Balance</span>
+          <span class="text-[10px] text-slate-400 block">Total Balance Left</span>
           <strong class="text-sm text-emerald-400">${formatINR(remContract)}</strong>
+          ${totalPend > 0 ? `<span class="block text-[9px] text-rose-400">Unsettled Bills: ${formatINR(totalPend)}</span>` : ""}
+        </div>
+        <div>
+          <span class="text-[10px] text-slate-400 block">Retention Hold (${retentionPct}%)</span>
+          <strong class="text-sm text-sky-300">${formatINR(retentionHoldAmt)}</strong>
+          <span class="block text-[9px] text-slate-400">Net Payable Now: ${formatINR(netPayableBeforeRelease)}</span>
         </div>
       `;
 
       const listEl = document.getElementById("ledgerModalPaymentsList");
       if (payments.length === 0) {
-        listEl.innerHTML = `<p class="text-xs text-slate-400 py-6 text-center">No payments linked to "${escapeHtml(c.name)}" yet. Select "${escapeHtml(c.name)}" in the Vendor dropdown when adding an expense.</p>`;
+        listEl.innerHTML = `<tr><td colspan="5" class="text-xs text-slate-400 py-8 text-center">No payments linked to "${escapeHtml(c.name)}" yet. Select "${escapeHtml(c.name)}" in the Vendor dropdown when adding an expense.</td></tr>`;
       } else {
-        listEl.innerHTML = payments.map((p, idx) => `
-          <div class="py-2 flex items-center justify-between gap-2">
-            <div>
-              <span class="font-bold text-slate-900">${idx + 1}. ${escapeHtml(p.description)}</span>
-              <p class="text-[11px] text-slate-500">${p.date} • ${escapeHtml(p.paymentMode)} (Paid by ${escapeHtml(p.paidBy)}) ${p.bookRef ? '• ' + escapeHtml(p.bookRef) : ''}</p>
-            </div>
-            <div class="text-right shrink-0">
-              <strong class="text-slate-900">${formatINR(p.amount)}</strong>
-              ${p.pendingAmount > 0 ? `<span class="block text-[10px] text-rose-600 font-bold">Bill Due: ${formatINR(p.pendingAmount)}</span>` : ""}
-            </div>
-          </div>
-        `).join("");
+        let runningTotal = 0;
+        listEl.innerHTML = payments.map((p, idx) => {
+          runningTotal += Number(p.amount) || 0;
+          return `
+            <tr class="hover:bg-slate-50">
+              <td class="py-2 px-2.5 font-bold text-slate-500">${idx + 1}</td>
+              <td class="py-2 px-2.5 whitespace-nowrap font-semibold">${escapeHtml(p.date || "")}</td>
+              <td class="py-2 px-2.5">
+                <span class="font-bold text-slate-900 block">${escapeHtml(p.description || "")}</span>
+                <span class="text-[10px] text-slate-500">${escapeHtml(p.category || "")} ${p.bookRef ? '• Ref: ' + escapeHtml(p.bookRef) : ''}</span>
+              </td>
+              <td class="py-2 px-2.5 text-[11px] text-slate-600">
+                ${escapeHtml(String(p.paymentMode || "Cash").split(" ")[0])} (${escapeHtml(p.paidBy || "Self")})
+              </td>
+              <td class="py-2 px-2.5 text-right whitespace-nowrap">
+                <strong class="text-slate-900">${formatINR(p.amount)}</strong>
+                <span class="block text-[9px] text-slate-400">Cum: ${formatINR(runningTotal)}</span>
+              </td>
+            </tr>
+          `;
+        }).join("");
       }
 
+      // 1. COMPLETE WHATSAPP TEXT EXPORT (100% OF PAYMENTS — ZERO TRUNCATION)
       document.getElementById("ledgerWhatsAppBtn").onclick = () => {
-        const lines = [
-          `*📋 ${appState.meta.projectTitle || "Nirmaan Pro"} — Contractor Statement*`,
+        let running = 0;
+        const paymentLines = payments.length === 0
+          ? ["• No payments recorded yet."]
+          : payments.map((p, i) => {
+              running += Number(p.amount) || 0;
+              const modeShort = String(p.paymentMode || "Cash").split(" ")[0];
+              return `${i + 1}. *${p.date}* — *${formatINR(p.amount)}* (${p.description} | ${modeShort}${p.bookRef ? ' | ' + p.bookRef : ''}) _[Total: ${formatINR(running)}]_`;
+            });
+
+        const fullMessage = [
+          `*📋 ${appState.meta.projectTitle || "Nirmaan Pro"} — Complete Contractor Payment Statement*`,
           `*Contractor:* ${c.name} (${c.workType})`,
-          `*Total Agreed Value:* ${formatINR(c.agreedAmount)}`,
-          `*Total Paid So Far:* ${formatINR(totalPaid)} (${pct}%)`,
+          `*Statement Date:* ${new Date().toISOString().split("T")[0]}`,
+          `--------------------------------`,
+          `*Base Agreed Contract:* ${formatINR(baseContract)}`,
+          extraWork > 0 ? `*Extra / Additional Work:* ${formatINR(extraWork)}` : "",
+          `*Total Revised Contract:* ${formatINR(totalRevisedContract)}`,
+          `*Total Paid Till Date (${payments.length} Payments):* ${formatINR(totalPaid)} (${pct}%)`,
           `*Remaining Contract Balance:* ${formatINR(remContract)}`,
+          retentionHoldAmt > 0 ? `*Retention Hold (${retentionPct}%):* ${formatINR(retentionHoldAmt)} (Payable before retention: ${formatINR(netPayableBeforeRelease)})` : "",
           totalPend > 0 ? `*Pending Unsettled Bills:* ${formatINR(totalPend)}` : "",
-          `\n*Recent Payments:*`,
-          ...payments.slice(0, 15).map(p => `• ${p.date}: ${formatINR(p.amount)} (${p.description} - ${p.paymentMode.split(" ")[0]})`)
+          `--------------------------------`,
+          `*COMPLETE PAYMENT DETAILS (${payments.length} Entries):*`,
+          ...paymentLines
         ].filter(Boolean).join("\n");
 
-        window.open(`https://wa.me/?text=${encodeURIComponent(lines)}`, "_blank");
+        window.open(`https://wa.me/?text=${encodeURIComponent(fullMessage)}`, "_blank");
+      };
+
+      // 2. COMPLETE PDF STATEMENT GENERATOR & MOBILE WHATSAPP FILE SHARE
+      document.getElementById("ledgerPdfBtn").onclick = () => {
+        generateAndShareContractorPDF(c, payments, {
+          baseContract, extraWork, totalRevisedContract, totalPaid, remContract, retentionPct, retentionHoldAmt, pct
+        });
       };
 
       document.getElementById("contractorLedgerModal").classList.remove("hidden");
@@ -2676,9 +3166,188 @@
     }
 
     function closeContractorLedgerModal() {
+      activeLedgerContractorId = null;
       document.getElementById("contractorLedgerModal").classList.add("hidden");
     }
 
+    // Generate & Share / Download PDF Statement for Contractor
+    async function generateAndShareContractorPDF(contractor, payments, metrics) {
+      showToast("Generating PDF Statement...");
+      const wrapper = document.getElementById("pdfRenderWrapper");
+      let running = 0;
+
+      wrapper.innerHTML = `
+        <div style="font-family: 'Plus Jakarta Sans', sans-serif; padding: 24px; color: #0f172a; background: #ffffff;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #0f172a; padding-bottom: 14px; margin-bottom: 16px;">
+            <div>
+              <h1 style="font-size: 20px; font-weight: 800; margin: 0;">${escapeHtml(appState.meta.projectTitle || "Nirmaan Pro")}</h1>
+              <p style="font-size: 12px; color: #475569; margin: 4px 0 0 0;">Complete Contractor Running Account (RA) Payment Statement</p>
+            </div>
+            <div style="text-align: right; font-size: 11px; color: #475569;">
+              <div><strong>Date:</strong> ${new Date().toISOString().split("T")[0]}</div>
+              <div><strong>Total Entries:</strong> ${payments.length} Payments</div>
+            </div>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; padding: 14px; margin-bottom: 18px;">
+            <div style="font-size: 15px; font-weight: 800; margin-bottom: 8px;">Contractor: ${escapeHtml(contractor.name)} (${escapeHtml(contractor.workType)})</div>
+            <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 4px 0;"><strong>Base Contract:</strong> ${formatINR(metrics.baseContract)}</td>
+                <td style="padding: 4px 0;"><strong>Extra Work:</strong> ${formatINR(metrics.extraWork)}</td>
+                <td style="padding: 4px 0;"><strong>Revised Total:</strong> ${formatINR(metrics.totalRevisedContract)}</td>
+              </tr>
+              <tr>
+                <td style="padding: 4px 0; color: #047857;"><strong>Total Paid (${metrics.pct}%):</strong> ${formatINR(metrics.totalPaid)}</td>
+                <td style="padding: 4px 0; color: #be123c;"><strong>Remaining Balance:</strong> ${formatINR(metrics.remContract)}</td>
+                <td style="padding: 4px 0;"><strong>Retention (${metrics.retentionPct}%):</strong> ${formatINR(metrics.retentionHoldAmt)}</td>
+              </tr>
+            </table>
+          </div>
+
+          <h3 style="font-size: 13px; font-weight: 800; text-transform: uppercase; margin-bottom: 8px;">Chronological Payment Ledger (All ${payments.length} Installments)</h3>
+          <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+            <thead>
+              <tr style="background: #0f172a; color: #ffffff;">
+                <th style="padding: 8px; text-align: left;">#</th>
+                <th style="padding: 8px; text-align: left;">Date</th>
+                <th style="padding: 8px; text-align: left;">Description & Book Ref</th>
+                <th style="padding: 8px; text-align: left;">Mode / Paid By</th>
+                <th style="padding: 8px; text-align: right;">Amount Paid</th>
+                <th style="padding: 8px; text-align: right;">Cumulative Paid</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${payments.map((p, idx) => {
+                running += Number(p.amount) || 0;
+                return `
+                  <tr style="border-bottom: 1px solid #e2e8f0;">
+                    <td style="padding: 7px 8px;">${idx + 1}</td>
+                    <td style="padding: 7px 8px; white-space: nowrap;">${escapeHtml(p.date || "")}</td>
+                    <td style="padding: 7px 8px;"><strong>${escapeHtml(p.description || "")}</strong> ${p.bookRef ? '(' + escapeHtml(p.bookRef) + ')' : ''}</td>
+                    <td style="padding: 7px 8px;">${escapeHtml(String(p.paymentMode || "Cash").split(" ")[0])} (${escapeHtml(p.paidBy || "Self")})</td>
+                    <td style="padding: 7px 8px; text-align: right; font-weight: 700;">${formatINR(p.amount)}</td>
+                    <td style="padding: 7px 8px; text-align: right; color: #475569;">${formatINR(running)}</td>
+                  </tr>
+                `;
+              }).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      const fileName = `${contractor.name.replace(/\s+/g, "_")}_Payment_Statement_${new Date().toISOString().split("T")[0]}.pdf`;
+      const opt = {
+        margin: 8,
+        filename: fileName,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+      };
+
+      try {
+        if (window.html2pdf) {
+          const pdfBlob = await html2pdf().set(opt).from(wrapper).outputPdf("blob");
+          const pdfFile = new File([pdfBlob], fileName, { type: "application/pdf" });
+
+          // If on mobile phone that supports sharing PDF files directly to WhatsApp
+          if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+            await navigator.share({
+              files: [pdfFile],
+              title: `${contractor.name} Payment Statement`,
+              text: `Complete payment statement for ${contractor.name} (${formatINR(metrics.totalPaid)} paid).`
+            });
+            showToast("PDF Shared!");
+            return;
+          }
+          // Otherwise download the PDF directly
+          await html2pdf().set(opt).from(wrapper).save();
+          showToast("PDF Statement Downloaded!");
+        } else {
+          window.print();
+        }
+      } catch (err) {
+        await html2pdf().set(opt).from(wrapper).save();
+      }
+    }
+
+    // Export Full Passbook PDF Report
+    async function exportFullPassbookPDF() {
+      const { filtered } = getFilteredPassbookExpenses();
+      if (filtered.length === 0) {
+        alert("No entries to export to PDF.");
+        return;
+      }
+      showToast("Preparing Passbook PDF...");
+      const wrapper = document.getElementById("pdfRenderWrapper");
+      const total = filtered.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+      const pending = filtered.reduce((s, e) => s + (Number(e.pendingAmount) || 0), 0);
+
+      wrapper.innerHTML = `
+        <div style="font-family: 'Plus Jakarta Sans', sans-serif; padding: 24px; color: #0f172a; background: #ffffff;">
+          <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 16px;">
+            <div>
+              <h1 style="font-size: 20px; font-weight: 800; margin: 0;">${escapeHtml(appState.meta.projectTitle || "Nirmaan Pro")} — Expense Passbook</h1>
+              <p style="font-size: 12px; color: #475569; margin: 4px 0 0 0;">Total Paid: <strong>${formatINR(total)}</strong> (${formatShortINRWords(total)}) • Pending: <strong>${formatINR(pending)}</strong></p>
+            </div>
+            <div style="text-align: right; font-size: 11px; color: #475569;">
+              <div>Date: ${new Date().toISOString().split("T")[0]}</div>
+              <div>Entries: ${filtered.length}</div>
+            </div>
+          </div>
+          <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+            <thead>
+              <tr style="background: #0f172a; color: #ffffff;">
+                <th style="padding: 6px; text-align: left;">#</th>
+                <th style="padding: 6px; text-align: left;">Date</th>
+                <th style="padding: 6px; text-align: left;">Category</th>
+                <th style="padding: 6px; text-align: left;">Description / Book Ref</th>
+                <th style="padding: 6px; text-align: left;">Vendor</th>
+                <th style="padding: 6px; text-align: left;">Paid By / Mode</th>
+                <th style="padding: 6px; text-align: right;">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filtered.map((e, i) => `
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 6px;">${i + 1}</td>
+                  <td style="padding: 6px; white-space: nowrap;">${escapeHtml(e.date || "")}</td>
+                  <td style="padding: 6px;">${escapeHtml(e.category || "")}</td>
+                  <td style="padding: 6px;"><strong>${escapeHtml(e.description || "")}</strong> ${e.bookRef ? '(' + escapeHtml(e.bookRef) + ')' : ''}</td>
+                  <td style="padding: 6px;">${escapeHtml(e.vendor || "-")}</td>
+                  <td style="padding: 6px;">${escapeHtml(e.paidBy || "Self")} (${escapeHtml(String(e.paymentMode || "Cash").split(" ")[0])})</td>
+                  <td style="padding: 6px; text-align: right; font-weight: 700;">${formatINR(e.amount)}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      const fileName = `NirmaanPro_Passbook_${new Date().toISOString().split("T")[0]}.pdf`;
+      const opt = {
+        margin: 8,
+        filename: fileName,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+      };
+
+      try {
+        if (window.html2pdf) {
+          await html2pdf().set(opt).from(wrapper).save();
+          showToast("Passbook PDF Downloaded!");
+        } else {
+          window.print();
+        }
+      } catch (err) {
+        window.print();
+      }
+    }
+
+    // ==========================================
+    // MASTER ITEM MANAGER & SYSTEM SNAPSHOT BACKUP
+    // ==========================================
     async function quickAddMasterItem(listKey, inputId) {
       const inp = document.getElementById(inputId);
       const val = inp.value.trim();
@@ -2703,6 +3372,36 @@
       showToast(`Removed "${itemValue}"`);
     }
 
+    function downloadFullSystemSnapshot() {
+      const blob = new Blob([JSON.stringify(appState, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `NirmaanPro_FullBackup_${new Date().toISOString().split("T")[0]}.json`;
+      a.click();
+      showToast("Full System Backup Downloaded!");
+    }
+
+    function restoreFullSystemSnapshot(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (!parsed || typeof parsed !== "object") throw new Error("Invalid file");
+          if (!confirm("Restore this backup file and merge/sync with your Cloud Database?")) return;
+          mergeIncomingCloudData(parsed, true);
+          await pushFullStateToCloud();
+          showToast("System Backup Restored & Synced!");
+        } catch (err) {
+          alert("Invalid backup JSON file.");
+        }
+        event.target.value = "";
+      };
+      reader.readAsText(file);
+    }
+
     function renderContractorsAndSettings() {
       document.getElementById("settingsDbUrlInput").value = getActiveDbUrl();
 
@@ -2711,42 +3410,42 @@
       const conEl = document.getElementById("contractorsListContainer");
 
       if (conList.length === 0) {
-        conEl.innerHTML = `<p class="text-xs text-slate-400 py-3 col-span-2">No contractor agreements added yet. Add a contractor above to track their advances & balances automatically.</p>`;
+        conEl.innerHTML = `<p class="text-xs text-slate-400 py-3 col-span-2">No contractor agreements added yet. Add a contractor above to track their advances, extra work & balances automatically.</p>`;
       } else {
         conEl.innerHTML = conList.map(c => {
           const payments = allExp.filter(e => (e.vendor || "").toLowerCase().trim() === c.name.toLowerCase().trim());
           const paidToCon = payments.reduce((s, e) => s + (Number(e.amount) || 0), 0);
-          const bal = c.agreedAmount - paidToCon;
-          const pct = c.agreedAmount > 0 ? ((paidToCon / c.agreedAmount) * 100).toFixed(1) : 0;
+          const totalAgreed = (Number(c.agreedAmount) || 0) + (Number(c.extraWorkAmount) || 0);
+          const bal = totalAgreed - paidToCon;
+          const pct = totalAgreed > 0 ? ((paidToCon / totalAgreed) * 100).toFixed(1) : 0;
           return `
             <div onclick="openContractorLedgerModal('${c.id}')" class="p-3.5 rounded-xl bg-slate-50 hover:bg-amber-50/50 border border-slate-200 hover:border-amber-300 space-y-2 cursor-pointer transition">
               <div class="flex items-center justify-between">
                 <div>
                   <span class="text-xs font-extrabold text-slate-900 flex items-center gap-1.5">
                     👷 ${escapeHtml(c.name)}
-                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">${payments.length} txns</span>
+                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">${payments.length} payments</span>
                   </span>
-                  <span class="text-[11px] text-slate-500 block">${escapeHtml(c.workType)}</span>
+                  <span class="text-[11px] text-slate-500 block">${escapeHtml(c.workType)} ${Number(c.extraWorkAmount) > 0 ? `(Incl. +${formatINR(c.extraWorkAmount)} Extra)` : ""}</span>
                 </div>
                 <button type="button" onclick="deleteContractor('${c.id}', event)" class="text-slate-400 hover:text-rose-600 p-1">
                   <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                 </button>
               </div>
               <div class="grid grid-cols-3 gap-2 text-xs pt-1">
-                <div><span class="text-[10px] text-slate-400 block">Agreed Value</span><strong>${formatINR(c.agreedAmount)}</strong></div>
+                <div><span class="text-[10px] text-slate-400 block">Total Contract</span><strong>${formatINR(totalAgreed)}</strong></div>
                 <div><span class="text-[10px] text-slate-400 block">Paid (${pct}%)</span><strong class="text-emerald-700">${formatINR(paidToCon)}</strong></div>
                 <div><span class="text-[10px] text-slate-400 block">Balance</span><strong class="text-rose-600">${formatINR(bal)}</strong></div>
               </div>
               <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
                 <div class="h-full bg-emerald-500 rounded-full" style="width: ${Math.min(100, pct)}%"></div>
               </div>
-              <p class="text-[10px] text-amber-700 font-bold text-right">Tap for Full Statement & WhatsApp Share →</p>
+              <p class="text-[10px] text-amber-700 font-bold text-right">Tap for All ${payments.length} Payments, PDF & WhatsApp →</p>
             </div>
           `;
         }).join("");
       }
 
-      // Render Master Lists in Settings
       document.getElementById("manageCategoriesList").innerHTML = (appState.categories || []).map(c => `
         <div class="flex items-center justify-between text-[11px] bg-white px-2 py-1 rounded border border-slate-200">
           <span class="truncate pr-2">${escapeHtml(c)}</span>
@@ -2771,7 +3470,6 @@
         </div>
       `).join("");
 
-      // Recycle Bin
       const binItems = Object.values(appState.recycleBin || {});
       document.getElementById("recycleBinCount").textContent = `${binItems.length} items`;
       const binEl = document.getElementById("recycleBinContainer");
@@ -2779,29 +3477,30 @@
         ? `<p class="text-[11px] text-slate-400">Recycle bin is empty.</p>`
         : binItems.map(b => `
             <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-slate-50 border border-slate-200">
-              <span class="truncate pr-2">${b.date} • <strong>${escapeHtml(b.description)}</strong> (${formatINR(b.amount)})</span>
+              <span class="truncate pr-2">${b.date || ""} • <strong>${escapeHtml(b.description || "")}</strong> (${formatINR(b.amount)})</span>
               <button onclick="restoreFromRecycleBin('${b.id}')" class="px-2.5 py-1 rounded bg-emerald-600 text-white text-[10px] font-bold shrink-0">Restore</button>
             </div>
           `).join("");
     }
 
-    // 1-Tap WhatsApp Project Summary Share
     function shareWhatsAppProjectSummary() {
       const all = getExpensesArray();
       const total = all.reduce((s, e) => s + (Number(e.amount) || 0), 0);
       const pending = all.reduce((s, e) => s + (Number(e.pendingAmount) || 0), 0);
+      const sqFt = Number(appState.meta.builtUpSqFt) || 0;
       const catTotals = {};
       all.forEach(e => { catTotals[e.category] = (catTotals[e.category] || 0) + (Number(e.amount) || 0); });
-      const top5 = Object.entries(catTotals).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      const allCatsSorted = Object.entries(catTotals).filter(([, a]) => a > 0).sort((a, b) => b[1] - a[1]);
 
       const text = [
-        `*🏗️ ${appState.meta.projectTitle || "Nirmaan Pro"} — Construction Expense Summary*`,
+        `*🏗️ ${appState.meta.projectTitle || "Nirmaan Pro"} — Construction Expense Report*`,
         `*Total Spent:* ${formatINR(total)} (${formatShortINRWords(total)})`,
         appState.meta.totalBudget > 0 ? `*Target Budget:* ${formatINR(appState.meta.totalBudget)} (${((total / appState.meta.totalBudget) * 100).toFixed(1)}% Used)` : "",
+        sqFt > 0 ? `*Cost Per Sq.Ft:* ${formatINR(Math.round(total / sqFt))}/Sq.Ft (${sqFt} Sq.Ft)` : "",
         `*Construction Stage:* ${appState.meta.constructionStagePct || 0}% Completed`,
         pending > 0 ? `*Pending Dues:* ${formatINR(pending)}` : "",
-        `\n*Top Spending Categories:*`,
-        ...top5.map(([c, a]) => `• ${c}: ${formatINR(a)} (${total > 0 ? ((a / total) * 100).toFixed(1) : 0}%)`)
+        `\n*Category-Wise Spending Breakdown:*`,
+        ...allCatsSorted.map(([c, a]) => `• ${c}: ${formatINR(a)} (${total > 0 ? ((a / total) * 100).toFixed(1) : 0}%)`)
       ].filter(Boolean).join("\n");
 
       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
@@ -2844,6 +3543,7 @@
     function openBudgetAndProgressModal() {
       document.getElementById("modalProjectTitle").value = appState.meta.projectTitle || "Nirmaan Pro";
       document.getElementById("modalTotalBudget").value = appState.meta.totalBudget || "";
+      document.getElementById("modalBuiltUpSqFt").value = appState.meta.builtUpSqFt || "";
       const st = Number(appState.meta.constructionStagePct) || 0;
       document.getElementById("modalStagePercent").value = st;
       document.getElementById("modalStageRangeVal").textContent = st + "%";
@@ -2857,11 +3557,12 @@
     async function saveBudgetAndProgressModal() {
       appState.meta.projectTitle = document.getElementById("modalProjectTitle").value.trim() || "Nirmaan Pro";
       appState.meta.totalBudget = Number(document.getElementById("modalTotalBudget").value) || 0;
+      appState.meta.builtUpSqFt = Number(document.getElementById("modalBuiltUpSqFt").value) || 0;
       appState.meta.constructionStagePct = Number(document.getElementById("modalStagePercent").value) || 0;
       closeBudgetAndProgressModal();
       renderAllViews();
       await pushFullStateToCloud();
-      showToast("Budget & Construction Stage Updated!");
+      showToast("Budget, Sq.Ft & Stage Updated!");
     }
 
     function switchMainTab(tabId) {
@@ -2884,7 +3585,6 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    // Initialize Application Safely
     window.addEventListener("DOMContentLoaded", async () => {
       lucide.createIcons();
       document.getElementById("expDate").value = new Date().toISOString().split("T")[0];
@@ -2898,7 +3598,6 @@
         document.getElementById("mainAppContainer").classList.remove("hidden");
       }
 
-      // First pull existing records from Firebase before any write can happen
       await forceCloudPullNow();
       startRealTimeCloudStream();
     });
