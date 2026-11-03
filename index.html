@@ -731,6 +731,9 @@
               <button type="button" onclick="bulkAssignVendorToSelected()" class="px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-amber-300 text-xs font-bold flex items-center gap-1 shadow-sm">
                 👷 Set Vendor
               </button>
+              <button type="button" onclick="bulkDeleteSelectedPassbook()" class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold flex items-center gap-1 shadow-sm">
+                🗑️ Delete Selected
+              </button>
               <button type="button" onclick="clearPassbookSelection()" class="px-2.5 py-1.5 rounded-xl bg-slate-950/20 hover:bg-slate-950/30 text-slate-950 text-xs font-extrabold">
                 Clear Selection
               </button>
@@ -2460,6 +2463,39 @@
       showToast(`Assigned Vendor "${cleanVendor || 'None'}" to ${ids.length} entries!`);
       clearPassbookSelection();
     }
+
+    async function bulkDeleteSelectedPassbook() {
+  const ids = Array.from(selectedPassbookIds);
+  if (ids.length === 0) return;
+
+  if (!confirm(`⚠️ Are you sure you want to delete all ${ids.length} selected entries?`)) return;
+
+  const permanent = confirm(`Press OK to PERMANENTLY erase these ${ids.length} entries, or Cancel to move them to the Recycle Bin.`);
+
+  ids.forEach(id => {
+    if (appState.expenses && appState.expenses[id]) {
+      if (!permanent) {
+        if (!appState.recycleBin) appState.recycleBin = {};
+        appState.recycleBin[id] = { ...appState.expenses[id], deletedAt: Date.now() };
+      }
+      delete appState.expenses[id];
+    }
+  });
+
+  // Also clean any corrupted CSV lines that got pushed into dropdown lists
+  const isCorruptedLine = (s) => String(s || "").includes(",") && String(s || "").includes("202");
+  appState.categories = (appState.categories || []).filter(x => !isCorruptedLine(x));
+  appState.payers = (appState.payers || []).filter(x => !isCorruptedLine(x));
+  appState.zones = (appState.zones || []).filter(x => !isCorruptedLine(x));
+  appState.vendors = (appState.vendors || []).filter(x => !isCorruptedLine(x));
+  appState.costNatures = (appState.costNatures || []).filter(x => !isCorruptedLine(x));
+
+  clearPassbookSelection();
+  populateAllDropdowns();
+  renderAllViews();
+  await pushFullStateToCloud();
+  showToast(`Deleted ${ids.length} selected entries!`);
+}
 
     // ==========================================
     // NULL-SAFE GET EXPENSES ARRAY
