@@ -10,7 +10,9 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Vector PDF Engine: jsPDF + jsPDF-AutoTable (Never produces blank PDFs!) -->
+  <!-- SheetJS (xlsx) for Bulletproof CSV & Excel (.xlsx) Parsing/Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <!-- Vector PDF Engine: jsPDF + jsPDF-AutoTable -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
   <style>
@@ -43,7 +45,7 @@
         <span id="lockSyncDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
         <span id="lockSyncText">Cloud DB Connected</span>
       </span>
-      <span class="text-slate-500 font-mono">v5.0 Rock-Solid</span>
+      <span class="text-slate-500 font-mono">v6.0 Pro</span>
     </div>
 
     <div class="w-full max-w-xs flex flex-col items-center my-auto">
@@ -236,7 +238,7 @@
                 <h3 class="text-sm font-bold text-slate-900">Digitize Your Physical Expense Book</h3>
                 <span id="lastBookPageBadge" class="hidden px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-extrabold"></span>
               </div>
-              <p class="text-xs text-slate-500 mt-0.5">Use <strong>Sticky Rapid Mode</strong>, <strong>Bulk Table</strong>, or <strong>Upload Excel (CSV)</strong> in Passbook.</p>
+              <p class="text-xs text-slate-500 mt-0.5">Use <strong>Sticky Rapid Mode</strong>, <strong>Bulk Table</strong>, or <strong>Upload Excel (.xlsx / .csv)</strong> in Passbook.</p>
             </div>
           </div>
           <div class="flex items-center gap-2 w-full sm:w-auto">
@@ -607,20 +609,20 @@
       </section>
 
       <!-- ==========================================
-           TAB 4: PASSBOOK (ALL ENTRIES + GROUP BY + PDF/EXCEL)
+           TAB 4: PASSBOOK (MULTI-SELECT BULK GST/VENDOR BAR + SHEETJS UPLOAD)
            ========================================== -->
       <section id="tab-passbook" class="hidden space-y-4">
         <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div>
               <h2 class="text-base font-extrabold text-slate-900">Digital Construction Passbook</h2>
-              <p class="text-xs text-slate-500">Tap the <strong>📄 Slip / 🧾 GST badge</strong> on any entry to toggle GST status in 1 click!</p>
+              <p class="text-xs text-slate-500">Select multiple entries below to bulk-update <strong>🧾 GST / 📄 Normal Slip</strong> or <strong>👷 Vendor</strong> in 1 tap!</p>
             </div>
-            <!-- Excel & Vector PDF Action Buttons -->
+            <!-- Excel (.xlsx / .csv) & Vector PDF Action Buttons -->
             <div class="flex flex-wrap items-center gap-2">
-              <input type="file" id="csvFileInput" accept=".csv" onchange="handleImportCSVFile(event)" class="hidden" />
+              <input type="file" id="csvFileInput" accept=".csv,.xlsx,.xls" onchange="handleImportExcelOrCSV(event)" class="hidden" />
               <button type="button" onclick="document.getElementById('csvFileInput').click()" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-extrabold flex items-center gap-1.5 shadow-sm transition">
-                <i data-lucide="upload" class="w-3.5 h-3.5"></i> Upload Excel (CSV)
+                <i data-lucide="upload" class="w-3.5 h-3.5"></i> Upload Excel / CSV
               </button>
               <button type="button" onclick="exportPassbookCSV(false)" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
                 <i data-lucide="download" class="w-3.5 h-3.5"></i> Download Excel
@@ -697,12 +699,41 @@
             <button onclick="clearPassbookFilters()" class="px-2.5 py-1 rounded-lg bg-slate-900 text-white text-[11px] font-bold">Show All Records</button>
           </div>
 
-          <!-- Filtered Total Bar -->
+          <!-- Filtered Total Bar + Master "Select All Filtered" Checkbox -->
           <div class="flex flex-wrap items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl bg-slate-900 text-white text-xs">
-            <span id="passbookFilteredCount" class="font-bold">Showing 0 entries</span>
+            <div class="flex items-center gap-3">
+              <label class="flex items-center gap-2 cursor-pointer select-none font-extrabold text-amber-400">
+                <input type="checkbox" id="selectAllFilteredCheckbox" onchange="toggleSelectAllFilteredPassbook(this.checked)" class="w-4 h-4 rounded accent-amber-400 cursor-pointer" />
+                <span>Select All Shown</span>
+              </label>
+              <span class="text-slate-600">|</span>
+              <span id="passbookFilteredCount" class="font-bold">Showing 0 entries</span>
+            </div>
             <div class="flex items-center gap-4">
               <span>Displayed Paid Total: <strong id="passbookFilteredTotal" class="text-amber-400 text-sm">₹0</strong></span>
               <span>Pending: <strong id="passbookFilteredPending" class="text-rose-400">₹0</strong></span>
+            </div>
+          </div>
+
+          <!-- FLOATING BULK ACTION BAR (Appears when 1+ Passbook rows are selected) -->
+          <div id="passbookBulkActionBar" class="hidden p-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span id="bulkSelectedCountBadge" class="px-2.5 py-1 rounded-lg bg-slate-950 text-amber-400 text-xs font-extrabold">0 Selected</span>
+              <span class="text-xs font-bold">Bulk Update Selected Entries:</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" onclick="bulkUpdatePassbookBillType('GST Tax Invoice')" class="px-3 py-1.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-extrabold flex items-center gap-1 shadow-sm">
+                🧾 Mark as GST Bill
+              </button>
+              <button type="button" onclick="bulkUpdatePassbookBillType('Normal / Cash Slip')" class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-900 text-xs font-extrabold flex items-center gap-1 shadow-sm">
+                📄 Mark as Normal Slip
+              </button>
+              <button type="button" onclick="bulkAssignVendorToSelected()" class="px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-amber-300 text-xs font-bold flex items-center gap-1 shadow-sm">
+                👷 Set Vendor
+              </button>
+              <button type="button" onclick="clearPassbookSelection()" class="px-2.5 py-1.5 rounded-xl bg-slate-950/20 hover:bg-slate-950/30 text-slate-950 text-xs font-extrabold">
+                Clear Selection
+              </button>
             </div>
           </div>
         </div>
@@ -787,7 +818,7 @@
               </div>
             </div>
             <div class="flex items-center gap-2">
-              <button onclick="forceCloudPullNow()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 flex items-center gap-1.5">
+              <button onclick="forceCloudPullNow(true)" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 flex items-center gap-1.5">
                 <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Sync Now
               </button>
               <button onclick="downloadFullSystemSnapshot()" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1.5">
@@ -814,7 +845,7 @@
           </div>
         </div>
 
-        <!-- Security PIN Change & Recycle Bin (With Double Confirmation Permanent Delete) -->
+        <!-- Security PIN Change & Recycle Bin -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
             <h3 class="text-sm font-extrabold text-slate-900">Change App Lock PIN</h3>
@@ -935,7 +966,6 @@
         </button>
       </div>
 
-      <!-- Editable Base Agreement, Extra Work & Retention % inside Modal -->
       <div class="grid grid-cols-3 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs">
         <div>
           <label class="text-[10px] font-bold text-slate-500 block">Base Contract (₹)</label>
@@ -951,10 +981,8 @@
         </div>
       </div>
 
-      <!-- Summary KPI Strip -->
       <div id="ledgerModalSummary" class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-slate-900 text-white p-3 rounded-xl text-xs"></div>
 
-      <!-- Complete Chronological Payment Table (100% of Payments) -->
       <div class="flex-1 overflow-y-auto border border-slate-200 rounded-xl">
         <table class="w-full text-left border-collapse text-xs">
           <thead class="bg-slate-100 text-[10px] uppercase text-slate-600 sticky top-0">
@@ -970,7 +998,6 @@
         </table>
       </div>
 
-      <!-- Action Footer: Full WhatsApp Text + Vector PDF Download & Share -->
       <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
         <div class="flex flex-wrap items-center gap-2">
           <button type="button" id="ledgerWhatsAppBtn" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold flex items-center gap-1.5 shadow-sm">
@@ -1042,13 +1069,10 @@
   </div>
 
   <!-- ==========================================
-       JAVASCRIPT ENGINE (v5.0 ATOMIC SYNC + VECTOR PDF)
+       JAVASCRIPT ENGINE (v6.0 SHEETJS + BULK SELECT + ATOMIC SYNC)
        ========================================== -->
   <script>
-    // 1. BUILT-IN FIREBASE REALTIME DATABASE URL
     const DEFAULT_FIREBASE_DB_URL = "https://nirmaanpro-73f90-default-rtdb.firebaseio.com";
-
-    // 2. VERIFIED SHA-256 HASH FOR PIN 9975
     const DEFAULT_PIN_SHA256 = "8220f2490226f57d84e902e082394a175d988ebcc2bc4523295d6210c849f83f";
 
     const INITIAL_CATEGORIES = [
@@ -1131,11 +1155,12 @@
     let enteredPin = "";
     let eventSourceStream = null;
     let hasCompletedInitialFetch = false;
-    let activeWriteCount = 0;         // Prevents background poll from overwriting in-flight saves!
-    let lastLocalWriteTime = 0;       // Timestamp guard against stale poll responses
+    let activeWriteCount = 0;
+    let lastLocalWriteTime = 0;
     let activeLedgerContractorId = null;
     let categoryChartInstance = null;
     let monthlyChartInstance = null;
+    let selectedPassbookIds = new Set(); // Stores multi-selected Passbook entry IDs
 
     function getActiveDbUrl() {
       const custom = localStorage.getItem("nirmaan_custom_db_url");
@@ -1236,7 +1261,7 @@
     });
 
     // ==========================================
-    // ATOMIC REAL-TIME FIREBASE SYNC ENGINE (ZERO RACE CONDITION)
+    // ATOMIC REAL-TIME FIREBASE SYNC ENGINE
     // ==========================================
     function setSyncIndicator(status, message) {
       const badge = document.getElementById("syncStatusBadge");
@@ -1269,16 +1294,16 @@
 
     function saveLocalBackup() {
       try {
-        localStorage.setItem("nirmaan_state_cache_v5", JSON.stringify(appState));
+        localStorage.setItem("nirmaan_state_cache_v6", JSON.stringify(appState));
       } catch (e) {}
     }
 
     function loadLocalBackup() {
       try {
-        const raw = localStorage.getItem("nirmaan_state_cache_v5") ||
+        const raw = localStorage.getItem("nirmaan_state_cache_v6") ||
+                    localStorage.getItem("nirmaan_state_cache_v5") ||
                     localStorage.getItem("nirmaan_state_cache_v4") ||
-                    localStorage.getItem("nirmaan_state_cache_v3") ||
-                    localStorage.getItem("nirmaan_state_cache_v2");
+                    localStorage.getItem("nirmaan_state_cache_v3");
         if (raw) {
           const parsed = JSON.parse(raw);
           mergeIncomingCloudData(parsed, false);
@@ -1322,7 +1347,6 @@
     function mergeIncomingCloudData(cloudData, shouldRender = true) {
       if (!cloudData || typeof cloudData !== "object") return;
 
-      // Ignore stale incoming poll if a local write just happened within the last 3 seconds
       if (activeWriteCount > 0 || (Date.now() - lastLocalWriteTime < 3000)) {
         return;
       }
@@ -1387,10 +1411,9 @@
       }
     }
 
-    // Atomic Direct Sub-Path Write (Guarantees edits like GST Bill Type or deletes NEVER revert!)
     async function writeCloudPath(subPath, payload, method = "PUT") {
       if (!hasCompletedInitialFetch) {
-        await forceCloudPullNow();
+        await forceCloudPullNow(true);
       }
       activeWriteCount++;
       lastLocalWriteTime = Date.now();
@@ -1479,7 +1502,7 @@
     }, 12000);
 
     // ==========================================
-    // FORMATTING HELPERS (SCREEN + PDF SAFE)
+    // FORMATTING HELPERS
     // ==========================================
     function formatINR(num) {
       const n = Number(num) || 0;
@@ -1488,7 +1511,6 @@
       return (isNeg ? "-₹" : "₹") + abs.toLocaleString("en-IN");
     }
 
-    // Standard ASCII "Rs." format for Vector PDFs so standard Helvetica font never glitches on the ₹ glyph
     function formatRsPDF(num) {
       const n = Number(num) || 0;
       const isNeg = n < 0;
@@ -1623,8 +1645,10 @@
     }
 
     function evaluateMathExpression(raw) {
-      if (!raw) return 0;
-      const cleaned = String(raw).replace(/[₹,\s]/g, "").trim();
+      if (raw === null || raw === undefined || raw === "") return 0;
+      if (typeof raw === "number") return isFinite(raw) ? raw : 0;
+      const cleaned = String(raw).replace(/Rs\.?|INR|₹|,|\s/gi, "").trim();
+      if (!cleaned) return 0;
       if (/^[0-9+\-*/.()]+$/.test(cleaned)) {
         try {
           const val = Function('"use strict"; return (' + cleaned + ')')();
@@ -1633,7 +1657,8 @@
           return Number(cleaned) || 0;
         }
       }
-      return Number(cleaned) || 0;
+      const numMatch = cleaned.match(/-?\d+(\.\d+)?/);
+      return numMatch ? Number(numMatch[0]) : 0;
     }
 
     function handleAmountMathPreview() {
@@ -1655,7 +1680,7 @@
     }
 
     // ==========================================
-    // SAVE SINGLE OR EDITED EXPENSE (ATOMIC CLOUD WRITE)
+    // SAVE SINGLE OR EDITED EXPENSE
     // ==========================================
     async function handleSingleExpenseSubmit(e) {
       e.preventDefault();
@@ -1785,7 +1810,6 @@
       populateAllDropdowns({ category, costNature, paidBy, zone, vendor });
       renderAllViews();
 
-      // Atomic Cloud Write directly to this expense ID (Plus full state if new dropdown items were created)
       if (masterListsChanged) {
         await pushFullStateToCloud();
       } else {
@@ -1813,15 +1837,15 @@
       }
     }
 
-    // 1-Tap Quick GST Toggle Directly on Any Passbook Card!
+    // 1-Tap Quick GST Toggle Directly on Any Passbook Card
     async function toggleExpenseGstStatus(id) {
       const e = appState.expenses && appState.expenses[id];
       if (!e) return;
-      e.billType = e.billType === "GST Tax Invoice" ? "Normal / Cash Slip" : "GST Tax Invoice";
+      e.billType = normalizeBillType(e.billType) === "GST Tax Invoice" ? "Normal / Cash Slip" : "GST Tax Invoice";
       e.updatedAt = Date.now();
       renderAllViews();
       await writeCloudPath(`expenses/${id}`, e, "PUT");
-      showToast(`Changed to ${e.billType}`);
+      showToast(`Updated to ${e.billType}`);
     }
 
     function resetSingleForm() {
@@ -2054,7 +2078,7 @@
     }
 
     // ==========================================
-    // EXCEL (CSV) DOWNLOAD & AUTO-FILL UPLOAD IMPORT
+    // BULLETPROOF EXCEL (.XLSX) & CSV IMPORT/EXPORT (POWERED BY SHEETJS)
     // ==========================================
     function exportPassbookCSV(blankTemplate = false) {
       const headers = [
@@ -2082,20 +2106,20 @@
           "Cement",
           "Material",
           "100 Bags UltraTech Cement (Sample Row - Delete or Replace)",
-          "39000",
-          "0",
+          39000,
+          0,
           "",
           "Paid",
           "Self",
           "UPI / GPay / PhonePe",
           "Ground Floor",
           "",
-          "100",
+          100,
           "Bags",
           "GST Tax Invoice",
           "Book Pg 1"
         ];
-        const csvContent = "\uFEFF" + [headers.join(","), sampleRow.join(",")].join("\n");
+        const csvContent = "\uFEFF" + [headers.join(","), sampleRow.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")].join("\n");
         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
@@ -2139,50 +2163,14 @@
       a.click();
     }
 
-    function parseCSVTextToRows(csvText) {
-      const rows = [];
-      let row = [];
-      let cur = "";
-      let inQuotes = false;
-      const text = csvText.replace(/^\uFEFF/, "");
-
-      for (let i = 0; i < text.length; i++) {
-        const ch = text[i];
-        const next = text[i + 1];
-
-        if (inQuotes) {
-          if (ch === '"' && next === '"') {
-            cur += '"';
-            i++;
-          } else if (ch === '"') {
-            inQuotes = false;
-          } else {
-            cur += ch;
-          }
-        } else {
-          if (ch === '"') {
-            inQuotes = true;
-          } else if (ch === ",") {
-            row.push(cur.trim());
-            cur = "";
-          } else if (ch === "\n" || (ch === "\r" && next === "\n")) {
-            if (ch === "\r") i++;
-            row.push(cur.trim());
-            if (row.some(cell => cell !== "")) rows.push(row);
-            row = [];
-            cur = "";
-          } else {
-            cur += ch;
-          }
-        }
-      }
-      row.push(cur.trim());
-      if (row.some(cell => cell !== "")) rows.push(row);
-      return rows;
-    }
-
     function normalizeExcelDate(rawDate) {
-      if (!rawDate) return new Date().toISOString().split("T")[0];
+      if (!rawDate && rawDate !== 0) return new Date().toISOString().split("T")[0];
+      // Handle Excel Serial Date Numbers (e.g., 46050)
+      if (typeof rawDate === "number" && rawDate > 25000 && rawDate < 80000) {
+        const utcDays = Math.floor(rawDate - 25569);
+        const dObj = new Date(utcDays * 86400 * 1000);
+        return dObj.toISOString().split("T")[0];
+      }
       const d = String(rawDate).trim();
       if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
       const parts = d.split(/[\/\-]/);
@@ -2191,6 +2179,9 @@
           return `${parts[0]}-${parts[1].padStart(2, "0")}-${parts[2].padStart(2, "0")}`;
         } else if (parts[2].length === 4) {
           return `${parts[2]}-${parts[1].padStart(2, "0")}-${parts[0].padStart(2, "0")}`;
+        } else if (parts[2].length === 2) {
+          const yr = Number(parts[2]) >= 70 ? "19" + parts[2] : "20" + parts[2];
+          return `${yr}-${parts[1].padStart(2, "0")}-${parts[0].padStart(2, "0")}`;
         }
       }
       const parsed = new Date(d);
@@ -2198,42 +2189,96 @@
       return new Date().toISOString().split("T")[0];
     }
 
-    async function handleImportCSVFile(event) {
+    // Smart Row Repair: If an unquoted CSV had a comma inside Category (like "Main Door, Windows & Teak Woodwork"),
+    // it splits into 17+ columns instead of 16. This function automatically stitches split categories/descriptions back together!
+    function normalizeImportedRowTo16Cols(rowArr) {
+      if (!Array.isArray(rowArr)) return [];
+      const cols = rowArr.map(c => (c === null || c === undefined) ? "" : String(c).trim());
+      if (cols.length <= 16) {
+        while (cols.length < 16) cols.push("");
+        return cols;
+      }
+      // If cols.length > 16 because Category or Description had an unescaped comma:
+      // Find which column index holds the numeric "Amount Paid (INR)" (usually index 4, 5, or 6)
+      let amtIdx = -1;
+      for (let i = 3; i < Math.min(cols.length, 9); i++) {
+        const cleanVal = cols[i].replace(/Rs\.?|INR|₹|,|\s/gi, "");
+        if (/^\d+(\.\d+)?$/.test(cleanVal) && Number(cleanVal) > 0) {
+          amtIdx = i;
+          break;
+        }
+      }
+      if (amtIdx > 4) {
+        // Check if Category (cols[1] + cols[2]) matches a known Category with a comma
+        const combinedCat = `${cols[1]}, ${cols[2]}`;
+        const matchesKnownCommaCat = INITIAL_CATEGORIES.some(c => c.toLowerCase() === combinedCat.toLowerCase());
+        const dateCol = cols[0];
+        let catCol = cols[1];
+        let natureCol = cols[2];
+        let descStartIdx = 3;
+
+        if (matchesKnownCommaCat) {
+          catCol = combinedCat;
+          natureCol = cols[3];
+          descStartIdx = 4;
+        }
+        const descCol = cols.slice(descStartIdx, amtIdx).join(", ");
+        const tail = cols.slice(amtIdx);
+        const rebuilt = [dateCol, catCol, natureCol, descCol, ...tail];
+        while (rebuilt.length < 16) rebuilt.push("");
+        return rebuilt.slice(0, 16);
+      }
+      return cols.slice(0, 16);
+    }
+
+    async function handleImportExcelOrCSV(event) {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
 
       const reader = new FileReader();
       reader.onload = async (e) => {
         try {
-          const text = e.target.result;
-          const rows = parseCSVTextToRows(text);
+          let rows = [];
+          const data = new Uint8Array(e.target.result);
+
+          if (window.XLSX) {
+            const workbook = XLSX.read(data, { type: "array", raw: true });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
+          } else {
+            alert("Spreadsheet parser is still loading. Please check your internet connection and try again.");
+            return;
+          }
+
+          // Filter out completely blank rows
+          rows = rows.filter(r => Array.isArray(r) && r.some(cell => String(cell || "").trim() !== ""));
+
           if (rows.length < 2) {
-            alert("The uploaded CSV file appears to be empty.");
+            alert("The uploaded file has no data rows.");
+            event.target.value = "";
             return;
           }
 
-          const header = rows[0].map(h => h.toLowerCase().trim());
-          const idxDate = header.findIndex(h => h.includes("date") && !h.includes("due"));
-          const idxCat = header.findIndex(h => h.includes("category"));
-          const idxNature = header.findIndex(h => h.includes("cost") || h.includes("nature"));
-          const idxDesc = header.findIndex(h => h.includes("desc") || h.includes("item") || h.includes("remark"));
-          const idxAmt = header.findIndex(h => h.includes("amount") || h.includes("paid (inr)") || h === "paid");
-          const idxPend = header.findIndex(h => h.includes("pending"));
-          const idxDue = header.findIndex(h => h.includes("due date"));
-          const idxStatus = header.findIndex(h => h.includes("status"));
-          const idxPaidBy = header.findIndex(h => h.includes("paid by") || h.includes("payer"));
-          const idxMode = header.findIndex(h => h.includes("mode"));
-          const idxZone = header.findIndex(h => h.includes("zone") || h.includes("floor") || h.includes("area"));
-          const idxVendor = header.findIndex(h => h.includes("vendor") || h.includes("contractor"));
-          const idxQty = header.findIndex(h => h.includes("qty") || h.includes("quantity"));
-          const idxUnit = header.findIndex(h => h.includes("unit"));
-          const idxBillType = header.findIndex(h => h.includes("bill type") || h.includes("gst"));
-          const idxRef = header.findIndex(h => h.includes("ref") || h.includes("book") || h.includes("page"));
+          const rawHeader = rows[0].map(h => String(h || "").toLowerCase().trim());
+          const isStandard16Template = rawHeader.some(h => h.includes("date")) && rawHeader.some(h => h.includes("category"));
 
-          if (idxDesc === -1 || idxAmt === -1) {
-            alert("Could not find 'Description' and 'Amount Paid (INR)' columns. Please use the same column format as Download Excel.");
-            return;
-          }
+          const idxDate = isStandard16Template ? rawHeader.findIndex(h => h.includes("date") && !h.includes("due")) : 0;
+          const idxCat = isStandard16Template ? rawHeader.findIndex(h => h.includes("category")) : 1;
+          const idxNature = isStandard16Template ? rawHeader.findIndex(h => h.includes("cost") || h.includes("nature")) : 2;
+          const idxDesc = isStandard16Template ? rawHeader.findIndex(h => h.includes("desc") || h.includes("item") || h.includes("remark")) : 3;
+          const idxAmt = isStandard16Template ? rawHeader.findIndex(h => h.includes("amount") || h.includes("paid (inr)") || h === "paid") : 4;
+          const idxPend = isStandard16Template ? rawHeader.findIndex(h => h.includes("pending")) : 5;
+          const idxDue = isStandard16Template ? rawHeader.findIndex(h => h.includes("due date")) : 6;
+          const idxStatus = isStandard16Template ? rawHeader.findIndex(h => h.includes("status")) : 7;
+          const idxPaidBy = isStandard16Template ? rawHeader.findIndex(h => h.includes("paid by") || h.includes("payer")) : 8;
+          const idxMode = isStandard16Template ? rawHeader.findIndex(h => h.includes("mode")) : 9;
+          const idxZone = isStandard16Template ? rawHeader.findIndex(h => h.includes("zone") || h.includes("floor") || h.includes("area")) : 10;
+          const idxVendor = isStandard16Template ? rawHeader.findIndex(h => h.includes("vendor") || h.includes("contractor")) : 11;
+          const idxQty = isStandard16Template ? rawHeader.findIndex(h => h.includes("qty") || h.includes("quantity")) : 12;
+          const idxUnit = isStandard16Template ? rawHeader.findIndex(h => h.includes("unit")) : 13;
+          const idxBillType = isStandard16Template ? rawHeader.findIndex(h => h.includes("bill type") || h.includes("gst")) : 14;
+          const idxRef = isStandard16Template ? rawHeader.findIndex(h => h.includes("ref") || h.includes("book") || h.includes("page")) : 15;
 
           if (!appState.expenses) appState.expenses = {};
           const existingList = Object.values(appState.expenses);
@@ -2241,27 +2286,29 @@
           let updatedExistingCount = 0;
 
           for (let r = 1; r < rows.length; r++) {
-            const cols = rows[r];
-            const desc = (cols[idxDesc] || "").trim();
+            const rawRow = rows[r];
+            const cols = rawRow.length > 16 ? normalizeImportedRowTo16Cols(rawRow) : rawRow.map(c => (c === null || c === undefined) ? "" : String(c).trim());
+
+            const desc = String(cols[idxDesc >= 0 ? idxDesc : 3] || "").trim();
             if (desc.includes("(Sample Row - Delete or Replace)")) continue;
 
-            const amtVal = evaluateMathExpression(cols[idxAmt]);
+            const amtVal = evaluateMathExpression(cols[idxAmt >= 0 ? idxAmt : 4]);
             if (!desc || amtVal === 0) continue;
 
-            const date = normalizeExcelDate(idxDate >= 0 ? cols[idxDate] : "");
-            const category = (idxCat >= 0 && cols[idxCat] ? cols[idxCat] : "Other").trim();
-            const costNature = (idxNature >= 0 && cols[idxNature] ? cols[idxNature] : inferCostNatureFromCategory(category)).trim();
+            const date = normalizeExcelDate(idxDate >= 0 ? cols[idxDate] : cols[0]);
+            const category = String(idxCat >= 0 && cols[idxCat] ? cols[idxCat] : "Other").trim();
+            const costNature = String(idxNature >= 0 && cols[idxNature] ? cols[idxNature] : inferCostNatureFromCategory(category)).trim();
             const pendingAmount = idxPend >= 0 ? (evaluateMathExpression(cols[idxPend]) || 0) : 0;
             const dueDate = (idxDue >= 0 && cols[idxDue]) ? normalizeExcelDate(cols[idxDue]) : "";
-            const paymentStatus = (idxStatus >= 0 && cols[idxStatus]) ? cols[idxStatus].trim() : (pendingAmount > 0 ? "Partial" : "Paid");
-            const paidBy = (idxPaidBy >= 0 && cols[idxPaidBy] ? cols[idxPaidBy] : "Self").trim();
-            const paymentMode = (idxMode >= 0 && cols[idxMode] ? cols[idxMode] : "Cash").trim();
-            const zone = (idxZone >= 0 && cols[idxZone] ? cols[idxZone] : "Overall House / Common").trim();
-            const vendor = (idxVendor >= 0 && cols[idxVendor] ? cols[idxVendor] : "").trim();
-            const qty = idxQty >= 0 ? (Number(cols[idxQty]) || 0) : 0;
-            const unit = (idxUnit >= 0 && cols[idxUnit] ? cols[idxUnit] : "").trim();
+            const paymentStatus = (idxStatus >= 0 && cols[idxStatus]) ? String(cols[idxStatus]).trim() : (pendingAmount > 0 ? "Partial" : "Paid");
+            const paidBy = String(idxPaidBy >= 0 && cols[idxPaidBy] ? cols[idxPaidBy] : "Self").trim();
+            const paymentMode = String(idxMode >= 0 && cols[idxMode] ? cols[idxMode] : "Cash").trim();
+            const zone = String(idxZone >= 0 && cols[idxZone] ? cols[idxZone] : "Overall House / Common").trim();
+            const vendor = String(idxVendor >= 0 && cols[idxVendor] ? cols[idxVendor] : "").trim();
+            const qty = idxQty >= 0 ? (evaluateMathExpression(cols[idxQty]) || 0) : 0;
+            const unit = String(idxUnit >= 0 && cols[idxUnit] ? cols[idxUnit] : "").trim();
             const billType = normalizeBillType(idxBillType >= 0 ? cols[idxBillType] : "");
-            const bookRef = (idxRef >= 0 && cols[idxRef] ? cols[idxRef] : "").trim();
+            const bookRef = String(idxRef >= 0 && cols[idxRef] ? cols[idxRef] : "").trim();
 
             if (category && !appState.categories.includes(category)) appState.categories.push(category);
             if (costNature && !appState.costNatures.includes(costNature)) appState.costNatures.push(costNature);
@@ -2269,11 +2316,10 @@
             if (zone && !appState.zones.includes(zone)) appState.zones.push(zone);
             if (vendor && !appState.vendors.includes(vendor)) appState.vendors.push(vendor);
 
-            // Check if row matches an existing entry (and update its fields if changed in Excel!)
             const existingMatch = existingList.find(ex =>
               ex && ex.date === date &&
               ex.category === category &&
-              Number(ex.amount) === Number(amtVal) &&
+              Math.abs(Number(ex.amount) - Number(amtVal)) < 1 &&
               String(ex.description || "").toLowerCase() === desc.toLowerCase()
             );
 
@@ -2305,16 +2351,118 @@
           renderAllViews();
           await pushFullStateToCloud();
 
-          alert(`✅ Excel Import Complete!\n\n• Imported New Rows: ${importedCount}\n• Updated Existing Rows: ${updatedExistingCount}`);
+          alert(`✅ Upload Successful!\n\n• New Entries Imported: ${importedCount}\n• Existing Entries Updated: ${updatedExistingCount}\n• Total Passbook Records Now: ${Object.keys(appState.expenses).length}`);
         } catch (err) {
-          alert("Error reading CSV file. Please make sure it is saved as a standard .csv file.");
+          console.error(err);
+          alert("Error reading file: " + (err.message || "Please check file format."));
+          event.target.value = "";
         }
       };
-      reader.readAsText(file);
+      reader.readAsArrayBuffer(file);
     }
 
     // ==========================================
-    // 100% NULL-SAFE GET EXPENSES ARRAY
+    // PASSBOOK MULTI-SELECT & BULK GST / VENDOR UPDATER
+    // ==========================================
+    function toggleSelectSinglePassbookRow(id, isChecked) {
+      if (isChecked) {
+        selectedPassbookIds.add(id);
+      } else {
+        selectedPassbookIds.delete(id);
+      }
+      updateBulkSelectionUI();
+    }
+
+    function toggleSelectAllFilteredPassbook(isChecked) {
+      const { filtered } = getFilteredPassbookExpenses();
+      if (isChecked) {
+        filtered.forEach(e => selectedPassbookIds.add(e.id));
+      } else {
+        filtered.forEach(e => selectedPassbookIds.delete(e.id));
+      }
+      renderPassbookList();
+    }
+
+    function clearPassbookSelection() {
+      selectedPassbookIds.clear();
+      const masterCb = document.getElementById("selectAllFilteredCheckbox");
+      if (masterCb) masterCb.checked = false;
+      renderPassbookList();
+    }
+
+    function updateBulkSelectionUI() {
+      // Remove any IDs that no longer exist
+      Array.from(selectedPassbookIds).forEach(id => {
+        if (!appState.expenses || !appState.expenses[id]) {
+          selectedPassbookIds.delete(id);
+        }
+      });
+
+      const count = selectedPassbookIds.size;
+      const bar = document.getElementById("passbookBulkActionBar");
+      const badge = document.getElementById("bulkSelectedCountBadge");
+      if (count > 0) {
+        bar.classList.remove("hidden");
+        badge.textContent = `${count} Selected`;
+      } else {
+        bar.classList.add("hidden");
+      }
+
+      const { filtered } = getFilteredPassbookExpenses();
+      const masterCb = document.getElementById("selectAllFilteredCheckbox");
+      if (masterCb) {
+        masterCb.checked = filtered.length > 0 && filtered.every(e => selectedPassbookIds.has(e.id));
+      }
+    }
+
+    async function bulkUpdatePassbookBillType(targetBillType) {
+      const ids = Array.from(selectedPassbookIds);
+      if (ids.length === 0) return;
+
+      const normalized = normalizeBillType(targetBillType);
+      ids.forEach(id => {
+        if (appState.expenses && appState.expenses[id]) {
+          appState.expenses[id].billType = normalized;
+          appState.expenses[id].updatedAt = Date.now();
+        }
+      });
+
+      renderAllViews();
+      await writeCloudPath("expenses", appState.expenses, "PUT");
+      showToast(`Updated ${ids.length} entries to ${normalized}!`);
+      clearPassbookSelection();
+    }
+
+    async function bulkAssignVendorToSelected() {
+      const ids = Array.from(selectedPassbookIds);
+      if (ids.length === 0) return;
+
+      const allVendors = getCombinedVendorsList();
+      const suggestionText = allVendors.length ? `\nSaved Vendors: ${allVendors.join(", ")}` : "";
+      const newVendor = prompt(`Enter Vendor / Contractor Name to assign to all ${ids.length} selected entries:${suggestionText}\n(Leave blank to clear vendor)`);
+      if (newVendor === null) return;
+
+      const cleanVendor = newVendor.trim();
+      if (cleanVendor && !appState.vendors.includes(cleanVendor)) {
+        appState.vendors.push(cleanVendor);
+      }
+
+      ids.forEach(id => {
+        if (appState.expenses && appState.expenses[id]) {
+          appState.expenses[id].vendor = cleanVendor;
+          appState.expenses[id].updatedAt = Date.now();
+        }
+      });
+
+      populateAllDropdowns();
+      renderAllViews();
+      await pushFullStateToCloud();
+      showToast(`Assigned Vendor "${cleanVendor || 'None'}" to ${ids.length} entries!`);
+      clearPassbookSelection();
+    }
+
+    // ==========================================
+    // NULL-SAFE GET EXPENSES ARRAY
     // ==========================================
     function getExpensesArray(sortMode = "DATE_DESC") {
       const rawList = Object.values(appState.expenses || {}).filter(e => e && typeof e === "object" && e.amount !== undefined);
@@ -2757,7 +2905,7 @@
     }
 
     // ==========================================
-    // PASSBOOK LIST, SORTING, GROUPING & 1-TAP GST TOGGLE
+    // PASSBOOK LIST, SORTING, GROUPING & MULTI-SELECT CHECKBOXES
     // ==========================================
     function clearPassbookFilters() {
       document.getElementById("passbookSearch").value = "";
@@ -2812,32 +2960,36 @@
 
     function renderSinglePassbookCardHtml(e) {
       const isGst = normalizeBillType(e.billType) === "GST Tax Invoice";
+      const isSelected = selectedPassbookIds.has(e.id);
       const historyArr = Array.isArray(e.settlementHistory) ? e.settlementHistory : [];
 
       return `
-        <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div class="space-y-1 min-w-0">
-            <div class="flex flex-wrap items-center gap-1.5">
-              <span class="px-2 py-0.5 rounded-md bg-slate-900 text-white text-[10px] font-bold">${escapeHtml(e.category || "Other")}</span>
-              <span class="text-xs font-extrabold text-slate-900">${escapeHtml(e.description || "")}</span>
-              <button type="button" onclick="toggleExpenseGstStatus('${e.id}')" title="Tap to toggle between GST Tax Invoice and Normal Slip" class="px-2 py-0.5 rounded-md text-[10px] font-extrabold border transition ${isGst ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200'}">
-                ${isGst ? '🧾 GST Invoice' : '📄 Normal Slip'}
-              </button>
-              ${Number(e.pendingAmount) > 0 ? `<span class="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[10px] font-extrabold">Pending: ${formatINR(e.pendingAmount)} ${e.dueDate ? '(Due: ' + e.dueDate + ')' : ''}</span>` : ""}
-            </div>
-            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-500">
-              <span>📅 ${escapeHtml(e.date || "No Date")}</span>
-              <span>👤 Paid by: <strong>${escapeHtml(e.paidBy || "Self")}</strong> (${escapeHtml(e.paymentMode || "Cash")})</span>
-              <span>🏠 ${escapeHtml(e.zone || "Overall")}</span>
-              ${e.vendor ? `<span class="text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded font-semibold">👷 ${escapeHtml(e.vendor)}</span>` : ""}
-              ${Number(e.qty) > 0 ? `<span>📦 Qty: ${e.qty} ${escapeHtml(e.unit || "")}</span>` : ""}
-              ${e.bookRef ? `<span>📖 Ref: <strong>${escapeHtml(e.bookRef)}</strong></span>` : ""}
-            </div>
-            ${historyArr.length > 0 ? `
-              <div class="flex flex-wrap gap-1 pt-0.5">
-                ${historyArr.map(h => `<span class="px-2 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-semibold">✅ Settled ${formatINR(h.amount)} on ${escapeHtml(h.date)} (${escapeHtml(h.mode)})</span>`).join("")}
+        <div class="bg-white rounded-2xl p-3.5 shadow-sm border transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${isSelected ? 'border-amber-500 ring-2 ring-amber-400/30 bg-amber-50/20' : 'border-slate-200'}">
+          <div class="flex items-start gap-3 min-w-0 w-full sm:w-auto">
+            <input type="checkbox" ${isSelected ? "checked" : ""} onchange="toggleSelectSinglePassbookRow('${e.id}', this.checked)" class="mt-1 w-4 h-4 rounded accent-amber-500 cursor-pointer shrink-0" title="Select for bulk update" />
+            <div class="space-y-1 min-w-0 flex-1">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="px-2 py-0.5 rounded-md bg-slate-900 text-white text-[10px] font-bold">${escapeHtml(e.category || "Other")}</span>
+                <span class="text-xs font-extrabold text-slate-900">${escapeHtml(e.description || "")}</span>
+                <button type="button" onclick="toggleExpenseGstStatus('${e.id}')" title="Tap to toggle between GST Tax Invoice and Normal Slip" class="px-2 py-0.5 rounded-md text-[10px] font-extrabold border transition ${isGst ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200'}">
+                  ${isGst ? '🧾 GST Invoice' : '📄 Normal Slip'}
+                </button>
+                ${Number(e.pendingAmount) > 0 ? `<span class="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[10px] font-extrabold">Pending: ${formatINR(e.pendingAmount)} ${e.dueDate ? '(Due: ' + e.dueDate + ')' : ''}</span>` : ""}
               </div>
-            ` : ""}
+              <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-500">
+                <span>📅 ${escapeHtml(e.date || "No Date")}</span>
+                <span>👤 Paid by: <strong>${escapeHtml(e.paidBy || "Self")}</strong> (${escapeHtml(e.paymentMode || "Cash")})</span>
+                <span>🏠 ${escapeHtml(e.zone || "Overall")}</span>
+                ${e.vendor ? `<span class="text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded font-semibold">👷 ${escapeHtml(e.vendor)}</span>` : ""}
+                ${Number(e.qty) > 0 ? `<span>📦 Qty: ${e.qty} ${escapeHtml(e.unit || "")}</span>` : ""}
+                ${e.bookRef ? `<span>📖 Ref: <strong>${escapeHtml(e.bookRef)}</strong></span>` : ""}
+              </div>
+              ${historyArr.length > 0 ? `
+                <div class="flex flex-wrap gap-1 pt-0.5">
+                  ${historyArr.map(h => `<span class="px-2 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-semibold">✅ Settled ${formatINR(h.amount)} on ${escapeHtml(h.date)} (${escapeHtml(h.mode)})</span>`).join("")}
+                </div>
+              ` : ""}
+            </div>
           </div>
 
           <div class="flex items-center justify-between sm:justify-end gap-2.5 w-full sm:w-auto border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-100">
@@ -2876,6 +3028,8 @@
       document.getElementById("passbookFilteredCount").textContent = `Showing ${filtered.length} of ${all.length} total records`;
       document.getElementById("passbookFilteredTotal").textContent = formatINR(sumPaid);
       document.getElementById("passbookFilteredPending").textContent = formatINR(sumPend);
+
+      updateBulkSelectionUI();
 
       const noticeEl = document.getElementById("activeFilterNotice");
       if (isAnyFilterActive && filtered.length < all.length) {
@@ -2932,7 +3086,7 @@
       const e = appState.expenses[id];
       if (!e) return;
 
-      switchMainTab("add");
+      switchMainTab("add", true);
       toggleAddSubMode("single");
       resetSingleForm();
 
@@ -2956,7 +3110,6 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    // Fixed Edit Loader: switchMainTab no longer resets dropdowns before setting edited values!
     function startEditingExpense(id) {
       const e = appState.expenses[id];
       if (!e) return;
@@ -3000,7 +3153,7 @@
     }
 
     // ==========================================
-    // PARTIAL / FULL DUE SETTLEMENT MODAL (CLEAN HISTORY LOG)
+    // PARTIAL / FULL DUE SETTLEMENT MODAL
     // ==========================================
     function openSettleDueModal(id) {
       const e = appState.expenses[id];
@@ -3063,6 +3216,7 @@
       const deletedItem = { ...e, deletedAt: Date.now() };
       appState.recycleBin[id] = deletedItem;
       delete appState.expenses[id];
+      selectedPassbookIds.delete(id);
 
       renderAllViews();
       await writeCloudPath(`recycleBin/${id}`, deletedItem, "PUT");
@@ -3086,7 +3240,6 @@
       showToast("Entry Restored to Passbook!");
     }
 
-    // Strict 2-Step Double Confirmation Permanent Delete from Recycle Bin
     async function permanentlyDeleteFromRecycleBin(id) {
       const item = appState.recycleBin && appState.recycleBin[id];
       if (!item) return;
@@ -3120,7 +3273,7 @@
     }
 
     // ==========================================
-    // CONTRACTORS & 100% VECTOR PDF ENGINE (NEVER BLANK!)
+    // CONTRACTORS & 100% VECTOR PDF ENGINE
     // ==========================================
     async function handleAddContractor(e) {
       e.preventDefault();
@@ -3256,7 +3409,6 @@
         }).join("");
       }
 
-      // 1. Complete Uncapped WhatsApp Text Share
       document.getElementById("ledgerWhatsAppBtn").onclick = () => {
         let running = 0;
         const paymentLines = payments.length === 0
@@ -3287,7 +3439,6 @@
         window.open(`https://wa.me/?text=${encodeURIComponent(fullMessage)}`, "_blank");
       };
 
-      // 2. Native Vector PDF Generator (jsPDF + AutoTable — Never Blank!)
       document.getElementById("ledgerPdfDownloadBtn").onclick = () => {
         generateVectorContractorPDF(c, payments, {
           baseContract, extraWork, totalRevisedContract, totalPaid, remContract, retentionPct, retentionHoldAmt, pct
@@ -3303,7 +3454,6 @@
       document.getElementById("contractorLedgerModal").classList.add("hidden");
     }
 
-    // Native Vector PDF Builder for Contractor Statement (0.05s execution, 0% chance of blank page)
     async function generateVectorContractorPDF(contractor, payments, metrics) {
       if (!window.jspdf || !window.jspdf.jsPDF) {
         alert("PDF engine is loading. Please try again in a second.");
@@ -3314,7 +3464,6 @@
       const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
       const todayStr = new Date().toISOString().split("T")[0];
 
-      // Dark Header Banner
       doc.setFillColor(15, 23, 42);
       doc.rect(0, 0, 210, 32, "F");
       doc.setTextColor(255, 255, 255);
@@ -3329,7 +3478,6 @@
       doc.setTextColor(203, 213, 225);
       doc.text(`Generated: ${todayStr}  |  Total Installments: ${payments.length}`, 14, 28);
 
-      // Summary Contract Box
       doc.autoTable({
         startY: 38,
         theme: "grid",
@@ -3346,7 +3494,6 @@
         ]]
       });
 
-      // Complete Chronological Payments Table
       let running = 0;
       const tableRows = payments.length === 0
         ? [["-", "-", "No payments recorded yet", "-", "-", "Rs. 0", "Rs. 0"]]
@@ -3384,8 +3531,6 @@
       });
 
       const fileName = `${contractor.name.replace(/[^a-zA-Z0-9]/g, "_")}_Statement_${todayStr}.pdf`;
-
-      // Always save a local copy AND trigger mobile share sheet if supported
       doc.save(fileName);
       showToast("PDF Statement Downloaded!");
 
@@ -3402,7 +3547,6 @@
       } catch (e) {}
     }
 
-    // Native Vector PDF Builder for Full Passbook Report (Never Blank!)
     async function exportFullPassbookPDF() {
       const { filtered } = getFilteredPassbookExpenses();
       if (filtered.length === 0) {
@@ -3602,7 +3746,6 @@
         </div>
       `).join("");
 
-      // Recycle Bin with Restore + 2-Step Delete Forever
       const binItems = Object.values(appState.recycleBin || {});
       document.getElementById("recycleBinCount").textContent = `${binItems.length} items`;
       const emptyBtn = document.getElementById("emptyBinBtn");
